@@ -132,10 +132,10 @@ def wiki_text(candidate : tuple[str, list] | str) -> str:
     '''
     
     def kw_matching(desc : str, isBB : bool = False, blackboard : list = []) -> str:
-        kw_match = re.search(r'<@(ba|cc)\.([^>]*)>([^<]*)<\/>', desc)
+        kw_match = re.search(r'<@(?:ba|cc)\.([\.\w\d]+)>((?:<(?!(?:@|\$)(?:cc|ba)\.\1).*?<\/>)*.*?)<\/>', desc)
         if kw_match:
-            match_desc = blackboarding(blackboard, kw_match.group(3)) if isBB else kw_match.group(3)
-            sub_desc = re.sub(r'<@(ba|cc)\.([^>]*)>([^<]*)<\/>', rf'{{{{Color|{match_desc}|{kw_match.group(2).replace("v","")}}}}}', desc, 1)
+            match_desc = blackboarding(blackboard, kw_match.group(2)) if isBB else kw_match.group(2)
+            sub_desc = re.sub(r'<@(?:ba|cc)\.([\.\w\d]+)>((?:<(?!(?:@|\$)(?:cc|ba)\.\1).*?<\/>)*.*?)<\/>', rf'{{{{Color|{match_desc}|{kw_match.group(1).replace("v","")}}}}}', desc, 1)
             return kw_matching(sub_desc, isBB, blackboard)
         else:
             return desc

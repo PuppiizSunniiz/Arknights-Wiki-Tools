@@ -101,7 +101,15 @@ def print_header(text : str) -> str:
     length : int = 20
     return f'\n{"#" * length * 3}\n{"#" * length}{text:^{length}}{"#" * length}\n{"#" * length * 3}'
 
-def script_result(text : str | list | set | dict , show : bool = False, indent : int | None = 4, key_sort : bool = False, sort_keys : Callable = None, forced_txt : bool = False) -> None:
+def script_result(text : str | list | set | dict ,
+                    show : bool = False,
+                    indent : int | None = 4,
+                    key_sort : bool = False,
+                    sort_keys : Callable = None,
+                    forced_txt : bool = False,
+                    txt_nokey : bool = False,
+                    no_tab : bool = False,
+                    ) -> None:
     '''
         Output result
             STR, LIST   >   TXT
@@ -112,10 +120,11 @@ def script_result(text : str | list | set | dict , show : bool = False, indent :
         keys = sorted(text.keys(), key = sort_keys) if key_sort else text.keys()
         for key in keys:
             if isinstance(text[key], dict):
-                to_txt.append(f'{"\t"*tab}{key}')
-                to_txt += dict_to_txt(text[key], tab + 1)
+                to_txt.append(f'{"" if tab else "\n"}{"\t"*tab}{key}')
+                to_txt += dict_to_txt(text[key], 0 if no_tab else tab + 1)
             else:
-                to_txt += [f'{"\t"*tab}{key} : {text[key].replace("\n", f'\n{"\t" *(tab + (len(key) + 3) // 4 + 1)}') if text[key] else None}']
+                value_text = (f'\n{text[key]}').replace("\n", f'\n{"\t" *(tab + (len(key) + 3) // 4 + 1)}') if text[key] and "\n" in text[key] else text[key]
+                to_txt += [f'{"\t"*tab}{value_text}'] if txt_nokey else [f'{"\t"*tab}{key} : {value_text}']
         return to_txt
     
     if isinstance(text, str):

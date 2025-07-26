@@ -11,7 +11,7 @@ used_json = [
             ]
 DB = load_json(used_json)
 
-def subpower_list(show : bool = False):
+def subpower_list():
     temp_char = {}
     for char in DB["json_character"]:
         temp_main = []
@@ -32,16 +32,16 @@ def char_subpower():
     subpower_json = subpower_list()
     for char in subpower_json.keys():
         char_name = DB["json_characterEN"][char]["name"] if char in DB["json_characterEN"].keys() else DB["json_character"][char]["appellation"]
-        char_main = ", ".join([power_name(power) for power in subpower_json[char]["main"]])
-        char_sub = ", ".join([power_name(power) for power in subpower_json[char]["sub"]])
-        temp_char[char_name] = {"Main Power" : char_main, "Sub Power" : char_sub}
-    return {char:temp_char[char] for char in sorted(temp_char.keys())}
+        char_main = [power_name(power) for power in subpower_json[char]["main"]]
+        char_sub = [power_name(power) for power in subpower_json[char]["sub"] if power not in subpower_json[char]["main"]]
+        temp_char[char_name] = {"id" : char, "power" : {"Main Power" : ", ".join(char_main), "Sub Power" : ", ".join(char_sub)}}
+    return {f'{char} ({temp_char[char]["id"]})':temp_char[char]["power"] for char in sorted(temp_char.keys())}
 
-def event_sypnosis(show : bool = False):
+def event_sypnosis():
     events = {}
     SStag = DB["json_stage"]["storylineTags"]
-    tags_en = DB["json_stageEN"]["storylineTags"] if "storylineTags" in DB["json_stageEN"].keys() else {}
-    SStag.update(tags_en)
+    SStag_en = DB["json_stageEN"]["storylineTags"] if "storylineTags" in DB["json_stageEN"].keys() else {}
+    SStag.update(SStag_en)
     tags = {tag:SStag[tag]["tagDesc"] for tag in SStag}
     
     SSset = DB["json_stage"]["storylineStorySets"]
@@ -68,11 +68,13 @@ def menu():
                 "1" : "Operator Subpower",
                 "2" : "Event Sypnosis",
             }
+    
     interface = [
                     f'\n{Y}What script do you want ?',
                     menu_gen(mode),
                     f'{Y}Select{RE} : '
     ]
+    
     user_input = input("\n".join(interface))
     if user_input in mode.keys():
         print(f'\n{"#"*30}\n{G if int(user_input) % 2 == 1 else B}{mode[user_input]}{RE} is {Y}Selected{RE}\n{"#"*30}')
