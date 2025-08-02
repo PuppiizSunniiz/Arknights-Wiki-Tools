@@ -120,11 +120,11 @@ def script_result(text : str | list | set | dict ,
         keys = sorted(text.keys(), key = sort_keys) if key_sort else text.keys()
         for key in keys:
             if isinstance(text[key], dict):
-                to_txt.append(f'{"" if tab else "\n"}{"\t"*tab}{key}')
+                to_txt.append(f'{"" if tab else "\n"}{"\t" * tab}{key}')
                 to_txt += dict_to_txt(text[key], 0 if no_tab else tab + 1)
             else:
-                value_text = (f'\n{text[key]}').replace("\n", f'\n{"\t" *(tab + (len(key) + 3) // 4 + 1)}') if text[key] and "\n" in text[key] else text[key]
-                to_txt += [f'{"\t"*tab}{value_text}'] if txt_nokey else [f'{"\t"*tab}{key} : {value_text}']
+                value_text = (f'\n{text[key]}').replace("\n", f'\n{"\t" * (tab + (len(key) + 3) // 4 + 1)}') if text[key] and "\n" in text[key] else text[key]
+                to_txt += [f'{"\t" * tab}{value_text}'] if txt_nokey else [f'{"\t" * tab}{key} : {value_text}']
         return to_txt
     
     if isinstance(text, str):

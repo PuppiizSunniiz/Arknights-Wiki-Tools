@@ -1,5 +1,5 @@
 
-from Wiki_pyFunction import load_json, wiki_story, wiki_text
+from pyFunction_Wiki import load_json, wiki_story, wiki_text
 from pyFunction import decimal_format, printr, script_result
 
 
@@ -76,7 +76,7 @@ for mod in json_modEN["equipTrackDict"][-1]["trackList"]:
         new_mod.append(mod["equipId"])
 
 for mod_id in new_mod:
-    temp_mod_txt += f'{"#"*80}\n\n{wiki_story(json_modEN["equipDict"][mod_id]["uniEquipDesc"].replace("—", "&mdash;"), join_str = "\n<br/>")}\n\n'
+    temp_mod_txt += f'{"#" * 80}\n\n{wiki_story(json_modEN["equipDict"][mod_id]["uniEquipDesc"].replace("—", "&mdash;"), join_str = "\n<br/>")}\n\n'
     temp_mod[mod_id] = {
                             "name" : json_modEN["equipDict"][mod_id]["uniEquipName"],
                             "trait" : mod_trait_search(json_battle_modEN[mod_id]),

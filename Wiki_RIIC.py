@@ -1,6 +1,6 @@
 
 import re
-from Wiki_pyFunction import load_json, wiki_text
+from pyFunction_Wiki import load_json, wiki_text
 from pyFunction import printr, script_result
 
 used_json = [

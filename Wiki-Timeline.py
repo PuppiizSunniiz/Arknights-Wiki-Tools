@@ -1,4 +1,4 @@
-from Wiki_pyFunction import load_json
+from pyFunction_Wiki import load_json
 from pyFunction import R, G, B, Y, RE, json_load, printr, script_result
 
 used_json = [

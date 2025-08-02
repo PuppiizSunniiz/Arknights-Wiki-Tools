@@ -1,7 +1,7 @@
 import re
 from typing import Any
 from Wiki_Dict import ENEMY_NAMES_TL, ITEM_NAMES_TL, SKILL_NAMES_TL, TOKEN_NAMES_TL
-from Wiki_pyFunction import load_json, wiki_trim
+from pyFunction_Wiki import load_json, wiki_trim
 from pyFunction import B, G, R, RE, Y, decimal_format, falsy_compare, join_and, json_load, printc, printr, script_result
 
 used_json = [
