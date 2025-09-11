@@ -1,0 +1,48 @@
+{{Device infobox
+|title = 
+|name = Allerdale's Guard
+|image = Allerdale's Guard.png
+|cnname = 阿勒黛的卫护
+|jpname = 
+|krname = 
+|othername = Allerdale Bewards{{Note|Used in the CN server; ''beward'' is synonymous to "protect" in English, which is rarely used today.}}
+|user = 
+|enemy =
+|intro = Episode 11
+|type = Deployable
+|position = Low/High
+|invulnerable = yes
+|ig = true}}
+'''Allerdale's Guard''' is a [[deployable device]] in ''[[Arknights]]''.
+
+==Overview==
+{{Quote|Forms an AOE shield for allies.|Description of operations featuring Allerdale's Guard}}
+When deployed, Allerdale's Guard summons [[Allerdale]] who will use her [[Arts]] to create a [[Barrier]] on the friendly unit ahead of her as well as friendlies in the surrounding 8 tiles to them after she is deployed and withdraws once this is done.
+
+==Appearances==
+{{Appearances
+|main theme = [[11-5]] &bull; [[11-6]] &bull; [[11-7|11-7 (Story/Standard Env.)]] &bull; [[11-8]] &bull; [[11-9]] &bull; [[11-11]] &bull; [[11-12]] &bull; [[11-13]] &bull; [[11-14]] &bull; [[11-15]] &bull; [[11-18]] &bull; [[11-20]] &bull; [[H11-4]]
+|tn = [[Fissure Strike]]
+|ps = [[Dagda/Paradox Simulation|Dagda: Through Thick and Thin]]}}
+
+==Stats==
+{{Device info
+|range = {{Ranges|p|p|s|r|p|p}}
+|hp = 100
+|hp note = Redundant as Allerdale's Guard is invulnerable
+|atk = 3000
+|atk note = Redundant as Allerdale's Guard does not attack
+|def = 0
+|res = 0
+|rdp = 40
+|cost = 3}}
+
+==Skill==
+{{Device skill|name=Allerdale's Guard|icon=AllerdalesGuard|sp=auto|type=auto|cost=0,5|effect=After deployment, gives the target and surrounding friendly units a {{G|Barrier}} that can absorb 1000 damage|addendum=
+*Once the skill is active, applies the Barrier to the friendly unit within attack range and other friendly units in the surrounding 8 tiles, then removes Allerdale's Guard from the map.
+*The Barrier lasts for 10 seconds, which is not stated in-game.}}
+
+==Note==
+{{Notelist}}
+
+{{Devices}}

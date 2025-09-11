@@ -1,6 +1,20 @@
 import re
+from types import NoneType
 
-from pyFunction import decimal_format, json_load, printr
+from pyFunction import R, RE, Y, decimal_format, json_load, printr
+
+CLASS_PARSE_EN : dict[str, str] = {
+                                    "MEDIC"   : "Medic",          "WARRIOR"   : "Guard",
+                                    "SPECIAL" : "Specialist",     "SNIPER"    : "Sniper",
+                                    "PIONEER" : "Vanguard",       "CASTER"    : "Caster",
+                                    "SUPPORT" : "Supporter",      "TANK"      : "Defender"
+                                }
+
+
+CLASS_PARSE_CN : dict[str, str] = {
+                                    'SNIPER' :"狙击", 'PIONEER':"先锋", 'TANK'   :"重装",  'MEDIC'   :"医疗",
+                                    'SUPPORT':"辅助", 'SPECIAL':"特种", 'WARRIOR':"近卫",  'CASTER'  :"术师"
+                                }
 
 def load_json(json_load_list : str | list = []) -> dict :
     '''
@@ -211,3 +225,46 @@ def blackboarding(blackboard : list, desc : str):
             if bb["key"] == match_bbkey:
                 #printr(match_bbkey, bb["valueStr"], bb["value"], match_format)
                 return re.sub(r'(\+|-|)\{([^\{\}:]*)(?::([^\{\}:]*)|)\}', f'{match_symbol}{bb["valueStr"] if bb["valueStr"] else (f'{bb["value"]:.{match_format}}' if match_format else f'{decimal_format(bb["value"])}')}', desc)
+
+def spType(sp_type : str|int):
+    match sp_type:
+        case "INCREASE_WITH_TIME":
+            return "auto"
+        case "INCREASE_WHEN_ATTACK": 
+            return "offensive"
+        case "INCREASE_WHEN_TAKEN_DAMAGE": 
+            return "defensive"
+        case 8: 
+            return "auto"
+        case _:
+            return sp_type
+
+def range_template(range_id : str|NoneType) -> str:
+    if isinstance(range_id, NoneType):
+        return ""
+    
+    json_range = load_json("json_range")["json_range"]
+    
+    if range_id not in json_range.keys():
+        printr(f'Range {Y}{range_id} {R}not{RE} found')
+        return ""
+
+    temp = [[grid["col"],grid["row"]] for grid in json_range[range_id]["grids"]]
+    
+    max_x = max([x[0] for x in temp])
+    min_x = min([x[0] for x in temp] + [0])
+    max_y = max([y[1] for y in temp])
+    min_y = min([y[1] for y in temp] + [0])
+    
+    range_array=[["p" for _ in range(max_x - min_x + 1)] for _ in range(max_y - min_y + 1)]
+
+    for col, row in temp:
+        if [col, row] == [0,0]:
+            range_array[row + max_y][col + abs(min(0, min_x))]="s"
+        else:
+            range_array[row + max_y][col + abs(min(0, min_x))]="r"
+    
+    if len(range_array) == 1 :
+        return f'{{{{ranges|{"|".join(range_array[0])}}}}}'
+    else:
+        return f'{{{{Range container|{"".join([f'{{{{ranges|{"|".join(range_array[row])}}}}}' for row in range(len(range_array))])}}}}}'
