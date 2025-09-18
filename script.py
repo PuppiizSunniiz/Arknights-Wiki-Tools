@@ -1,10 +1,5 @@
 import json
-import glob
 import re
-import subprocess
-import os
-import inspect
-from typing import Any
 import pandas as pd
 
 from pyFunction import R, G, B, Y, RE, json_load, printr, script_result
@@ -572,12 +567,11 @@ def ig1_mission():
 
 #ig1_mission()
 
-def activity_medal():
+def activity_medal(activity : str):
     def wikitrim_method(desc : str) -> str:
         trim_desc = desc.split(", ", 1)[-1]
         return trim_desc[0].upper() + trim_desc[1:]
     
-    activity = "act1multi"
     medal_dict = {}
     medal_text = []
     medal_rarity_dict = {"T3" : "gold", "T2" : "silver", "T1" : "bronze"}
@@ -601,6 +595,9 @@ def activity_medal():
     
     for key in sort_medal_dict.keys():
         medal_name  = sort_medal_dict[key]["name"]
+        if re.match(r'^\'(.+?)\'$', medal_name):
+            medal_name = re.sub(r'^\'(.+?)\'$', r'\1', medal_name)
+            medal_name = f'{medal_name}|title="{medal_name}"'
         medal_type  = medal_rarity_dict[sort_medal_dict[key]["rarity"]]
         medal_get   = sort_medal_dict[key]["getMethod"]
         medal_trim  = sort_medal_dict[key].get("trim", False)
@@ -608,9 +605,47 @@ def activity_medal():
         medal_text.append(f'{{{{Medal cell|name={medal_name}|type={medal_type}|desc={medal_desc}|cond={medal_get}{f'|trim={medal_trim}' if medal_trim else ""}}}}}')
         printr(medal_text)
     script_result(medal_text, True)
-#activity_medal()
+    
+activity_medal("medal_stage_hard")
 
 def navbox_list(item_list : list):
     printr(f'{"\n".join([f'*[[{item}]]' for item in sorted(item_list)])}')
 
-navbox_list(["Facility Builder", "Expert Facility Builder", "Collapsed Junk Pile", "Construction Workshop", "Recuperation Pod", "Hydraulic Platform", "Concrete Roadblock", "Portable Exercise Rack",] + ["Cheerleader", "Protective Gear Giver", "Chaotic Fireworks", "Beastmode Energy Drink", "Soda Dispenser"])
+#navbox_list(["Facility Builder", "Expert Facility Builder", "Collapsed Junk Pile", "Construction Workshop", "Recuperation Pod", "Hydraulic Platform", "Concrete Roadblock", "Portable Exercise Rack",] + ["Cheerleader", "Protective Gear Giver", "Chaotic Fireworks", "Beastmode Energy Drink", "Soda Dispenser"])
+
+def rename_enemies() -> str :
+    with open("py/input_script.txt", 'r', encoding="utf-8") as file_text:
+        text = "".join(file_text.readlines())
+    
+    ori_text = text
+    rename_dict = {
+                    "Befuddled Repair Assistant" : "Confused Maintenance Helper",
+                    "Uncontrollable Repair Assistant" : "Rampaging Maintenance Helper",
+                    "Iced Beverage Machine" : "Cold Drink Machine",
+                    "Hot Beverage Machine" : "Hot Drink Machine",
+                    "Foolproof Freight Carrier" : "Worry-Free Cargo Helper",
+                    "Blastproof Freight Carrier" : "Blast-Proof Cargo Helper",
+                    "Echo of the Frozen Monstrosity" : "Frozen Monstrosity's Echo",
+                    "Beta Food Delivery Terminal" : "Mockup Auto Meal Distributor",
+                    "Food Delivery Terminal Prototype" : "Prototype Auto Meal Distributor",
+                    "Solid Originium Colossus" : "Solidified Originium Colossus",
+                    "Stable Crystallized Sarkaz Caster" : "Stable Sarkaz Caster Crystal",
+                    "Active Crystallized Sarkaz Caster" : "Active Sarkaz Caster Crystal",
+                    "Static Illusion α" : "Static Oneiros α",
+                    "Static Illusion β" : "Static Oneiros β ",
+                    "Translation Base α" : "Decode Basis α",
+                    "Translation Base β" : "Decode Basis β",
+                    "Weakened Node" : "Weakening Node",
+                    }
+
+    for name_before, name_after  in rename_dict.items():
+        text = text.replace(name_before, name_after)
+        
+    if text == ori_text:
+        printr(f'Text {R}not{RE} changed')
+    else:
+        printr(f'Text has been {G}changed')
+    script_result(text, show = (text != ori_text))
+    
+
+#rename_enemies()
