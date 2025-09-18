@@ -27,9 +27,13 @@ def printt(*arg, mode = ""):
     else:
         print(*arg)
 
-def json_load(filepath : str):
-    with open(f'C:/Github/AN-EN-Tags/{filepath}', 'r', encoding = 'utf-8') as file:
-        return json.load(file)
+def json_load(filepath : str, temp = False):
+    if temp:
+        with open(f'{filepath}', 'r', encoding = 'utf-8') as file:
+            return json.load(file)
+    else:
+        with open(f'C:/Github/AN-EN-Tags/{filepath}', 'r', encoding = 'utf-8') as file:
+            return json.load(file)
 
 def epoch(time) -> str :
     return f'{TimeFormat(datetime.fromtimestamp(time))} is {time_diff(datetime.fromtimestamp(time))}'

@@ -606,7 +606,7 @@ def activity_medal(activity : str):
         printr(medal_text)
     script_result(medal_text, True)
     
-activity_medal("medal_stage_hard")
+#activity_medal("medal_stage_hard")
 
 def navbox_list(item_list : list):
     printr(f'{"\n".join([f'*[[{item}]]' for item in sorted(item_list)])}')
@@ -647,5 +647,4 @@ def rename_enemies() -> str :
         printr(f'Text has been {G}changed')
     script_result(text, show = (text != ori_text))
     
-
 #rename_enemies()

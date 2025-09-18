@@ -190,9 +190,9 @@ def wiki_text(candidate : tuple[str, list] | str) -> str:
 
 def wiki_story(story : str, newline : str = "\n", join_str : str = "<br/>") -> str:
     def replace_between(part : str) -> str:
-        between_match = re.search(r"^(|.+? )'([^']+?|[^(?:tis|twas|twere)].+?)'(?:( |\?|!)(.+?|)|)$", part)
+        between_match = re.search(r"^(|.+? )'([^']+?|[^(?:tis|twas|twere)].+?)'(?:( |\?|!|\.)(.+?|)|)$", part)
         if between_match:
-            new_part = re.sub(r"^(|.+? )'([^']+?|[^(?:tis|twas|twere)].+?)'(?:( |\?|!)(.+?|)|)$", r'\1"\2"\3\4', part)
+            new_part = re.sub(r"^(|.+? )'([^']+?|[^(?:tis|twas|twere)].+?)'(?:( |\?|!|\.)(.+?|)|)$", r'\1"\2"\3\4', part)
             return replace_between(new_part)
         else:
             return part
