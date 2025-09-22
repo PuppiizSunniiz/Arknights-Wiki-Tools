@@ -24,11 +24,11 @@ def wiki_skin(skin_list : list[str], lang = Literal["CN", "EN"], temp = False):
             if skin_id.find("@") == -1:
                 continue
             if skin_DB[skin_id]["displaySkin"]["skinName"] == skin:
-                illustrator = join_and(skin_DB[skin_id]["displaySkin"]["drawerList"])
-                usage   = skin_DB[skin_id]["displaySkin"]["usage"]
-                quote   = wiki_story(skin_DB[skin_id]["displaySkin"]["description"])
-                series  = wiki_story(skin_DB[skin_id]["displaySkin"]["dialog"][:skin_DB[skin_id]["displaySkin"]["dialog"].find(skin) + len(skin) + 1].strip())
-                desc    = wiki_story(skin_DB[skin_id]["displaySkin"]["dialog"][skin_DB[skin_id]["displaySkin"]["dialog"].find(skin) + len(skin) + 1:].strip())
+                illustrator : str   = join_and(skin_DB[skin_id]["displaySkin"]["drawerList"])
+                usage       : str   = skin_DB[skin_id]["displaySkin"]["usage"]
+                quote       : str   = wiki_story(skin_DB[skin_id]["displaySkin"]["description"])
+                series      : str   = wiki_story(skin_DB[skin_id]["displaySkin"]["dialog"][:skin_DB[skin_id]["displaySkin"]["dialog"].find(skin) + len(skin) + 1].strip())
+                desc        : str   = wiki_story(skin_DB[skin_id]["displaySkin"]["dialog"][skin_DB[skin_id]["displaySkin"]["dialog"].find(skin) + len(skin) + 1:].strip())
                 
                 skin_desc = f'''|name = {skin}
                                 |illustrator = {illustrator}
@@ -46,5 +46,5 @@ def wiki_skin(skin_list : list[str], lang = Literal["CN", "EN"], temp = False):
     
     script_result(skin_article, True)
 
-skin_list : list[str] = ["Empty Crown", "Ethereal Harmony", "Golden Reverie", "Melodic Flutter", "Radiant Serenity"]
+skin_list : list[str] = ["Candy Strike"]
 wiki_skin(skin_list, temp = True)

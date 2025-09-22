@@ -113,6 +113,7 @@ def script_result(text : str | list | set | dict ,
                     forced_txt : bool = False,
                     txt_nokey : bool = False,
                     no_tab : bool = False,
+                    script_exit : bool = False
                     ) -> None:
     '''
         Output result
@@ -152,6 +153,8 @@ def script_result(text : str | list | set | dict ,
     print(f'\n{Y}Script Completed{RE} -> {R}{file}{RE}')
     if show:
         subprocess.run(f'code --reuse-window -g "{os.path.abspath(file)}"', shell = True)
+    if script_exit:
+        exit()
         
 def join_and(text_list : list | set) -> str :
     return_text = " and ".join(text_list)

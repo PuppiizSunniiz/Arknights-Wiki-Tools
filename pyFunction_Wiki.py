@@ -203,12 +203,21 @@ def wiki_story(story : str, newline : str = "\n", join_str : str = "<br/>") -> s
         desc = replace_between(desc)
         # Start - End
         desc = re.sub(r"^'(.+?)'$", r'"\1"', desc)
-        #Start -
+        # Start -
         desc = re.sub(r"^'(.+?)([^'])$", r'"\1\2', desc)
         # - End
         desc = re.sub(r"^([^'])(.+?)'$", r'\1\2"', desc)
         desc_list[i] = desc
     return join_str.join(desc_list)
+
+def wiki_stage(stage_desc : str, newline : str = "\n", join_str : str = "<br/>") -> str:
+    wiki_story(stage_desc, "\n", "\n")
+    # Stage Item
+    stage_desc = re.sub(r"<@lv.item><(.+?)>( |)</>", r"'''<[[\1]]>'''\2", stage_desc)
+    # Rem
+    stage_desc = re.sub(r"<@lv.rem>(.+?)</>", r"{{Color|\1|rem}}", stage_desc)
+    return join_str.join(stage_desc)
+    
 
 def blackboarding(blackboard : list, desc : str):
     blackboard_match = re.match(r'(\+|-|)\{([^\{\}:]*)(?::([^\{\}:]*)|)\}', desc)

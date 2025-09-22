@@ -1,9 +1,10 @@
 import json
 import re
+from types import NoneType
 import pandas as pd
 
 from pyFunction import R, G, B, Y, RE, json_load, printr, script_result
-from pyFunction_Wiki import CLASS_PARSE_EN, wiki_story
+from pyFunction_Wiki import CLASS_PARSE_EN, range_template, wiki_stage, wiki_story
 
 ################################################################################################################################################################################################################################################
 # JSON
@@ -567,47 +568,6 @@ def ig1_mission():
 
 #ig1_mission()
 
-def activity_medal(activity : str):
-    def wikitrim_method(desc : str) -> str:
-        trim_desc = desc.split(", ", 1)[-1]
-        return trim_desc[0].upper() + trim_desc[1:]
-    
-    medal_dict = {}
-    medal_text = []
-    medal_rarity_dict = {"T3" : "gold", "T2" : "silver", "T1" : "bronze"}
-    get_data = json.load(open(r'py\temp_medal.json', 'r', encoding="utf-8"))
-    for medal in get_data["medalList"]:
-        if medal["medalId"].find(activity) != -1:
-            if medal.get("originMedal", ""):
-                medal_dict[medal["slotId"]].update({"trim" : wikitrim_method(medal["getMethod"])})
-            else :
-                medal_dict[medal["slotId"]] = {
-                                                "id"            : medal["medalId"],
-                                                "name"          : medal["medalName"],
-                                                "rarity"        : medal["rarity"],
-                                                "getMethod"     : wikitrim_method(medal["getMethod"]),
-                                                "description"   : medal["description"]
-                                            }
-    sort_medal_dict = {key:medal_dict[key] for key in sorted(medal_dict.keys(), key = lambda k : int(k))}
-    script_result(sort_medal_dict, True)
-    
-    #medal_group
-    
-    for key in sort_medal_dict.keys():
-        medal_name  = sort_medal_dict[key]["name"]
-        if re.match(r'^\'(.+?)\'$', medal_name):
-            medal_name = re.sub(r'^\'(.+?)\'$', r'\1', medal_name)
-            medal_name = f'{medal_name}|title="{medal_name}"'
-        medal_type  = medal_rarity_dict[sort_medal_dict[key]["rarity"]]
-        medal_get   = sort_medal_dict[key]["getMethod"]
-        medal_trim  = sort_medal_dict[key].get("trim", False)
-        medal_desc  = sort_medal_dict[key]["description"].replace("\n", "<br/>")
-        medal_text.append(f'{{{{Medal cell|name={medal_name}|type={medal_type}|desc={medal_desc}|cond={medal_get}{f'|trim={medal_trim}' if medal_trim else ""}}}}}')
-        printr(medal_text)
-    script_result(medal_text, True)
-    
-#activity_medal("medal_stage_hard")
-
 def navbox_list(item_list : list):
     printr(f'{"\n".join([f'*[[{item}]]' for item in sorted(item_list)])}')
 
@@ -648,3 +608,31 @@ def rename_enemies() -> str :
     script_result(text, show = (text != ori_text))
     
 #rename_enemies()
+
+def stage_desc(stage_name : str|list) -> NoneType :
+    stage_result = {}
+    if isinstance(stage_name, str):
+        stage_name = [stage_name]
+    stage_temp = json_load(r"py\temp_stage.json", temp=True)["stages"]
+    for stage in stage_temp.keys():
+        if set([stage.find(name) for name in stage_name]) != {-1}:
+            stage_result[stage] = {
+                                        "levelId"   : stage_temp[stage]["levelId"],
+                                        "zoneId"    : stage_temp[stage]["zoneId"],
+                                        "code"      : stage_temp[stage]["code"],
+                                        "name"      : stage_temp[stage]["name"],
+                                        "description": wiki_stage(stage_temp[stage]["description"]),
+            }
+    script_result(stage_result, forced_txt=True, show=True)
+
+#stage_desc("hard_15")
+
+def map_grid(grid_value : str) -> NoneType :
+    def get_grid(coord : str):
+        X = coord.split(",")[0]
+        Y = coord.split(",")[1]
+        return f'{{{{Pos|{chr(ord("A") + int(X))}{int(Y) + 1}}}}}'
+    
+    grid_list = grid_value.replace("(", "").replace(")", "").split("|")
+    printr(join_and(sorted([get_grid(coord) for coord in grid_list])))
+map_grid("(4,1)|(4,10)")
