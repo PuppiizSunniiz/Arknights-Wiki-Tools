@@ -134,14 +134,14 @@ def script_result(text : str | list | set | dict ,
     
     if isinstance(text, str):
         with open("py/script.txt", "w", encoding = "utf-8") as filepath:
-            filepath.write(text)
+            filepath.write(text.replace(" ", " "))
     elif isinstance(text, list) or isinstance(text, set):
         with open("py/script.txt", "w", encoding = "utf-8") as filepath:
-            filepath.write("\n".join(text))
+            filepath.write("\n".join(text).replace(" ", " "))
     elif isinstance(text, dict) and indent:
         if forced_txt:
             with open("py/script.txt", "w", encoding = "utf-8") as filepath:
-                filepath.write("\n".join(dict_to_txt(text)))
+                filepath.write("\n".join(dict_to_txt(text)).replace(" ", " "))
         else :
             with open("py/script.json", "w", encoding = "utf-8") as filepath:
                 json.dump(text, filepath, indent = indent, ensure_ascii = False, sort_keys = sort_keys)
@@ -165,7 +165,10 @@ def join_and(text_list : list | set) -> str :
 def falsy_compare(a, b) -> bool:
     return not bool(a) and not bool(b) or a == b
 
-def decimal_format(dec : float) -> str:
+def decimal_format(dec : float|str) -> str:
+    if isinstance(dec, str):
+        dec = float(dec)
+    
     if int(dec) != dec and len(str(dec).split(".")[-1]) > 1:
         return f'{dec:.2f}'
     elif int(dec) != dec and len(str(dec).split(".")[-1]) == 1:

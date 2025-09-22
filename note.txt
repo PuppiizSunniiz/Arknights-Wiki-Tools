@@ -1,48 +1,1681 @@
-{{Device infobox
-|title = 
-|name = Allerdale's Guard
-|image = Allerdale's Guard.png
-|cnname = 阿勒黛的卫护
-|jpname = 
-|krname = 
-|othername = Allerdale Bewards{{Note|Used in the CN server; ''beward'' is synonymous to "protect" in English, which is rarely used today.}}
-|user = 
-|enemy =
-|intro = Episode 11
-|type = Deployable
-|position = Low/High
-|invulnerable = yes
-|ig = true}}
-'''Allerdale's Guard''' is a [[deployable device]] in ''[[Arknights]]''.
+### act1multi_tr01
+{{Construction}}
+{{IG operation info
+|code = TR-1
+|name = Tutorial - Regular Events
+|season = 1
+|group = Regular Events, Training Grounds
+|desc = Learn the rules of Regular Events.
+|level = 
+|unit limit = 6
+|enemies = 21, 21
+|lp = 3
+|dp = 30
+|deployable = {{D|Cheerleader|1}} 
+|static =  
+|terrain = 
+|addendum = 
+<!-- ability_name : survive|time_x1 : 30.0|time_x2 : 30.0|basic : 1.0 -->
+Survive for 30 seconds
+<!-- ability_name : target|time_x : 120.0|kill_y1 : 3.0|kill_y2 : 5.0|enemy_key : enemy_1030_wteeth|rest_time : 10.0 -->
+Defeat target in 120 seconds with 10 seconds break time
+,
+|obj1 = Survival; Survive for 30 seconds.
+|obj2 = Infiltration; Defeat 3 Junkmen.
+|obj2+ = Infiltration; Defeat 5 Junkmen.
+|normal = {{E|Airborne Soldier|4}}, {{E|Junkman|7}}, {{E|Hound|9}}
+|elite = {{E|Butcher|1}}
+|boss = 
+|eaddendum = 
+Butcher will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Burdenbeast Supplier have 2000 HP and 700 ATK.
+*Airborne Soldier have 1200 HP.
+*Junkman have 2500 HP.
+|fixed = true
+|comp = 
+*{{C|Kroos}} (Elite 1 Level 50, {{Skill|Double Tap - Auto}} Level 7)
+*{{C|Cuora}} (Elite 1 Level 60, {{Skill|Shell Defense}} Level 7)
+*{{C|Myrrh}} (Elite 1 Level 50, {{Skill|Medic Field}} Level 7)
+*{{C|Meteor}} (Elite 1 Level 50, {{Skill|Armor Breaker - Spread}} Level 7)
+|auto = 
+*{{C|Amiya}} (Elite 1 Level 50, {{Skill|Spirit Burst}} Level 7)
+*{{C|Beagle}} (Elite 1 Level 50, {{Skill|DEF Up α}} Level 7)
+*{{C|Catapult}} (Elite 1 Level 50, {{Skill|Blast Range Up α}} Level 7)
+*{{C|Hibiscus}} (Elite 1 Level 50, {{Skill|Healing Up α}} Level 7)
+|pre = 
+|saddendum = 
+All Operators have 100% [[Trust]].
+}}
+{{IG operations}}
 
-==Overview==
-{{Quote|Forms an AOE shield for allies.|Description of operations featuring Allerdale's Guard}}
-When deployed, Allerdale's Guard summons [[Allerdale]] who will use her [[Arts]] to create a [[Barrier]] on the friendly unit ahead of her as well as friendlies in the surrounding 8 tiles to them after she is deployed and withdraws once this is done.
+### act1multi_tr02
+{{Construction}}
+{{IG operation info
+|code = TR-2
+|name = Tutorial - Positional Football
+|season = 1
+|group = Positional Football, Training Grounds
+|desc = Learn the rules of Positional Football.
+|level = 
+|unit limit = 4
+|enemies = 10, 11
+|lp = 99
+|dp = 60
+|deployable = {{D|Football|1}} 
+|static = {{D|Positional Barrier|14}}, {{D|Turret|9}}, {{D|Football|1}} 
+|terrain = 
+|addendum = 
+,
+|obj1 = Score; Achieve a 1-goal difference.
+|obj2 = Score; Achieve a 2-goal difference.
+|obj2+ = Score; Achieve a 4-goal difference.
+|normal = 
+|elite = {{E|Field Shooter|1}}, {{E|Field Goalie|1}}, {{E|RMA70 Spikeball|6}}, {{E|RMA70 Spikeball|1|2}}
+|boss = 
+|eaddendum = 
+*Field Shooter have 1500 HP and 500 ATK.
+*Field Goalie have 3500 HP and 700 ATK.
+|fixed = true
+|comp = 
+*{{C|Melantha}} (Elite 1 Level 55, {{Skill|ATK Up α}} Level 1)
+*{{C|Beagle}} (Elite 1 Level 55, {{Skill|DEF Up α}} Level 1)
+*{{C|Franka}} (Elite 1 Level 70, {{Skill|Swift Strike γ}} Level 7)
+*{{C|Vermeil}} (Elite 1 Level 55, {{Skill|ATK Up β}} Level 1)
+*{{C|Cuora}} (Elite 1 Level 55, {{Skill|DEF Up β}} Level 1)
+*{{C|Gravel}} (Elite 1 Level 55, {{Skill|Shadow Assault}} Level 1)
+|auto = 
+*{{C|Beagle}} (Elite 1 Level 55, {{Skill|DEF Up α}} Level 1)
+*{{C|Cardigan}} (Elite 1 Level 55, {{Skill|Regeneration α}} Level 1)
+*{{C|Cuora}} (Elite 1 Level 55, {{Skill|DEF Up β}} Level 1)
+*{{C|Franka}} (Elite 1 Level 70, {{Skill|Swift Strike γ}} Level 7)
+*{{C|Matoimaru}} (Elite 1 Level 60, {{Skill|Regeneration β}} Level 7)
+*{{C|Melantha}} (Elite 1 Level 55, {{Skill|ATK Up α}} Level 1)
+*{{C|Projekt Red}} (Elite 1 Level 55, {{Skill|Execution Mode}} Level 1)
+*{{C|Vermeil}} (Elite 1 Level 55, {{Skill|ATK Up β}} Level 1)
+|pre = 
+|saddendum = 
+$1 and $2 have $3% [[Trust]].
+<!--
+Comp = 
+	Melantha has 100 trust
+	Beagle has 100 trust
+	Franka has 200 trust
+	Vermeil has 100 trust
+	Cuora has 100 trust
+	Gravel has 100 trust
+Auto = 
+	Melantha has 100 trust
+	Beagle has 100 trust
+	Cuora has 100 trust
+	Cardigan has 100 trust
+	Vermeil has 100 trust
+	Franka has 200 trust
+	Melantha has 100 trust
+	Vermeil has 100 trust
+	Matoimaru has 200 trust
+	Projekt Red has 100 trust
+Pre = 
+-->
+}}
+{{IG operations}}
 
-==Appearances==
-{{Appearances
-|main theme = [[11-5]] &bull; [[11-6]] &bull; [[11-7|11-7 (Story/Standard Env.)]] &bull; [[11-8]] &bull; [[11-9]] &bull; [[11-11]] &bull; [[11-12]] &bull; [[11-13]] &bull; [[11-14]] &bull; [[11-15]] &bull; [[11-18]] &bull; [[11-20]] &bull; [[H11-4]]
-|tn = [[Fissure Strike]]
-|ps = [[Dagda/Paradox Simulation|Dagda: Through Thick and Thin]]}}
+### act1multi_tr03
+{{Construction}}
+{{IG operation info
+|code = TR-3
+|name = Tutorial - Bastion Defense
+|season = 1
+|group = Bastion Defense, Training Grounds
+|desc = Learn the rules of Bastion Defense.
+|level = 
+|unit limit = 6
+|enemies = 15, 15
+|lp = 20
+|dp = 30
+|deployable = {{D|Facility Builder|2}}, {{D|Expert Facility Builder|1}} 
+|static = {{D|Collapsed Junk Pile|1}}, {{D|Recuperation Pod|1}}, {{D|Construction Workshop|1}}, {{D|Hydraulic Platform|2}}, {{D|Concrete Roadblock|3}}, {{D|Facility Builder|14}}, {{D|Expert Facility Builder|1}}, {{D|Portable Exercise Rack|1}} 
+|terrain = 
+|addendum = 
+Survive for 27 seconds and have 65 seconds break time
+On break, recover up to 3 life points and increase next break time by 20 seconds
+Monument of Trial last for 60 seconds
+All Foldable Bastion, Foldable Maintenance Vehicle and Foldable Logistics Hub have recover 120 HP every second.
+All Roadblocks have Max HP increased by 3000.
+,
+|obj1 = Defense; Survive 1 wave.
+|obj2 = Defense; Survive 2 waves.
+|obj2+ = Defense; Survive 4 waves.
+|normal = {{E|Breaker|9}}, {{E|Hound Pro|4}}
+|elite = {{E|Logger|1}}, {{E|Monument to Force|1}}
+|boss = 
+|eaddendum = 
+*Ironhead Forward have Does not deduct [[Life Point|Life Points]].
+*Long-Armed Pitcher have Does not deduct [[Life Point|Life Points]].
+*Spec Ops Soldier have 2000 HP.
+*Monument to Force have 10000 HP and 0 DEF.
+*Logger have 1500 HP.
+*Breaker have 2000 HP.
+|fixed = true
+|comp = 
+*{{C|Adnachiel}} (Elite 1 Level 55, {{Skill|ATK Up α}} Level 7)
+*{{C|Steward}} (Elite 1 Level 55, {{Skill|Power Strike α}} Level 7)
+|auto = 
+*{{C|Melantha}} (Elite 1 Level 55, {{Skill|ATK Up α}} Level 7)
+*{{C|Vigna}} (Elite 1 Level 60, {{Skill|ATK Up β}} Level 7)
+|pre = 
+|saddendum = 
+All Operators have 200% [[Trust]].
+}}
+{{IG operations}}
 
-==Stats==
-{{Device info
-|range = {{Ranges|p|p|s|r|p|p}}
-|hp = 100
-|hp note = Redundant as Allerdale's Guard is invulnerable
-|atk = 3000
-|atk note = Redundant as Allerdale's Guard does not attack
-|def = 0
-|res = 0
-|rdp = 40
-|cost = 3}}
+### act1multi_rm02
+{{Construction}}
+{{IG operation info
+|code = 5
+|name = Rotten Forest
+|season = 1
+|group = Regular Events, Beginner
+|desc = After parting layers of giant mushrooms, cross-country contestants spot a dense, dark forest... Wait, are those branches moving?<br/>'''{{Color|<[[Rhodes Island Temporary Employee]]>|muitem}}''' Cleans up Giant Mushrooms to create deployable ranged slots.<br/>Your cost limit is greatly reduced.<br/>'''{{Color|<[[Twigs That Crave]]>|muitem}}''' Produces Rot Eaters when destroyed or at the end of the stage.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 45, 45
+|lp = 8
+|dp = 30
+|deployable = {{D|Temporary Rhodes Island Employee|1}}, {{D|Shiny Berries|1}}, {{D|Glooming Berry|1}}, {{D|Roast Berry|1}}, {{D|Shiny Brew|1}}, {{D|Chest Limb|1}} 
+|static = {{D|Giant Mushroom|13}}, {{D|Twigs That Crave|37}}, {{D|Treasure Chest|14}} 
+|terrain = 
+|addendum = 
+The [[DP]] cap is reduced to 30. 
+<!-- ability_name : target|time_x : 170.0|kill_y1 : 7.0|kill_y2 : 7.0|enemy_key : enemy_1266_nhapos|basic : 1.0 -->
+Defeat target in 170 seconds
+<!-- ability_name : target|time_x : 200.0|kill_y1 : 7.0|kill_y2 : 10.0|enemy_key : enemy_1266_nhapos|rest_time : 10.0 -->
+Defeat target in 200 seconds with 10 seconds break time
+,
+|obj1 = Infiltration; Defeat 7 Rot Eaters.
+|obj2 = Infiltration; Defeat 7 Rot Eaters.
+|obj2+ = Infiltration; Defeat 10 Rot Eaters.
+|normal = {{E|Norport Civilian|21}}, {{E|Sentry Spy|5}}, {{E|Seed of Withering|12}}
+|elite = {{E|Chalice of Regret|1}}, {{E|Raging Slug Eater|1}}, {{E|Mortar|5}}
+|boss = 
+|eaddendum = 
+Rot Eater will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+}}
+{{IG operations}}
 
-==Skill==
-{{Device skill|name=Allerdale's Guard|icon=AllerdalesGuard|sp=auto|type=auto|cost=0,5|effect=After deployment, gives the target and surrounding friendly units a {{G|Barrier}} that can absorb 1000 damage|addendum=
-*Once the skill is active, applies the Barrier to the friendly unit within attack range and other friendly units in the surrounding 8 tiles, then removes Allerdale's Guard from the map.
-*The Barrier lasts for 10 seconds, which is not stated in-game.}}
+### act1multi_rm05
+{{Construction}}
+{{IG operation info
+|code = 6
+|name = Combat Clamor
+|season = 1
+|group = Regular Events, Beginner
+|desc = Sharp hearing is a must for any contestant. Train your ears by distinguishing the sound of a Gramophone from the rumbling of engines and gunfire!<br/>'''{{Color|<[['Gramophone']]>|muitem}}''' Both allied and enemy units will fight for control over this device; When activated, deals Arts damage to enemies and heals allies.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 49, 57
+|lp = 8
+|dp = 25
+|deployable =  
+|static = {{D|L-44 Gramophone|6}} 
+|terrain = 
+|addendum = 
+<!-- ability_name : tower|tower_y1 : 1.0|time_x : 150.0|tower_type : 0.0|basic : 1.0 -->
+Capture Gramophones in 150 seconds
+<!-- rest_time : 10.0|ability_name : tower|time_x : 200.0|tower_type : 0.0|tower_y1 : 3.0|tower_y2 : 5.0 -->
+Capture Gramophones in 200 seconds with 10 seconds break time
+,
+|obj1 = Capture; Capture 1 Gramophone.
+|obj2 = Capture; Capture 3 Gramophones.
+|obj2+ = Capture; Capture 5 Gramophones.
+|normal = {{E|Monster Mk II|0|4}}, {{E|Defender-4|0|10}}, {{E|Arts Master A1|0|7}}, {{E|Winterwisp Hound|6|9}}, {{E|Leithanian Whisperer|2|13}}, {{E|Arc Screenguard|0|11}}, {{E|Rhine Defense Member|0|10}}, {{E|Rhine Engineering Member|0|10}}
+|elite = {{E|Frost|0|2}}, {{E|Mudrock Zealot|0|2}}, {{E|Mudrock Colossus|2|6}}, {{E|Winterwisp Blood Shaman|2}}, {{E|Mudrock Matterllurgist|0|24}}, {{E|R-31a Heavy Power Armor|0|6}}, {{E|R-11 Assault Power Armor|0|3}}, {{E|Sarkaz Lancer|1|8}}, {{E|Imperial Artillery Targeteer|0|6}}
+|boss = 
+|eaddendum = 
+*Mudrock Colossus have 80000 HP.
+}}
+{{IG operations}}
 
-==Note==
-{{Notelist}}
+### act1multi_rm06
+{{Construction}}
+{{IG operation info
+|code = 7
+|name = Remnants in the Night
+|season = 1
+|group = Regular Events, Beginner
+|desc = Good vision is a must for any contestant. Train your eyes by distinguishing enemy silhouettes in total darkness!<br/>'''{{Color|<[[City Neon]]>|muitem}}''' Provides an initial amount of visibility, and can further increase visibility when used.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 59, 82
+|lp = 8
+|dp = 10
+|deployable =  
+|static = {{D|City Neon|6}}, {{D|Roadblocks|2}} 
+|terrain = 
+|addendum = 
+<!-- ability_name : kill|time_x : 160.0|basic : 1.0|cnt_y1 : 30.0 -->
+Defeat enemies in 160 seconds
+<!-- ability_name : boss|hp_max : 120000.0|time_x : 320.0|hp_x1 : 0.75|rest_time : 10.0 -->
+Defeat target in 320 seconds with 10 seconds break time
+,
+|obj1 = Eliminate; Defeat 30 enemies.
+|obj2 = Assault; Reduce the HP of all Leader enemies by 75%.
+|obj2+ = Assault; Defeat all Leader enemies.
+|normal = {{E|Dublinn Flamechaser Soldier|0|21}}, {{E|Dublinn Scout Leader|0|7}}, {{E|Dublinn Sniper Leader|0|7}}, {{E|Dublinn Shadowcaster|0|2}}, {{E|Dublinn Phalanx Infantry|0|12}}, {{E|Roar Knightclub Trainee|0|12}}, {{E|Undertide Gloompincer α|0|18}}, {{E|Guerrilla Hound|0|12}}, {{E|Guerrilla Fighter|0|3}}, {{E|Guerrilla Fighter Leader|0|6}}, {{E|Guerrilla Sniper|0|3}}, {{E|Guerrilla Sniper Leader|0|6}}, {{E|Guerrilla Herald Leader|0|2}}, {{E|Sponsor Drone|0|12}}, {{E|Yeti Caster|0|4}}
+|elite = {{E|Demolitionist|0|4}}, {{E|Dublinn Heavy Defender|0|2}}, {{E|Dublinn Companion Guard|0|3}}, {{E|Dublinn Companion Shadowblade|0|3}}, {{E|Bloodboil Knightclub Trainee|0|6}}, {{E|Blade Helmet Knightclub Trainee|0|5}}, {{E|Elite Knight Shielder|0|4}}, {{E|Lazurite, Monique|0|1}}, {{E|Lazurite, Roy|0|1}}, {{E|Nightzmora Imitator|0|4}}, {{E|Knight Territory Hibernator|0|4}}, {{E|Guerrilla Shieldguard Leader|0|4}}, {{E|Yeti Icecleaver|0|2}}
+|boss = {{E|The Blood Knight Dikaiopolis|0|1}}, {{E|Corrupted Knight|0|1}}, {{E|Withered Knight|0|1}}, {{E|The Leader|0|1}}, {{E|Frost Buck|0|1}}, {{E|Snow Doe|0|1}}
+|eaddendum = 
+Bloodboil Knightclub Trainee, Nightzmora Imitator, Guerrilla Hound, Demolitionist, Dublinn Phalanx Infantry, Dublinn Companion Guard and Dublinn Companion Shadowblade will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+The Blood Knight Dikaiopolis, Corrupted Knight, Withered Knight, 'Snow Doe', 'Frost Buck', 'The Leader' and Knight Territory Hibernator will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Corrupted Knight have 65000 HP, 1500 DEF, 35 RES and deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Withered Knight have 55000 HP, 600 ATK, 1000 DEF, 80 RES and deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*The Blood Knight Dikaiopolis have 80000 HP, 2050 ATK, 950 DEF and deduct 10 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Bloodblade have 7000 HP.
+*'Snow Doe' have 60000 HP.
+*'The Leader' have 60000 HP.
+}}
+{{IG operations}}
 
-{{Devices}}
+### act1multi_rm01
+{{Construction}}
+{{IG operation info
+|code = 11
+|name = Candy Delivery
+|season = 1
+|group = Regular Events, Beginner
+|desc = No one's buying these sweets, so we can only give them away, albeit somewhat crudely! Perhaps we should ask a Lateran how to survive this sugar shock with our health intact.<br/>'''{{Color|<[['Gelato Stop']]>|muitem}}''' Both allied and enemy units will fight for control over this device; When activated, restores SP of surrounding allies.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 134, 212
+|lp = 8
+|dp = 20
+|deployable = {{D|Shiny Berries|1}}, {{D|Glooming Berry|1}}, {{D|Roast Berry|1}}, {{D|Shiny Brew|1}}, {{D|Chest Limb|1}} 
+|static = {{D|Tuba|2}}, {{D|L-7 Whisperer|1}}, {{D|Treasure Chest|12}}, {{D|L-44 Gramophone|6}} 
+|terrain = 
+|addendum = 
+*Waste Energy Interference reduces the automatic SP generation rate of friendly units by 30.000000%.
+*Friendly units linked with [[Realigned Flux]]es have their automatic SP generation rate increased by 30.000000%.
+<!-- ability_name : survive|time_x1 : 120.0|time_x2 : 120.0|clear_id : trap_062_magicstart|trap_057_wpnsts|basic : 1.0 -->
+Survive for 120 seconds
+<!-- ability_name : survive|time_x1 : 120.0|time_x2 : 180.0|rest_time : 10.0 -->
+Survive for 120 seconds with 10 seconds break time
+,
+|obj1 = Survival; Survive for 120 seconds.
+|obj2 = Survival; Survive for 120 seconds.
+|obj2+ = Survival; Survive for 180 seconds.
+|normal = {{E|Blazing Originium Slug|54|76}}, {{E|Chitotex Clawbeast|0|2}}, {{E|Basorobeast|26|30}}, {{E|Winterwisp Hound|0|70}}, {{E|Leithanian Whisperer|0|18}}, {{E|Street Layabout|0|45}}, {{E|Street Performer|0|18}}, {{E|Spire Caster|0|3}}
+|elite = {{E|Sinkingsand|5}}, {{E|Raging Slug Eater|0|2}}, {{E|Raging Man Eater|3}}, {{E|Direswine|12|16}}, {{E|Mudrock Zealot|0|13}}, {{E|Mudrock Colossus|0|10}}, {{E|Hexed Colossus|0|7}}, {{E|Remnant Saxophonist|0|19}}, {{E|Mass-Produced Colossus|0|14}}, {{E|Sarkaz Wither Devourer|0|2}}
+|boss = 
+|eaddendum = 
+*Remnant Saxophonist have 22500 HP and 700 ATK.
+*Remnant Official Saxophonist have 25000 HP and 900 ATK.
+*Remnant Principal Violinist have 21000 HP.
+}}
+{{IG operations}}
+
+### act1multi_rm03
+{{Construction}}
+{{IG operation info
+|code = 12
+|name = Volcanic Pool
+|season = 1
+|group = Regular Events, Beginner
+|desc = After many complaints about the swimming pool's low temperatures, the organizers chose a volcanic hot spring for the swimming competition.<br/>'''{{Color|<[[Custom Floating Platform]]>|muitem}}''' Can be deployed on Deep Water Zones, thereafter any unit can be deployed on that tile. The platform is destroyed when the deployed unit retreats.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 21, 21
+|lp = 8
+|dp = 5
+|deployable = {{D|Custom Floating Platform|1}}, {{D|Shiny Berries|1}} 
+|static = {{D|Custom Floating Platform|24}} 
+|terrain = 
+*The [[Lava Crack]]s erupt every 8-12 seconds and deals 200 True damage to friendly units in the surrounding tiles.
+*The [[Heat Pump Passage]] erupt every 13 ~ 19 seconds and deals 600 True damage.
+|addendum = 
+<!-- ability_name : car|time_x : 170.0|distance_y1 : 22.0|basic : 1.0 -->
+Push $1 in 170 seconds
+<!-- ability_name : car|time_x : 180.0|distance_y1 : 16.0|rest_time : 10.0 -->
+Push $1 in 180 seconds with 10 seconds break time
+,
+|obj1 = Escort; Push bomb 22 tiles away in stage 1.
+|obj2 = Escort; Push bomb 16 tiles away in stage 2.
+|obj2+ = Escort; Push bomb 22 tiles away in stage 2.
+|normal = {{E|Anti-Witchcraft Repositionable Bomb|2}}, {{E|Heavy Crossbowman Ambusher|0|10}}
+|elite = {{E|Nucleic Maleficent|1|11}}, {{E|Sarkaz Boneguard|8|12}}, {{E|Sarkaz Boneguard Flayer|0|6}}
+|boss = 
+|eaddendum = 
+Sarkaz Grudgebearer, Sarkaz Bladeweaver, Nucleic Maleficent and Sarkaz Boneguard Captain will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Anti-Witchcraft Repositionable Bomb have 1000000 HP and 0.5 MSPD.
+*Anti-Witchcraft Repositionable Bomb have 1000000 HP.
+*Sarkaz Boneguard have 10000 HP and 1000 DEF.
+*Sarkaz Boneguard Captain have 14000 HP and 1300 DEF.
+*Sarkaz Boneguard Torturer have 22000 HP, 1100 ATK and 1000 DEF.
+*Raging Slug Eater have 20000 HP and weight 20.
+}}
+{{IG operations}}
+
+### act1multi_rm04
+{{Construction}}
+{{IG operation info
+|code = 13
+|name = Repel Avenue
+|season = 1
+|group = Regular Events, Beginner
+|desc = Contestants require not just physical strength, but also mental fortitude. An example of a strong mind is knowing how to firmly reject strange guys on the street.<br/>'''{{Color|<[[Post-Firing Debt Relief Program]]>|muitem}}''' Shoots 3 consecutive bullets forward, dealing Physical damage to the first Operator hit.<br/>'''{{Color|<[[Witchcraft Ballista]]>|muitem}}''' Periodically fires missiles that deal Arts damage to your units while healing enemy units; Can be destroyed.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 92, 101
+|lp = 8
+|dp = 10
+|deployable =  
+|static = {{D|Post-Firing Debt Relief Program|8}}, {{D|Witchcraft Ballista|8}} 
+|terrain = 
+|addendum = 
+<!-- ability_name : survive|time_x1 : 150.0|basic : 1.0|time_x2 : 150.0 -->
+Survive for 150 seconds
+<!-- ability_name : survive|time_x1 : 150.0|time_x2 : 180.0|rest_time : 10.0 -->
+Survive for 150 seconds with 10 seconds break time
+,
+|obj1 = Survival; Survive for 150 seconds.
+|obj2 = Survival; Survive for 150 seconds.
+|obj2+ = Survival; Survive for 180 seconds.
+|normal = {{E|Wraith|0|32}}, {{E|Technical Scout|0|1}}, {{E|Tactical Crossbowman|0|5}}, {{E|Ergate Leader|0|9}}, {{E|Tactical Hound Pro|0|25}}, {{E|Anti-Armor Infantry|0|11}}, {{E|Rhine Defense Member|0|32}}, {{E|Infected Patrol Captain|0|10}}, {{E|Ursus Assault Crossbowman|16}}
+|elite = {{E|Swamp Rover|3|9}}, {{E|Bully|0|7}}, {{E|Greytail|0|9}}, {{E|Mudrock Zealot|0|7}}, {{E|Tactical Defender Leader|0|25}}, {{E|Ursus Raider|0|24}}
+|boss = 
+|eaddendum = 
+*Ergate Leader have 9000 HP.
+*Bombtail-G have Does not deduct [[Life Point|Life Points]].
+}}
+{{IG operations}}
+
+### act1multi_rm07
+{{Construction}}
+{{IG operation info
+|code = 14
+|name = Creation and Reproduction
+|season = 1
+|group = Regular Events, Beginner
+|desc = Academics still argue over this: When trying to create as many organisms as possible within a short period of time, is it better to rely on creation Arts or reproductive instincts?
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 88, 160
+|lp = 8
+|dp = 10
+|deployable =  
+|static =  
+|terrain = 
+|addendum = 
+<!-- ability_name : survive|time_x1 : 150.0|basic : 1.0|time_x2 : 150.0 -->
+Survive for 150 seconds
+<!-- ability_name : survive|time_x1 : 150.0|time_x2 : 180.0|rest_time : 10.0 -->
+Survive for 150 seconds with 10 seconds break time
+,
+|obj1 = Survival; Survive for 150 seconds.
+|obj2 = Survival; Survive for 150 seconds.
+|obj2+ = Survival; Survive for 180 seconds.
+|normal = {{E|Infused Glacial Originium Slug|0|56}}, {{E|Icefield Caster|0|32}}, {{E|Icefield Hunter Leader|0|2}}, {{E|Originiutant Excrescence|0|65}}, {{E|Sarkaz Sentinel|0|10}}, {{E|Sarkaz Royal Court Soldier|24}}, {{E|Gift of the Sanguinarch|0|7}}, {{E|Sarkaz Absurdist Operative|0|13}}, {{E|Sarkaz Absurdist Operative Leader|0|18}}, {{E|Guerrilla Fighter|0|15}}, {{E|Guerrilla Herald|0|3}}, {{E|Guerrilla Herald Leader|0|2}}
+|elite = {{E|Demolitionist|0|14}}, {{E|Demolitionist Leader|0|10}}, {{E|Sarkaz Wither Devourer|16}}, {{E|Sarkaz Royal Court Caster|0|15}}, {{E|Sarkaz Royal Court Elite Caster|0|18}}, {{E|Redmark Infiltrator|0|42}}, {{E|Mutant Giant Rock Spider|0|3}}, {{E|Sarkaz Grudgebearer|0|13}}, {{E|Sarkaz Bladeweaver|0|15}}, {{E|Sarkaz Heirbearer Retrofit ASV|0|2}}, {{E|Sarkaz Heirbearer Hatedrinker|10}}, {{E|Sarkaz Heirbearer ASV|0|7}}, {{E|Guerrilla Shieldguard|0|6}}, {{E|Guerrilla Mortar|0|7}}
+|boss = 
+|eaddendum = 
+Londinium Mobile Defense Artillery will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+}}
+{{IG operations}}
+
+### act1multi_01
+{{Construction}}
+{{IG operation info
+|code = 1
+|name = Firing Line Escape
+|season = 1
+|group = Regular Events, Beginner
+|desc = Civilians never intrude onto the battlefield: the field finds them first. To escape intact, professional help may be required—in addition to some extraordinary luck.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 77, 109
+|lp = 8
+|dp = 10
+|deployable =  
+|static =  
+|terrain = 
+|addendum = 
+<!-- ability_name : protect|protect_y1 : 4.0|basic : 1.0|time_x : 150.0 -->
+Rescue in 150 seconds
+<!-- ability_name : protect|protect_y1 : 3.0|protect_y2 : 5.0|time_x : 210.0|rest_time : 10.0 -->
+Rescue in 210 seconds with 10 seconds break time
+,
+|obj1 = Rescue; Protect 4 Ursus Civilians until they enter the Objective Point.
+|obj2 = Rescue; Protect 3 Ursus Civilians until they enter the Objective Point.
+|obj2+ = Rescue; Protect 5 Ursus Civilians until they enter the Objective Point.
+|normal = {{E|Infused Glacial Originium Slug|0|17}}, {{E|Light Rapid Crossbowman|0|20}}, {{E|Heavy Rapid Crossbowman|0|35}}, {{E|Heavy Crossbowman Ambusher|0|3}}, {{E|Heavy Crossbowman Hunter|0|6}}, {{E|Impetuous Grenadier|0|14}}, {{E|Infected Patrol Captain|0|13}}, {{E|Ursus Civilian|14}}, {{E|Elite Infected Patrol Captain|0|20}}, {{E|Ursus Assault Crossbowman|0|10}}, {{E|Ursus Armored Caster|0|4}}, {{E|Elite Ursus Armored Caster|0|10}}, {{E|Delegation Centurion|1|5}}, {{E|Delegation Centurion Champion|1|9}}
+|elite = {{E|Battleline Advance Guard|0|2}}, {{E|Battleline Breacher|0|5}}, {{E|Ursus Raider Leader|0|8}}, {{E|Imperial Artillery Targeteer|0|2}}, {{E|Imperial Artillery Core Targeteer|0|3}}, {{E|Imperial Striker|0|6}}, {{E|Ursus Raider|0|8}}, {{E|Boom Canister|0|12}}, {{E|Catapult|0|4}}, {{E|Mortar|0|6}}, {{E|Jet Canister|0|6}}
+|boss = 
+|eaddendum = 
+Heavy Crossbowman Hunter, Heavy Crossbowman Ambusher, Ursus Raider, Ursus Raider Leader, Imperial Artillery Targeteer and Imperial Artillery Core Targeteer will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Ursus Civilian have 10000 HP and 0.4 MSPD.
+*Imperial Artillery Targeteer have 10000 HP.
+}}
+{{IG operations}}
+
+### act1multi_03
+{{Construction}}
+{{IG operation info
+|code = 2
+|name = Sinister Consumption
+|season = 1
+|group = Regular Events, Beginner
+|desc = Two mafias can never share the same territory unless they encounter a new force.<br/>'''{{Color|<[[Blood Ledger]]>|muitem}}''' All enemies are boosted and Famiglia Silencer is summoned when Blood Debt is at max.<br/>'''{{Color|<[[Turrets]]>|muitem}}''' Periodically fire bolts, dealing Physical Damage to allied units.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 41, 60
+|lp = 8
+|dp = 10
+|deployable =  
+|static = {{D|Turret|3}} 
+|terrain = 
+|addendum = 
+<!-- ability_name : boss|hp_max : 100000.0|basic : 1.0|time_x : 180.0|hp_x1 : 1.0 -->
+Defeat target in 180 seconds
+<!-- ability_name : boss|hp_max : 150000.0|hp_x1 : 0.5|time_x : 240.0|rest_time : 10.0 -->
+Defeat target in 240 seconds with 10 seconds break time
+,
+|obj1 = Assault; Defeat all Leader enemies.
+|obj2 = Assault; Reduce the HP of all Leader enemies by 50%.
+|obj2+ = Assault; Defeat all Leader enemies.
+|normal = {{E|Possessed Junkman|2|3}}, {{E|Possessed Veteran Junkman|6|10}}, {{E|Famiglia Soldier|14}}, {{E|Famiglia Intimidator|0|8}}
+|elite = {{E|Desperate Fanatic|0|5}}, {{E|Greytail|1|6}}, {{E|Possessed Heavy Defender|2}}, {{E|Originiutant|0|2}}, {{E|Originiutant α|0|1}}, {{E|Famiglia Capo|0|2}}, {{E|Famiglia Limo|6|11}}, {{E|Shanhaizhong Ringleader|0|4}}, {{E|Shanhaizhong Secret-Keeper|0|4}}
+|boss = {{E|Essence of Evolution|0|1}}, {{E|Faust|0|1}}, {{E|Rat King|0|1}}, {{E|Mephisto|0|1}}, {{E|Ya|0|1}}, {{E|Zaaro, Signore dei Lupi|0|1}}
+|eaddendum = 
+'Essence of Evolution', 'Ya', 'Rat King', Faust, Mephisto, Zaaro, Signore dei Lupi and Famiglia Shadow Silencer will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Mephisto have 60000 HP and deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Faust have 40000 HP and deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*'Rat King' have 100000 HP and deduct 10 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*'Ya' have 150000 HP, 900 ATK, 650 DEF and deduct 10 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*'Essence of Evolution' have 150000 HP and deduct 10 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Zaaro, Signore dei Lupi have 75000 HP and deduct 10 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Delusion have 75000 HP.
+}}
+{{IG operations}}
+
+### act1multi_05
+{{Construction}}
+{{IG operation info
+|code = 3
+|name = Make Sea With Land
+|season = 1
+|group = Regular Events, Beginner
+|desc = No one understood why the ferocious direswines were running amok until they saw the spreading nethersea brand behind them, followed shortly by groups of Seaborn.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 100, 129
+|lp = 8
+|dp = 10
+|deployable =  
+|static = {{D|Nethersea Brand|1}} 
+|terrain = 
+|addendum = 
+<!-- ability_name : target|time_x : 210.0|kill_y1 : 20.0|enemy_key : enemy_1309_mhboar|basic : 1.0 -->
+Defeat target in 210 seconds
+<!-- ability_name : target|time_x : 210.0|kill_y1 : 20.0|kill_y2 : 40.0|enemy_key : enemy_1231_dsrunr_2|rest_time : 10.0 -->
+Defeat target in 210 seconds with 10 seconds break time
+,
+|obj1 = Infiltration; Defeat 20 Direswines.
+|obj2 = Infiltration; Defeat 20 Nourished Predators.
+|obj2+ = Infiltration; Defeat 40 Nourished Predators.
+|normal = {{E|Nourished Predator|48|63}}, {{E|Nethersea Spewer|0|10}}
+|elite = {{E|Mead-Grade Waker-Upper|0|4}}, {{E|Full Metal Surfing Instructor|0|4}}, {{E|Direswine|29|41}}, {{E|Sarkaz Wither Devourer|0|6}}, {{E|Sarkaz Wither Maw|1|3}}, {{E|Enraged Possessed Soldier|0|6}}, {{E|Sarkaz Lancer|0|6}}, {{E|Nethersea Founder|0|8}}, {{E|Nethersea Brandguider|0|4}}, {{E|Nethersea Reefbreaker|0|4}}, {{E|Basin Sea Reaper|0|14}}, {{E|Tiacauh Brave|0|6}}
+|boss = 
+|eaddendum = 
+Nourished Predator and Direswine will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Sarkaz Lancer have Does not deduct [[Life Point|Life Points]].
+*Sarkaz Lancer Leader have Does not deduct [[Life Point|Life Points]].
+*Nourished Predator have Does not deduct [[Life Point|Life Points]].
+*Direswine have Does not deduct [[Life Point|Life Points]].
+}}
+{{IG operations}}
+
+### act1multi_07
+{{Construction}}
+{{IG operation info
+|code = 4
+|name = When Surprise Knocks
+|season = 1
+|group = Regular Events, Beginner
+|desc = Be it locking themselves in a stall for some peace and quiet, or actually needing a bathroom break, all plans have gone up in smoke. Why are there so many people outside?<br/>'''{{Color|<[['Gramophone']]>|muitem}}''' Both allied and enemy units will fight for control over this device; When activated, deals Arts damage to enemies and heals allies.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 52, 84
+|lp = 8
+|dp = 10
+|deployable =  
+|static = {{D|L-44 Gramophone|9}} 
+|terrain = 
+|addendum = 
+<!-- ability_name : tower|tower_y1 : 4.0|time_x : 150.0|tower_type : 0.0|basic : 1.0 -->
+Capture Gramophones in 150 seconds
+<!-- rest_time : 10.0|ability_name : tower|tower_y1 : 4.0|time_x : 150.0|tower_type : 0.0|tower_y2 : 5.0 -->
+Capture Gramophones in 150 seconds with 10 seconds break time
+,
+|obj1 = Capture; Capture 4 Gramophones.
+|obj2 = Capture; Capture 4 Gramophones.
+|obj2+ = Capture; Capture 5 Gramophones.
+|normal = {{E|Sniper Prisoner|0|7}}, {{E|Roar Knightclub Trainee|0|4}}, {{E|Leithanian Whisperer|22}}, {{E|Snack Cart|0|40}}
+|elite = {{E|Caster Prisoner|0|4}}, {{E|Recidivist|0|1}}, {{E|Winterwisp Blood Shaman|0|1}}, {{E|Winterwisp Blood Magister|1}}, {{E|Mudrock Matterllurgist|0|8}}, {{E|Enraged Possessed Soldier|0|4}}, {{E|Sarkaz Greatswordsman|0|4}}, {{E|Sarkaz Caster Leader|1|4}}, {{E|Pathfinder Dessert Vendor|0|4}}, {{E|Pathfinder Nuncio|0|12}}, {{E|Pathfinder Ballistarius|0|16}}, {{E|Guerrilla Shieldguard|0|4}}, {{E|Imperial Striker|0|7}}
+|boss = 
+|eaddendum = 
+}}
+{{IG operations}}
+
+### act1multi_02
+{{Construction}}
+{{IG operation info
+|code = 8
+|name = Intercept Special Spy
+|season = 1
+|group = Regular Events, Beginner
+|desc = Spy bureaus normally arrange specialized vehicles for spies when they are operating undercover in town. But aren't these colorful beach buggies a little too conspicuous?<br/>Your cost limit is greatly reduced.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 72, 97
+|lp = 8
+|dp = 10
+|deployable =  
+|static =  
+|terrain = 
+|addendum = 
+The [[DP]] cap is reduced to 30. 
+<!-- ability_name : target|kill_y1 : 6.0|basic : 1.0|time_x : 180.0|enemy_key : enemy_1315_wdyjd_2 -->
+Defeat target in 180 seconds
+<!-- ability_name : target|kill_y1 : 6.0|kill_y2 : 12.0|time_x : 210.0|rest_time : 10.0|enemy_key : enemy_1315_wdyjd_2 -->
+Defeat target in 210 seconds with 10 seconds break time
+,
+|obj1 = Infiltration; Defeat 6 Sentry Spymasters.
+|obj2 = Infiltration; Defeat 6 Sentry Spymasters.
+|obj2+ = Infiltration; Defeat 12 Sentry Spymasters.
+|normal = {{E|Volleyball Serving Cart|0|5}}, {{E|Volleyball Spiking Cart|1|3}}, {{E|Sentry Spymaster|36|48}}, {{E|Norport Civilian|8|44}}, {{E|Sarkaz Absurdist Operative Leader|0|8}}, {{E|Sarkaz Absurdist Splitcaster Apprentice|0|3}}, {{E|Sarkaz Absurdist Splitcaster|0|7}}
+|elite = {{E|Shielded Senior Caster|0|4}}, {{E|Fully-Enclosed Beach Buggy|1|4}}, {{E|Competitive-Grade Beach Buggy|0|6}}, {{E|Trilby Asher|0|4}}, {{E|Rebellion Instigator|0|2}}, {{E|Rebellion Agitator|0|4}}
+|boss = 
+|eaddendum = 
+Decaying Collector Disciple, Sentry Spymaster, Fully-Enclosed Beach Buggy, Competitive-Grade Beach Buggy and 'Trilby Asher' will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Sentry Spymaster have 5500 HP, 600 ATK, 0.6 MSPD and Does not deduct [[Life Point|Life Points]].
+*Fully-Enclosed Beach Buggy have Does not deduct [[Life Point|Life Points]].
+*Competitive-Grade Beach Buggy have Does not deduct [[Life Point|Life Points]].
+}}
+{{IG operations}}
+
+### act1multi_04
+{{Construction}}
+{{IG operation info
+|code = 9
+|name = Mobile Target Practice
+|season = 1
+|group = Regular Events, Beginner
+|desc = When people see something without an owner, they either want to take it for themselves or destroy it—just look, there's a group trying to use an innocent delivery platform for target practice.<br/>'''{{Color|<[[Post-Firing Debt Relief Program]]>|muitem}}''' Shoots 3 consecutive bullets forward, dealing Physical damage to the first Operator hit.<br/>'''{{Color|<[[Mobile Tactical Hangar]]>|muitem}}''' Deploys drones as needed to assist enemy combatants.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 83, 172
+|lp = 8
+|dp = 10
+|deployable =  
+|static = {{D|Post-Firing Debt Relief Program|5}}, {{D|Mobile Tactical Hangar|1}} 
+|terrain = 
+|addendum = 
+<!-- ability_name : car|time_x : 150.0|distance_y1 : 15.0|basic : 1.0 -->
+Push $1 in 150 seconds
+<!-- ability_name : car|time_x : 180.0|distance_y1 : 15.0|rest_time : 10.0 -->
+Push $1 in 180 seconds with 10 seconds break time
+,
+|obj1 = Escort; Push bomb 15 tiles away in stage 1.
+|obj2 = Escort; Push bomb 15 tiles away in stage 2.
+|obj2+ = Escort; Push bomb 25 tiles away in stage 2.
+|normal = {{E|Sky Pole - Yi|0|155}}, {{E|Anti-Witchcraft Repositionable Bomb|2}}, {{E|Tactical Crossbowman|10}}, {{E|Light Rapid Crossbowman|0|66}}
+|elite = {{E|Crossroads Production Model|0|1}}, {{E|War Phantom|4}}, {{E|R-11 Assault Power Armor|0|1}}
+|boss = {{E|Pompeii|0|1}}
+|eaddendum = 
+*Anti-Witchcraft Repositionable Bomb have 1000000 HP and 0.5 MSPD.
+*Out of Control Sky Pole - Yi have 250 ATK.
+*Out of Control Sky Pole - Yi have 350 ATK.
+}}
+{{IG operations}}
+
+### act1multi_06
+{{Construction}}
+{{IG operation info
+|code = 10
+|name = Gang Gathering
+|season = 1
+|group = Regular Events, Beginner
+|desc = Sometimes bandits from the wilds manage to display shocking destructive power. It doesn't matter if their equipment or tactics are shabby, they make up for it with numbers.<br/>'''{{Color|<[[Yumen Catastrophe Defenses]]>|muitem}}''' Units placed here deal more damage to ground units and take less damage from ground units.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 108, 224
+|lp = 8
+|dp = 10
+|deployable =  
+|static =  
+|terrain = 
+|addendum = 
+<!-- ability_name : survive|time_x1 : 150.0|basic : 1.0|time_x2 : 150.0 -->
+Survive for 150 seconds
+<!-- ability_name : survive|time_x1 : 150.0|time_x2 : 180.0|rest_time : 10.0 -->
+Survive for 150 seconds with 10 seconds break time
+,
+|obj1 = Survival; Survive for 150 seconds.
+|obj2 = Survival; Survive for 150 seconds.
+|obj2+ = Survival; Survive for 180 seconds.
+|normal = {{E|Radioactive Originium Slug|0|41}}, {{E|Paramilitary Thief|0|79}}, {{E|Wasteland Robber|0|49}}, {{E|Elite Wasteland Robber|0|3}}, {{E|Wasteland Plunderer|0|16}}, {{E|Di Beast|0|70}}, {{E|Raging Di Beast|0|12}}, {{E|Shanhaizhong Skirmisher|0|39}}, {{E|Shanhaizhong Vigilante|0|6}}, {{E|Shanhaizhong Relayer|0|22}}, {{E|Shanhaizhong Harbinger|0|2}}, {{E|Shanhaizhong Desperado|0|16}}
+|elite = {{E|Bounty Hunter Crossbowman|0|8}}, {{E|Paramilitary Bombardier|0|16}}, {{E|Paramilitary Sniper|0|8}}, {{E|Paramilitary Sniper Leader|0|2}}, {{E|Paramilitary Axeman|0|12}}, {{E|Shanhaizhong Ringleader|0|40}}, {{E|Shanhaizhong Secret-Keeper|0|5}}, {{E|Shanhaizhong Seer|0|37}}, {{E|Shanhaizhong Oracle|0|4}}, {{E|Wallbreaker|0|8}}, {{E|Sandwalker|0|2}}
+|boss = 
+|eaddendum = 
+Shanhaizhong Skirmisher, Shanhaizhong Ringleader, Shanhaizhong Seer, Shanhaizhong Relayer, Bounty Hunter Crossbowman, Bounty Hunter Disruptor, Paramilitary Sniper, Paramilitary Axeman and Paramilitary Thief will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+}}
+{{IG operations}}
+
+### act1multi_rm-ex02
+{{Construction}}
+{{IG operation info
+|code = EX-5
+|name = Rotten Forest
+|season = 1
+|group = Regular Events, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Additional enemies appear.<br/>'''{{Color|<[[Rhodes Island Temporary Employee]]>|muitem}}''' Cleans up Giant Mushrooms to create deployable ranged slots.<br/>Your cost limit is greatly reduced.<br/>'''{{Color|<[[Twigs That Crave]]>|muitem}}''' Produces Rot Eaters when destroyed or at the end of the stage.
+|level = Elite 2 Level 40
+|unit limit = 6
+|enemies = 77, 77
+|lp = 5
+|dp = 30
+|deployable = {{D|Temporary Rhodes Island Employee|1}}, {{D|Shiny Berries|1}}, {{D|Glooming Berry|1}}, {{D|Roast Berry|1}}, {{D|Shiny Brew|1}}, {{D|Chest Limb|1}} 
+|static = {{D|Giant Mushroom|13}}, {{D|Twigs That Crave|37}}, {{D|Treasure Chest|14}} 
+|terrain = 
+|addendum = 
+The [[DP]] cap is reduced to 30. 
+<!-- ability_name : target|time_x : 170.0|kill_y1 : 7.0|kill_y2 : 7.0|enemy_key : enemy_1266_nhapos|basic : 1.0 -->
+Defeat target in 170 seconds
+<!-- ability_name : target|time_x : 200.0|kill_y1 : 7.0|kill_y2 : 10.0|enemy_key : enemy_1266_nhapos|rest_time : 10.0 -->
+Defeat target in 200 seconds with 10 seconds break time
+,
+|obj1 = Infiltration; Defeat 7 Rot Eaters.
+|obj2 = Infiltration; Defeat 7 Rot Eaters.
+|obj2+ = Infiltration; Defeat 10 Rot Eaters.
+|normal = {{E|Norport Civilian|23}}, {{E|Sentry Spy|4}}, {{E|Sarkaz Witherer|4}}, {{E|Sarkaz Wither Caster|8}}, {{E|Seed of Withering|12}}, {{E|Heavy Crossbowman Hunter|7}}, {{E|Flying Boots Mercenary|4}}
+|elite = {{E|Chalice of Regret|2}}, {{E|Raging Slug Eater|8}}, {{E|Pathfinder Nuncio|5}}
+|boss = 
+|eaddendum = 
+All enemies have their ATK, DEF and HP increased by 40%, 10% and 40%.
+Rot Eater will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+}}
+{{IG operations}}
+
+### act1multi_rm-ex05
+{{Construction}}
+{{IG operation info
+|code = EX-6
+|name = Combat Clamor
+|season = 1
+|group = Regular Events, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Natural DP regeneration rate is reduced.<br/>'''{{Color|<[['Gramophone']]>|muitem}}''' Both allied and enemy units will fight for control over this device; When activated, deals Arts damage to enemies and heals allies.
+|level = Elite 2 Level 40
+|unit limit = 6
+|enemies = 49, 57
+|lp = 5
+|dp = 25
+|deployable =  
+|static = {{D|L-44 Gramophone|6}} 
+|terrain = 
+|addendum = 
+The automatic DP generation rate is reduced to 1 DP every 2 seconds.
+<!-- ability_name : tower|tower_y1 : 1.0|time_x : 150.0|tower_type : 0.0|basic : 1.0 -->
+Capture Gramophones in 150 seconds
+<!-- rest_time : 10.0|ability_name : tower|time_x : 200.0|tower_type : 0.0|tower_y1 : 3.0|tower_y2 : 5.0 -->
+Capture Gramophones in 200 seconds with 10 seconds break time
+,
+|obj1 = Capture; Capture 1 Gramophone.
+|obj2 = Capture; Capture 3 Gramophones.
+|obj2+ = Capture; Capture 5 Gramophones.
+|normal = {{E|Monster Mk II|0|4}}, {{E|Defender-4|0|10}}, {{E|Arts Master A1|0|7}}, {{E|Winterwisp Hound|6|9}}, {{E|Leithanian Whisperer|2|13}}, {{E|Arc Screenguard|0|11}}, {{E|Rhine Defense Member|0|10}}, {{E|Rhine Engineering Member|0|10}}
+|elite = {{E|Frost|0|2}}, {{E|Mudrock Zealot|0|2}}, {{E|Mudrock Colossus|2|6}}, {{E|Winterwisp Blood Shaman|2}}, {{E|Mudrock Matterllurgist|0|24}}, {{E|R-31a Heavy Power Armor|0|6}}, {{E|R-11 Assault Power Armor|0|3}}, {{E|Sarkaz Lancer|1|8}}, {{E|Imperial Artillery Targeteer|0|6}}
+|boss = 
+|eaddendum = 
+All enemies have their ATK, DEF and HP increased by 40%, 20% and 30%.
+*Mudrock Colossus have 80000 HP.
+}}
+{{IG operations}}
+
+### act1multi_rm-ex06
+{{Construction}}
+{{IG operation info
+|code = EX-7
+|name = Remnants in the Night
+|season = 1
+|group = Regular Events, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Additional Leader enemies appear.<br/>'''{{Color|<[[City Neon]]>|muitem}}''' Provides an initial amount of visibility, and can further increase visibility when used.
+|level = Elite 2 Level 40
+|unit limit = 6
+|enemies = 26, 84
+|lp = 5
+|dp = 10
+|deployable =  
+|static = {{D|City Neon|6}}, {{D|Roadblocks|2}} 
+|terrain = 
+|addendum = 
+<!--Multi-player controller--> have hp_x1 : 1.0 change by hp_max : 2.4
+<!-- ability_name : kill|time_x : 160.0|basic : 1.0|cnt_y1 : 30.0 -->
+Defeat enemies in 160 seconds
+<!-- ability_name : boss|hp_max : 120000.0|time_x : 320.0|hp_x1 : 0.75|rest_time : 10.0 -->
+Defeat target in 320 seconds with 10 seconds break time
+,
+|obj1 = Eliminate; Defeat 30 enemies.
+|obj2 = Assault; Reduce the HP of all Leader enemies by 75%.
+|obj2+ = Assault; Defeat all Leader enemies.
+|normal = {{E|Dublinn Phalanx Commander|0|10}}, {{E|Dublinn Flamechaser Soldier|1|21}}, {{E|Dublinn Scout Leader|0|7}}, {{E|Dublinn Sniper Leader|0|7}}, {{E|Dublinn Phalanx Infantry|0|2}}, {{E|Undertide Gloompincer α|0|18}}, {{E|Guerrilla Hound Pro|0|12}}, {{E|Guerrilla Fighter|0|3}}, {{E|Guerrilla Fighter Leader|0|6}}, {{E|Guerrilla Sniper|0|3}}, {{E|Guerrilla Sniper Leader|0|6}}, {{E|Guerrilla Herald Leader|0|2}}, {{E|Sponsor Drone|8}}, {{E|Yeti Caster|0|4}}
+|elite = {{E|Demolitionist Leader|0|4}}, {{E|Dublinn Elite Companion Guard|0|5}}, {{E|Dublinn Elite Companion Shadowblade|1|6}}, {{E|Dublinn Flamechaser Elite Guard|0|4}}, {{E|Bloodboil Knightclub Elite|0|6}}, {{E|Blade Helmet Knightclub Elite|0|1}}, {{E|Elite Knight Shielder|0|5}}, {{E|Lazurite, Monique|0|1}}, {{E|Lazurite, Roy|0|1}}, {{E|Nova Knightclub Elite|0|6}}, {{E|Nightzmora Follower|0|5}}, {{E|Knight Territory Hibernator|0|4}}, {{E|Guerrilla Shieldguard Leader|0|4}}, {{E|Guerrilla Mortar Leader|0|2}}, {{E|Yeti Icecleaver|0|2}}
+|boss = {{E|The Blood Knight Dikaiopolis|0|1}}, {{E|Corrupted Knight|0|1}}, {{E|Withered Knight|0|1}}, {{E|The Leader|0|1}}, {{E|Frost Buck|0|1}}, {{E|Snow Doe|0|1}}
+|eaddendum = 
+All enemies have their ATK, DEF and HP increased by 20%.
+Bloodboil Knightclub Elite, Nightzmora Follower, Guerrilla Hound Pro, Demolitionist Leader, Dublinn Elite Companion Shadowblade, Dublinn Elite Companion Guard and Dublinn Phalanx Commander will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+The Blood Knight Dikaiopolis, Corrupted Knight, Withered Knight, 'Snow Doe', 'Frost Buck', 'The Leader' and Knight Territory Hibernator will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Corrupted Knight have 65000 HP, 1500 DEF, 35 RES and deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Withered Knight have 55000 HP, 600 ATK, 1000 DEF, 80 RES and deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*The Blood Knight Dikaiopolis have 80000 HP, 2050 ATK, 950 DEF and deduct 10 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Bloodblade have 7000 HP.
+*'Snow Doe' have 60000 HP.
+*'The Leader' have 60000 HP.
+}}
+{{IG operations}}
+
+### act1multi_rm-ex01
+{{Construction}}
+{{IG operation info
+|code = EX-11
+|name = Candy Delivery
+|season = 1
+|group = Regular Events, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Additional enemies appear.<br/>Deployment Limit -1.<br/>'''{{Color|<[['Gelato Stop']]>|muitem}}''' Both allied and enemy units will fight for control over this device; When activated, restores SP of surrounding allies.
+|level = Elite 2 Level 40
+|unit limit = 6
+|enemies = 144, 233
+|lp = 5
+|dp = 19
+|deployable = {{D|Shiny Berries|1}}, {{D|Glooming Berry|1}}, {{D|Roast Berry|1}}, {{D|Shiny Brew|1}}, {{D|Chest Limb|1}} 
+|static = {{D|Tuba|2}}, {{D|L-7 Whisperer|1}}, {{D|Treasure Chest|12}}, {{D|L-44 Gramophone|6}} 
+|terrain = 
+|addendum = 
+*Waste Energy Interference reduces the automatic SP generation rate of friendly units by 30.000000%.
+*Friendly units linked with [[Realigned Flux]]es have their automatic SP generation rate increased by 30.000000%.
+<!-- ability_name : survive|time_x1 : 120.0|time_x2 : 120.0|clear_id : trap_062_magicstart|trap_057_wpnsts|basic : 1.0 -->
+Survive for 120 seconds
+<!-- ability_name : survive|time_x1 : 120.0|time_x2 : 180.0|rest_time : 10.0 -->
+Survive for 120 seconds with 10 seconds break time
+,
+|obj1 = Survival; Survive for 120 seconds.
+|obj2 = Survival; Survive for 120 seconds.
+|obj2+ = Survival; Survive for 180 seconds.
+|normal = {{E|Blazing Originium Slug|54|76}}, {{E|Chitotex Clawbeast|0|2}}, {{E|Basorobeast|26|30}}, {{E|Winterwisp Hound|0|70}}, {{E|Leithanian Whisperer|0|20}}, {{E|Street Layabout|0|36}}, {{E|Street Performer|0|16}}
+|elite = {{E|Sinkingsand|5}}, {{E|Raging Slug Eater|0|4}}, {{E|Raging Man Eater|6}}, {{E|Direswine|17|21}}, {{E|Mudrock Zealot|0|13}}, {{E|Mudrock Colossus|0|4}}, {{E|Hexed Colossus|0|10}}, {{E|Winterwisp Blood Shaman|0|8}}, {{E|Remnant Principal Violinist|0|8}}, {{E|Remnant Saxophonist|0|9}}, {{E|Remnant Official Saxophonist|0|5}}, {{E|Mass-Produced Colossus|0|15}}, {{E|Sarkaz Absurdist Tyrant Captain|0|18}}
+|boss = 
+|eaddendum = 
+All enemies have their ATK, DEF and HP increased by 20%, 20% and 40%.
+All Mass-Produced Colossus are replaced with Enhanced Mass-Produced Colossus.
+All Leithanian Whisperer are replaced with Leithanian Psalmist.
+All Direswine are replaced with Raging Direswine.
+*Remnant Saxophonist have 22500 HP and 700 ATK.
+*Remnant Official Saxophonist have 25000 HP and 900 ATK.
+*Remnant Principal Violinist have 21000 HP.
+}}
+{{IG operations}}
+
+### act1multi_rm-ex03
+{{Construction}}
+{{IG operation info
+|code = EX-12
+|name = Volcanic Pool
+|season = 1
+|group = Regular Events, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Additional enemies appear.<br/>Custom Floating Platforms have increased DP Cost.<br/>'''{{Color|<[[Custom Floating Platform]]>|muitem}}''' Can be deployed on Deep Water Zones, thereafter any unit can be deployed on that tile. The platform is destroyed when the deployed unit retreats.
+|level = Elite 2 Level 40
+|unit limit = 6
+|enemies = 25, 45
+|lp = 5
+|dp = 5
+|deployable = {{D|Custom Floating Platform|1}}, {{D|Shiny Berries|1}} 
+|static = {{D|Custom Floating Platform|24}} 
+|terrain = 
+*The [[Lava Crack]]s erupt every 8-12 seconds and deals 200 True damage to friendly units in the surrounding tiles.
+*The [[Heat Pump Passage]] erupt every 13 ~ 19 seconds and deals 600 True damage.
+|addendum = 
+Custom Floating Platform DP cost increased by 15
+<!-- ability_name : car|time_x : 170.0|distance_y1 : 22.0|basic : 1.0 -->
+Push $1 in 170 seconds
+<!-- ability_name : car|time_x : 180.0|distance_y1 : 16.0|rest_time : 10.0 -->
+Push $1 in 180 seconds with 10 seconds break time
+,
+|obj1 = Escort; Push bomb 22 tiles away in stage 1.
+|obj2 = Escort; Push bomb 16 tiles away in stage 2.
+|obj2+ = Escort; Push bomb 22 tiles away in stage 2.
+|normal = {{E|Fruit Slug|0|6}}, {{E|Anti-Witchcraft Repositionable Bomb|2}}, {{E|Heavy Crossbowman Ambusher|0|10}}, {{E|Heavy Crossbowman Hunter|0|6}}, {{E|Bloodborn Spawn|0|16}}
+|elite = {{E|Raging Slug Eater|0|4}}, {{E|Nucleic Maleficent|1|11}}, {{E|Sarkaz Boneguard|8|14}}, {{E|Sarkaz Boneguard Flayer|0|6}}
+|boss = 
+|eaddendum = 
+All enemies have their ATK, DEF and HP increased by 20%, 10% and 20%.
+All Sarkaz Boneguard are replaced with Sarkaz Boneguard Captain.
+All Sarkaz Boneguard Flayer are replaced with Sarkaz Boneguard Torturer.
+All Nucleic Maleficent are replaced with Allotropic Maleficent.
+All Heavy Crossbowman Ambusher are replaced with Heavy Crossbowman Hunter.
+Sarkaz Grudgebearer, Sarkaz Bladeweaver, Nucleic Maleficent and Sarkaz Boneguard Captain will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Anti-Witchcraft Repositionable Bomb have 1000000 HP and 0.5 MSPD.
+*Anti-Witchcraft Repositionable Bomb have 1000000 HP.
+*Sarkaz Boneguard have 10000 HP and 1000 DEF.
+*Sarkaz Boneguard Captain have 14000 HP and 1300 DEF.
+*Sarkaz Boneguard Torturer have 22000 HP, 1100 ATK and 1000 DEF.
+*Raging Slug Eater have 20000 HP and weight 20.
+}}
+{{IG operations}}
+
+### act1multi_rm-ex04
+{{Construction}}
+{{IG operation info
+|code = EX-13
+|name = Repel Avenue
+|season = 1
+|group = Regular Events, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Additional enemies appear.<br/>Enemies have increased Movement Speed.<br/>'''{{Color|<[[Post-Firing Debt Relief Program]]>|muitem}}''' Shoots 3 consecutive bullets forward, dealing Physical damage to the first Operator hit.<br/>'''{{Color|<[[Witchcraft Ballista]]>|muitem}}''' Periodically fires missiles that deal Arts damage to your units while healing enemy units; Can be destroyed.
+|level = Elite 2 Level 40
+|unit limit = 6
+|enemies = 104, 115
+|lp = 5
+|dp = 10
+|deployable =  
+|static = {{D|Post-Firing Debt Relief Program|8}}, {{D|Witchcraft Ballista|8}} 
+|terrain = 
+|addendum = 
+<!-- ability_name : survive|time_x1 : 150.0|basic : 1.0|time_x2 : 150.0 -->
+Survive for 150 seconds
+<!-- ability_name : survive|time_x1 : 150.0|time_x2 : 180.0|rest_time : 10.0 -->
+Survive for 150 seconds with 10 seconds break time
+,
+|obj1 = Survival; Survive for 150 seconds.
+|obj2 = Survival; Survive for 150 seconds.
+|obj2+ = Survival; Survive for 180 seconds.
+|normal = {{E|Wraith|0|32}}, {{E|Technical Scout|0|1}}, {{E|Tactical Crossbowman|0|5}}, {{E|Ergate Leader|0|9}}, {{E|Tactical Hound Pro|0|25}}, {{E|Anti-Armor Infantry|0|11}}, {{E|Rhine Defense Member|0|32}}, {{E|Infected Patrol Captain|0|10}}, {{E|Ursus Assault Crossbowman|16}}
+|elite = {{E|Bombtail-G|12|14}}, {{E|Swamp Rover|3|9}}, {{E|Bully|0|7}}, {{E|Greytail|0|9}}, {{E|Mudrock Zealot|0|7}}, {{E|Tactical Defender Leader|0|25}}, {{E|Ursus Raider|0|24}}
+|boss = 
+|eaddendum = 
+All enemies have their ATK, DEF, HP and MSPD increased by 40%.
+*Ergate Leader have 9000 HP.
+*Bombtail-G have Does not deduct [[Life Point|Life Points]].
+}}
+{{IG operations}}
+
+### act1multi_rm-ex07
+{{Construction}}
+{{IG operation info
+|code = EX-14
+|name = Creation and Reproduction
+|season = 1
+|group = Regular Events, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Thunderstorm appears.
+|level = Elite 2 Level 40
+|unit limit = 6
+|enemies = 132, 255
+|lp = 5
+|dp = 10
+|deployable =  
+|static =  
+|terrain = 
+|addendum = 
+<!-- ability_name : survive|time_x1 : 150.0|basic : 1.0|time_x2 : 150.0 -->
+Survive for 150 seconds
+<!-- ability_name : survive|time_x1 : 150.0|time_x2 : 180.0|rest_time : 10.0 -->
+Survive for 150 seconds with 10 seconds break time
+,
+|obj1 = Survival; Survive for 150 seconds.
+|obj2 = Survival; Survive for 150 seconds.
+|obj2+ = Survival; Survive for 180 seconds.
+|normal = {{E|Infused Glacial Originium Slug α|0|56}}, {{E|Icefield Caster Leader|0|34}}, {{E|Icefield Hunter Leader|0|2}}, {{E|Originiutant Tumor|0|65}}, {{E|Mutant Sand Beast α|0|5}}, {{E|Sarkaz Sentinel Leader|0|24}}, {{E|Sarkaz Royal Court Elite Soldier|0|35}}, {{E|Gift of Magnanimity|0|7}}, {{E|Sarkaz Absurdist Operative Leader|0|26}}, {{E|Guerrilla Fighter Leader|0|15}}, {{E|Guerrilla Herald Leader|0|7}}
+|elite = {{E|Demolitionist Leader|0|23}}, {{E|Icefield Berserker Leader|0|16}}, {{E|Sarkaz Wither Maw|0|25}}, {{E|Sarkaz Royal Court Elite Caster|0|30}}, {{E|Redmark Elite Infiltrator|0|58}}, {{E|Mutant Giant Rock Spider α|0|3}}, {{E|Sarkaz Worldcurser|0|15}}, {{E|Sarkaz Bladeweaver|0|2}}, {{E|Sarkaz Bladeweaver Leader|0|22}}, {{E|Sarkaz Heirbearer Retrofit ASV|0|9}}, {{E|Sarkaz Heirbearer Wrathgorger|0|16}}, {{E|Guerrilla Shieldguard Leader|0|17}}, {{E|Guerrilla Mortar Leader|0|5}}, {{E|Yeti Icecleaver|0|16}}
+|boss = 
+|eaddendum = 
+All enemies have their ATK, DEF and HP increased by 20%.
+Sarkaz Sentinel Leader, Sarkaz Heirbearer Retrofit ASV, Gift of the Sanguinarch, Demolitionist Leader, Guerrilla Shieldguard Leader, Mutant Giant Rock Spider α, Mutant Sand Beast α, Icefield Caster Leader, Originiutant Excrescence, Sarkaz Wither Maw and Sarkaz Absurdist Operative Leader will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+Londinium Mobile Defense Artillery will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+}}
+{{IG operations}}
+
+### act1multi_ex01
+{{Construction}}
+{{IG operation info
+|code = EX-1
+|name = Firing Line Escape
+|season = 1
+|group = Regular Events, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Additional enemies appear.
+|level = Elite 2 Level 40
+|unit limit = 6
+|enemies = 76, 108
+|lp = 5
+|dp = 10
+|deployable =  
+|static =  
+|terrain = 
+|addendum = 
+<!-- ability_name : protect|protect_y1 : 4.0|basic : 1.0|time_x : 150.0 -->
+Rescue in 150 seconds
+<!-- ability_name : protect|protect_y1 : 3.0|protect_y2 : 5.0|time_x : 210.0|rest_time : 10.0 -->
+Rescue in 210 seconds with 10 seconds break time
+,
+|obj1 = Rescue; Protect 4 Ursus Civilians until they enter the Objective Point.
+|obj2 = Rescue; Protect 3 Ursus Civilians until they enter the Objective Point.
+|obj2+ = Rescue; Protect 5 Ursus Civilians until they enter the Objective Point.
+|normal = {{E|Infused Glacial Originium Slug|0|17}}, {{E|Light Rapid Crossbowman|0|20}}, {{E|Heavy Rapid Crossbowman|0|35}}, {{E|Heavy Crossbowman Ambusher|0|3}}, {{E|Heavy Crossbowman Hunter|0|6}}, {{E|Impetuous Grenadier|0|14}}, {{E|Infected Patrol Captain|0|13}}, {{E|Ursus Civilian|11|12}}, {{E|Elite Infected Patrol Captain|0|20}}, {{E|Ursus Assault Crossbowman|0|10}}, {{E|Ursus Armored Caster|0|4}}, {{E|Elite Ursus Armored Caster|0|4}}, {{E|Delegation Centurion|1|5}}, {{E|Delegation Centurion Champion|1|9}}
+|elite = {{E|Battleline Advance Guard|0|2}}, {{E|Battleline Breacher|0|7}}, {{E|Ursus Raider Leader|0|16}}, {{E|Imperial Artillery Targeteer|0|2}}, {{E|Imperial Artillery Core Targeteer|0|3}}, {{E|Imperial Striker|0|6}}, {{E|Ursus Raider|0|8}}, {{E|Boom Canister|0|12}}, {{E|Catapult|0|4}}, {{E|Mortar|0|6}}, {{E|Jet Canister|0|6}}
+|boss = 
+|eaddendum = 
+All enemies have their ATK, DEF and HP increased by 40%, 20% and 20%.
+Heavy Crossbowman Hunter, Heavy Crossbowman Ambusher, Ursus Raider, Ursus Raider Leader, Imperial Artillery Targeteer and Imperial Artillery Core Targeteer will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Ursus Civilian have 10000 HP and 0.4 MSPD.
+*Imperial Artillery Targeteer have 10000 HP.
+}}
+{{IG operations}}
+
+### act1multi_ex03
+{{Construction}}
+{{IG operation info
+|code = EX-2
+|name = Sinister Consumption
+|season = 1
+|group = Regular Events, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Enemy types are different.<br/>'''{{Color|<[[Blood Ledger]]>|muitem}}''' All enemies are boosted and Famiglia Silencer is summoned when Blood Debt is at max.<br/>'''{{Color|<[[Turrets]]>|muitem}}''' Periodically fire bolts, dealing Physical Damage to allied units.
+|level = Elite 2 Level 40
+|unit limit = 6
+|enemies = 41, 60
+|lp = 5
+|dp = 10
+|deployable =  
+|static = {{D|Turret|3}} 
+|terrain = 
+|addendum = 
+<!-- ability_name : boss|hp_max : 100000.0|basic : 1.0|time_x : 180.0|hp_x1 : 1.0 -->
+Defeat target in 180 seconds
+<!-- ability_name : boss|hp_max : 150000.0|hp_x1 : 0.5|time_x : 240.0|rest_time : 10.0 -->
+Defeat target in 240 seconds with 10 seconds break time
+,
+|obj1 = Assault; Defeat all Leader enemies.
+|obj2 = Assault; Reduce the HP of all Leader enemies by 50%.
+|obj2+ = Assault; Defeat all Leader enemies.
+|normal = {{E|Possessed Junkman|2|3}}, {{E|Possessed Veteran Junkman|6|10}}, {{E|Famiglia Soldier|14}}, {{E|Famiglia Intimidator|0|8}}
+|elite = {{E|Desperate Fanatic|0|5}}, {{E|Greytail|1|6}}, {{E|Possessed Heavy Defender|2}}, {{E|Originiutant|0|2}}, {{E|Originiutant α|0|1}}, {{E|Famiglia Capo|0|2}}, {{E|Famiglia Limo|6|11}}, {{E|Shanhaizhong Ringleader|0|4}}, {{E|Shanhaizhong Secret-Keeper|0|4}}
+|boss = {{E|Essence of Evolution|0|1}}, {{E|Faust|0|1}}, {{E|Rat King|0|1}}, {{E|Mephisto|0|1}}, {{E|Ya|0|1}}, {{E|Zaaro, Signore dei Lupi|0|1}}
+|eaddendum = 
+All enemies have their ATK, DEF and HP increased by 20%.
+'Essence of Evolution', 'Ya', 'Rat King', Faust, Mephisto, Zaaro, Signore dei Lupi and Famiglia Shadow Silencer will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+All Famiglia Capo are replaced with Famiglia Heavy Capo.
+All Famiglia Soldier are replaced with Elite Famiglia Soldier.
+All Famiglia Intimidator are replaced with Famiglia Terrorizer.
+All Famiglia Limo are replaced with Famiglia Luxury Limo.
+*Mephisto have 60000 HP and deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Faust have 40000 HP and deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*'Rat King' have 100000 HP and deduct 10 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*'Ya' have 150000 HP, 900 ATK, 650 DEF and deduct 10 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*'Essence of Evolution' have 150000 HP and deduct 10 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Zaaro, Signore dei Lupi have 75000 HP and deduct 10 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Delusion have 75000 HP.
+}}
+{{IG operations}}
+
+### act1multi_ex05
+{{Construction}}
+{{IG operation info
+|code = EX-3
+|name = Make Sea With Land
+|season = 1
+|group = Regular Events, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Additional enemies appear.
+|level = Elite 2 Level 40
+|unit limit = 6
+|enemies = 107, 136
+|lp = 5
+|dp = 10
+|deployable =  
+|static = {{D|Nethersea Brand|1}} 
+|terrain = 
+|addendum = 
+<!-- ability_name : target|time_x : 210.0|kill_y1 : 20.0|enemy_key : enemy_1309_mhboar|basic : 1.0 -->
+Defeat target in 210 seconds
+<!-- ability_name : target|time_x : 210.0|kill_y1 : 20.0|kill_y2 : 40.0|enemy_key : enemy_1231_dsrunr_2|rest_time : 10.0 -->
+Defeat target in 210 seconds with 10 seconds break time
+,
+|obj1 = Infiltration; Defeat 20 Direswines.
+|obj2 = Infiltration; Defeat 20 Nourished Predators.
+|obj2+ = Infiltration; Defeat 40 Nourished Predators.
+|normal = {{E|Nourished Predator|48|63}}, {{E|Nourished Spewer|1|10}}
+|elite = {{E|Alloy Surfing Instructor|0|2}}, {{E|Mead-Grade Waker-Upper|0|2}}, {{E|Whiskey-Grade Waker-Upper|0|2}}, {{E|Full Metal Surfing Instructor|0|2}}, {{E|Direswine|29|41}}, {{E|Sarkaz Wither Devourer|0|2}}, {{E|Sarkaz Wither Maw|1|7}}, {{E|Enraged Possessed Soldier|0|2}}, {{E|Enraged Possessed Leader|0|4}}, {{E|Sarkaz Lancer Leader|0|4}}, {{E|Sarkaz Lancer|0|2}}, {{E|Nourished Reaper|0|14}}, {{E|Nourished Founder|0|8}}, {{E|Nourished Brandguider|6|10}}, {{E|Nourished Reefbreaker|0|4}}, {{E|Tiacauh Brave|0|4}}, {{E|Tiacauh Champion|0|2}}
+|boss = 
+|eaddendum = 
+All enemies have their ATK, DEF and HP increased by 20%.
+Nourished Predator and Direswine will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+Nourished Predator have their HP, ATK, DEF and MSPD increased by 0%, 0%, 0% and 10%.
+Direswine have their HP, ATK, DEF and MSPD increased by 0%, 0%, 0% and 10%.
+*Sarkaz Lancer have Does not deduct [[Life Point|Life Points]].
+*Sarkaz Lancer Leader have Does not deduct [[Life Point|Life Points]].
+*Nourished Predator have Does not deduct [[Life Point|Life Points]].
+*Direswine have Does not deduct [[Life Point|Life Points]].
+}}
+{{IG operations}}
+
+### act1multi_ex07
+{{Construction}}
+{{IG operation info
+|code = EX-4
+|name = When Surprise Knocks
+|season = 1
+|group = Regular Events, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Additional enemies appear.
+|level = Elite 2 Level 40
+|unit limit = 6
+|enemies = 78, 115
+|lp = 5
+|dp = 10
+|deployable =  
+|static = {{D|L-44 Gramophone|9}} 
+|terrain = 
+|addendum = 
+(Possible Key Typo) The automatic DP generation rate is increased to 1 DP every 0.5 seconds.
+<!-- ability_name : tower|tower_y1 : 4.0|time_x : 150.0|tower_type : 0.0|basic : 1.0 -->
+Capture Gramophones in 150 seconds
+<!-- rest_time : 10.0|ability_name : tower|tower_y1 : 4.0|time_x : 150.0|tower_type : 0.0|tower_y2 : 5.0 -->
+Capture Gramophones in 150 seconds with 10 seconds break time
+,
+|obj1 = Capture; Capture 4 Gramophones.
+|obj2 = Capture; Capture 4 Gramophones.
+|obj2+ = Capture; Capture 5 Gramophones.
+|normal = {{E|Elite Sniper Prisoner|0|7}}, {{E|Roar Knightclub Elite|0|4}}, {{E|Leithanian Whisperer|16}}, {{E|Leithanian Psalmist|8}}, {{E|Luscious Snack Cart|0|40}}
+|elite = {{E|Deadly Caster Prisoner|0|4}}, {{E|Infamous Recidivist|0|1}}, {{E|Mudrock Matterllurgist Leader|0|8}}, {{E|Winterwisp Blood Shaman|2}}, {{E|Winterwisp Blood Magister|5|6}}, {{E|Sarkaz Centurion Nidus Guard|0|4}}, {{E|Enraged Possessed Leader|0|4}}, {{E|Sarkaz Caster Leader|1|5}}, {{E|Pathfinder Ballistarius Prefect|18}}, {{E|Renowned Pathfinder Dessert Vendor|0|4}}, {{E|Pathfinder Nuncio|5|12}}, {{E|Guerrilla Shieldguard|0|4}}, {{E|Elite Imperial Striker|0|7}}
+|boss = 
+|eaddendum = 
+All enemies have their ATK, DEF and HP increased by 20% (Excluding -> Ursus Civilian).
+}}
+{{IG operations}}
+
+### act1multi_ex02
+{{Construction}}
+{{IG operation info
+|code = EX-8
+|name = Intercept Special Spy
+|season = 1
+|group = Regular Events, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Enemies have increased Movement Speed.
+|level = Elite 2 Level 40
+|unit limit = 6
+|enemies = 72, 97
+|lp = 5
+|dp = 10
+|deployable =  
+|static =  
+|terrain = 
+|addendum = 
+The [[DP]] cap is reduced to 30. 
+<!-- ability_name : target|kill_y1 : 6.0|basic : 1.0|time_x : 180.0|enemy_key : enemy_1315_wdyjd_2 -->
+Defeat target in 180 seconds
+<!-- ability_name : target|kill_y1 : 6.0|kill_y2 : 12.0|time_x : 210.0|rest_time : 10.0|enemy_key : enemy_1315_wdyjd_2 -->
+Defeat target in 210 seconds with 10 seconds break time
+,
+|obj1 = Infiltration; Defeat 6 Sentry Spymasters.
+|obj2 = Infiltration; Defeat 6 Sentry Spymasters.
+|obj2+ = Infiltration; Defeat 12 Sentry Spymasters.
+|normal = {{E|Volleyball Serving Cart|0|5}}, {{E|Volleyball Spiking Cart|1|3}}, {{E|Sentry Spymaster|36|48}}, {{E|Norport Civilian|8|44}}, {{E|Sarkaz Absurdist Operative Leader|0|8}}, {{E|Sarkaz Absurdist Splitcaster Apprentice|0|3}}, {{E|Sarkaz Absurdist Splitcaster|0|7}}
+|elite = {{E|Shielded Senior Caster|0|4}}, {{E|Fully-Enclosed Beach Buggy|1|4}}, {{E|Competitive-Grade Beach Buggy|0|6}}, {{E|Trilby Asher|0|4}}, {{E|Rebellion Instigator|0|2}}, {{E|Rebellion Agitator|0|4}}
+|boss = 
+|eaddendum = 
+All enemies have their ATK, DEF, HP and MSPD increased by 20%, 20%, 20% and 50%.
+Decaying Collector Disciple, Sentry Spymaster, Fully-Enclosed Beach Buggy, Competitive-Grade Beach Buggy and 'Trilby Asher' will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Sentry Spymaster have 5500 HP, 600 ATK, 0.6 MSPD and Does not deduct [[Life Point|Life Points]].
+*Fully-Enclosed Beach Buggy have Does not deduct [[Life Point|Life Points]].
+*Competitive-Grade Beach Buggy have Does not deduct [[Life Point|Life Points]].
+}}
+{{IG operations}}
+
+### act1multi_ex04
+{{Construction}}
+{{IG operation info
+|code = EX-9
+|name = Mobile Target Practice
+|season = 1
+|group = Regular Events, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Additional enemies appear.<br/>'''{{Color|<[[Post-Firing Debt Relief Program]]>|muitem}}''' Shoots 3 consecutive bullets forward, dealing Physical damage to the first Operator hit.<br/>'''{{Color|<[[Mobile Tactical Hangar]]>|muitem}}''' Deploys drones as needed to assist enemy combatants.
+|level = Elite 2 Level 40
+|unit limit = 6
+|enemies = 26, 168
+|lp = 5
+|dp = 10
+|deployable =  
+|static = {{D|Post-Firing Debt Relief Program|5}}, {{D|Mobile Tactical Hangar|1}} 
+|terrain = 
+|addendum = 
+<!-- ability_name : car|time_x : 150.0|distance_y1 : 15.0|basic : 1.0 -->
+Push $1 in 150 seconds
+<!-- ability_name : car|time_x : 180.0|distance_y1 : 15.0|rest_time : 10.0 -->
+Push $1 in 180 seconds with 10 seconds break time
+,
+|obj1 = Escort; Push bomb 15 tiles away in stage 1.
+|obj2 = Escort; Push bomb 15 tiles away in stage 2.
+|obj2+ = Escort; Push bomb 25 tiles away in stage 2.
+|normal = {{E|Out of Control Sky Pole - Yi|0|155}}, {{E|Anti-Witchcraft Repositionable Bomb|2}}, {{E|Tactical Crossbowman|1}}, {{E|Tactical Crossbowman Leader|0|10}}, {{E|Heavy Rapid Crossbowman|0|65}}
+|elite = {{E|Crossroads Prototype|0|3}}, {{E|Legendary War Phantom|0|3}}, {{E|R-11 Assault Power Armor|0|1}}, {{E|R-11a Assault Power Armor|0|2}}, {{E|Sarkaz Boneguard Captain|7}}
+|boss = {{E|Pompeii|0|3}}
+|eaddendum = 
+All enemies have their ATK, DEF and HP increased by 20% (Excluding -> Ursus Civilian).
+*Anti-Witchcraft Repositionable Bomb have 1000000 HP and 0.5 MSPD.
+*Out of Control Sky Pole - Yi have 250 ATK.
+*Out of Control Sky Pole - Yi have 350 ATK.
+}}
+{{IG operations}}
+
+### act1multi_ex06
+{{Construction}}
+{{IG operation info
+|code = EX-10
+|name = Gang Gathering
+|season = 1
+|group = Regular Events, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Additional enemies appear.<br/>Operators Block -1.<br/>'''{{Color|<[[Yumen Catastrophe Defenses]]>|muitem}}''' Units placed here deal more damage to ground units and take less damage from ground units.
+|level = Elite 2 Level 40
+|unit limit = 6
+|enemies = 124, 231
+|lp = 5
+|dp = 10
+|deployable =  
+|static =  
+|terrain = 
+|addendum = 
+All allied units Block Count reduced by 1
+<!-- ability_name : survive|time_x1 : 150.0|basic : 1.0|time_x2 : 150.0 -->
+Survive for 150 seconds
+<!-- ability_name : survive|time_x1 : 150.0|time_x2 : 180.0|rest_time : 10.0 -->
+Survive for 150 seconds with 10 seconds break time
+,
+|obj1 = Survival; Survive for 150 seconds.
+|obj2 = Survival; Survive for 150 seconds.
+|obj2+ = Survival; Survive for 180 seconds.
+|normal = {{E|Radioactive Originium Slug α|0|41}}, {{E|Paramilitary Thief|0|20}}, {{E|Paramilitary Thief Leader|0|59}}, {{E|Elite Wasteland Plunderer|0|16}}, {{E|Wasteland Robber|0|8}}, {{E|Elite Wasteland Robber|0|48}}, {{E|Raging Di Beast|0|82}}, {{E|Shanhaizhong Vigilante|0|43}}, {{E|Shanhaizhong Relayer|0|8}}, {{E|Shanhaizhong Harbinger|0|28}}, {{E|Shanhaizhong Desperado|0|2}}, {{E|Shanhaizhong Phalanx|0|20}}
+|elite = {{E|Bounty Hunter Crossbowman|0|4}}, {{E|Bounty Hunter Crossbowman Captain|0|4}}, {{E|Paramilitary Bombardier Leader|0|28}}, {{E|Paramilitary Sniper|0|2}}, {{E|Paramilitary Sniper Leader|0|8}}, {{E|Paramilitary Axeman Leader|0|12}}, {{E|Shanhaizhong Ringleader|0|36}}, {{E|Shanhaizhong Secret-Keeper|0|17}}, {{E|Shanhaizhong Seer|0|3}}, {{E|Shanhaizhong Oracle|0|38}}, {{E|Fortbreaker|0|8}}, {{E|Sand Voyager|0|2}}
+|boss = 
+|eaddendum = 
+All enemies have their ATK, DEF and HP increased by 20%.
+Shanhaizhong Vigilante, Shanhaizhong Secret-Keeper, Shanhaizhong Oracle, Shanhaizhong Harbinger, Bounty Hunter Crossbowman Captain, Bounty Hunter Disruptor Captain, Paramilitary Sniper Leader, Paramilitary Axeman Leader and Paramilitary Thief Leader will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+}}
+{{IG operations}}
+
+### act1multi_hard-01
+{{Construction}}
+{{IG operation info
+|code = S-1
+|name = Exceptional Place
+|season = 1
+|group = Regular Events, Expert
+|desc = None of the contestants imagined such a small arena could fit such a huge Feranmut.<br/>{{Color|Condition: |muitem}}<br/>Leader enemy gains greatly increased HP and ATK.<br/>Ranged units can be deployed on melee tiles.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 255, 255
+|lp = 3
+|dp = 30
+|deployable =  
+|static = {{D|Dantian|1}} 
+|terrain = 
+The [[Defense Rune]] increases the DEF of the friendly unit on it by 200.
+|addendum = 
+<!-- ability_name : survive|time_x1 : 100.0|basic : 1.0|time_x2 : 100.0 -->
+Survive for 100 seconds
+<!-- ability_name : boss|hp_max : 600000.0|time_x : 300.0|hp_x1 : 0.7|rest_time : 15.0 -->
+Defeat target in 300 seconds with 15 seconds break time
+,
+|obj1 = Survival; Survive for 100 seconds.
+|obj2 = Assault; Reduce the HP of all Leader enemies by 75%.
+|obj2+ = Assault; Defeat all Leader enemies.
+|normal = {{E|Rainbowbrew|5}}, {{E|Brightmirror|4}}, {{E|Wisp|220}}, {{E|Sophistication|2}}
+|elite = {{E|Heartbillow|4}}, {{E|Scarletmist|2}}, {{E|Sharpedge|1}}, {{E|Indefatigable Blindey|16}}
+|boss = {{E|Sui-Xiang|1}}
+|eaddendum = 
+The Blood Knight Dikaiopolis, Corrupted Knight, Withered Knight, 'Snow Doe', 'Frost Buck', 'The Leader' and Knight Territory Hibernator will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*'Sui-Xiang' have 600000 HP and 2025 ATK.
+}}
+{{IG operations}}
+
+### act1multi_hard-02
+{{Construction}}
+{{IG operation info
+|code = S-2
+|name = Vertical Climbing
+|season = 1
+|group = Regular Events, Expert
+|desc = Jumping over layers of Catastrophe Defenses to reach the other side of the city walls seems to be a 'sport' that tests your jumping ability even more than the high jump and long jump events.<br/>'''{{Color|<[[Yumen Catastrophe Defenses]]>|muitem}}''' Units placed here deal more damage to ground units and take less damage from ground units.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 303, 406
+|lp = 8
+|dp = 10
+|deployable =  
+|static = {{D|Mire Controller|1}}, {{D|Roadblocks|3}}, {{D|Shanhaizhong Cipher Machine|8}} 
+|terrain = 
+|addendum = 
+<!-- ability_name : survive|time_x1 : 120.0|time_x2 : 120.0|basic : 1.0 -->
+Survive for 120 seconds
+<!-- ability_name : survive|time_x1 : 180.0|time_x2 : 210.0|rest_time : 10.0 -->
+Survive for 180 seconds with 10 seconds break time
+,
+|obj1 = Survival; Survive for 120 seconds.
+|obj2 = Survival; Survive for 180 seconds.
+|obj2+ = Survival; Survive for 210 seconds.
+|normal = {{E|Wraith Leader|0|144}}, {{E|Seasoned Prisoner|0|2}}, {{E|Elite Sniper Prisoner|0|4}}, {{E|Heavy Crossbowman Hunter|0|13}}, {{E|Raging Di Beast|0|98}}, {{E|Shanhaizhong Vigilante|0|16}}, {{E|Shanhaizhong Harbinger|0|15}}, {{E|Shanhaizhong Phalanx|0|205}}, {{E|Scrap Inventor|0|144}}
+|elite = {{E|Elite Pugilist Prisoner|0|56}}, {{E|Herculean Prisoner|0|17}}, {{E|Infamous Recidivist|0|9}}, {{E|Shanhaizhong Secret-Keeper|18|28}}, {{E|Shanhaizhong Oracle|3|7}}, {{E|Sand Voyager|36}}
+|boss = {{E|Hateful Avenger|1}}
+|eaddendum = 
+Shanhaizhong Phalanx, Raging Di Beast, 'Sand Voyager', Scrap Inventor, Wraith Leader, Elite Pugilist Prisoner and Infamous Recidivist will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+All enemies have their ATK, DEF and HP increased by 30%.
+*'Hateful Avenger' have 40000 HP and 1000 ATK.
+}}
+{{IG operations}}
+
+### act1multi_hard-03
+{{Construction}}
+{{IG operation info
+|code = S-3
+|name = Musbeast Surge
+|season = 1
+|group = Regular Events, Expert
+|desc = Contestants cannot help but wonder if every Fieldmus on Terra has congregated here to form this river of rodents.<br/>'''{{Color|<[[Farmland]]>|muitem}}''' Operators on Farmland recover HP or take damage based on Blight level.<br/>'''{{Color|<[[Throttle Valve]]>|muitem}}''' Stops Blight from spreading.<br/>'''{{Color|<[[Pumping Station]]>|muitem}}''' Pumps water from one tile behind towards the front, cleansing or spreading Blight.
+|level = Elite 2 Level 1
+|unit limit = 6
+|enemies = 445, 445
+|lp = 8
+|dp = 10
+|deployable = {{D|Throttle Valve|1}}, {{D|Pumping Station|1}} 
+|static = {{D|Throttle Valve|6}}, {{D|Pumping Station|3}}, {{D|Sky Pole|4}} 
+|terrain = 
+|addendum = 
+<!-- ability_name : survive|time_x1 : 120.0|time_x2 : 120.0|basic : 1.0 -->
+Survive for 120 seconds
+<!-- ability_name : survive|time_x1 : 150.0|time_x2 : 180.0|rest_time : 10.0 -->
+Survive for 150 seconds with 10 seconds break time
+,
+|obj1 = Survival; Survive for 120 seconds.
+|obj2 = Survival; Survive for 150 seconds.
+|obj2+ = Survival; Survive for 180 seconds.
+|normal = {{E|Hard-Snouted Fieldmus|304}}, {{E|Expelled Filth|24}}, {{E|Out of Control Sky Pole - Yi|36}}, {{E|Banished Consumption|7}}
+|elite = {{E|Basal Miasma|10}}, {{E|Fieldmus Ravager|2}}, {{E|Fieldmus Heistmaster|7}}, {{E|Accursed Scum|39}}, {{E|Renounced Blemish|16}}
+|boss = 
+|eaddendum = 
+Hard-Snouted Fieldmus and Accursed Scum will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+All enemies have their ATK, DEF and HP increased by 30%.
+*Renounced Blemish have 800 ATK.
+*Fieldmus Ravager have 35000 HP.
+}}
+{{IG operations}}
+
+### act1multi_football
+{{Construction}}
+{{IG operation info
+|code = FT-1
+|name = Power Shot
+|season = 1
+|group = Positional Football, Beginner
+|desc = Hit the ball hard enough and you can knock out the opponent's players and break their Positional Barriers. Scoring has never been easier!
+|level = Elite 2 Level 1
+|unit limit = 4
+|enemies = 1394, 1457
+|lp = 99
+|dp = 30
+|deployable = {{D|Football|1}} 
+|static = {{D|Positional Barrier|48}}, {{D|Turret|9}} 
+|terrain = 
+|addendum = 
+The SP generation rate is increased to 2 SP per second.
+All skill cost reduce by 20.000000%
+,
+|obj1 = Score; Achieve a 1-goal difference.
+|obj2 = Score; Achieve a 2-goal difference.
+|obj2+ = Score; Achieve a 4-goal difference.
+|normal = {{E|Infused Originium Slug|25}}, {{E|Infused Glacial Originium Slug|25}}, {{E|Sniper Leader|14}}, {{E|Sarkaz Sentinel Leader|4}}, {{E|Exocellular Depositor|13}}, {{E|Ocean Stonecutter|4}}, {{E|Yeti Caster Leader|14}}
+|elite = {{E|Demolitionist Leader|7}}, {{E|Magnificence|6}}, {{E|Dublinn Evocator Leader|7}}, {{E|Direswine|20}}, {{E|Rainer Haribeast|7}}, {{E|Field Shooter|46}}, {{E|Field Goalie|65}}, {{E|Field Bludgeoner|35}}, {{E|RMA70 Spikeball|177}}, {{E|RMA70 Spikeball|0|26}}, {{E|Fluffy Pink Balloon|0|28}}, {{E|Compressed Ball|0|28}}, {{E|Infused Originium Ball|0|23}}, {{E|Originite Prime Ball|0|25}}, {{E|Perpetual Rebounder|0|21}}, {{E|Leaking Beetleball|0|20}}, {{E|Bloated Beetleball|0|20}}, {{E|Will of the North Ball|0|20}}, {{E|Deep Sea Slider Ball|0|20}}, {{E|Hexed Colossus|6}}, {{E|Armorless Union Third Squad Leader|7}}, {{E|Sarkaz Lancer Leader|23}}, {{E|Sarkaz Worldcurser|14}}, {{E|Sarkaz Bladeweaver Leader|14}}, {{E|Pocket Sea Crawler|8}}, {{E|Nourished Swarmcaller|8}}, {{E|Greater Armored Burdenbeast|6}}, {{E|Guerrilla Shieldguard Leader|28}}
+|boss = 
+|eaddendum = 
+All Will of the North Ball are replaced with Compressed Ball.
+All Deep Sea Slider Ball are replaced with Compressed Ball.
+All Bloated Beetleball are replaced with Fluffy Pink Balloon.
+All Leaking Beetleball are replaced with RMA70 Spikeball.
+*Infused Originium Slug have Does not deduct [[Life Point|Life Points]].
+*Direswine have Does not deduct [[Life Point|Life Points]].
+*Magnificence have Does not deduct [[Life Point|Life Points]].
+*Iron Lampstand have Does not deduct [[Life Point|Life Points]].
+}}
+{{IG operations}}
+
+### act1multi_ex-football
+{{Construction}}
+{{IG operation info
+|code = FT-2
+|name = Power Shot
+|season = 1
+|group = Positional Football, Advanced
+|desc = Hit the ball hard enough and you can knock out the opponent's players and break their Positional Barriers. Scoring has never been easier!<br/>{{Color|Condition: |muitem}}<br/>Additional types of football appear.
+|level = Elite 2 Level 40
+|unit limit = 4
+|enemies = 1394, 1457
+|lp = 99
+|dp = 30
+|deployable = {{D|Football|1}} 
+|static = {{D|Positional Barrier|48}}, {{D|Turret|9}} 
+|terrain = 
+|addendum = 
+The SP generation rate is increased to 2 SP per second.
+All skill cost reduce by 20.000000%
+,
+|obj1 = Score; Achieve a 1-goal difference.
+|obj2 = Score; Achieve a 2-goal difference.
+|obj2+ = Score; Achieve a 4-goal difference.
+|normal = {{E|Infused Originium Slug|25}}, {{E|Infused Glacial Originium Slug|25}}, {{E|Sniper Leader|14}}, {{E|Sarkaz Sentinel Leader|4}}, {{E|Exocellular Depositor|13}}, {{E|Ocean Stonecutter|4}}, {{E|Yeti Caster Leader|14}}
+|elite = {{E|Demolitionist Leader|7}}, {{E|Magnificence|6}}, {{E|Dublinn Evocator Leader|7}}, {{E|Direswine|20}}, {{E|Rainer Haribeast|7}}, {{E|Field Shooter|46}}, {{E|Field Goalie|65}}, {{E|Field Bludgeoner|35}}, {{E|RMA70 Spikeball|177}}, {{E|RMA70 Spikeball|0|26}}, {{E|Fluffy Pink Balloon|0|28}}, {{E|Compressed Ball|0|28}}, {{E|Infused Originium Ball|0|23}}, {{E|Originite Prime Ball|0|25}}, {{E|Perpetual Rebounder|0|21}}, {{E|Leaking Beetleball|0|20}}, {{E|Bloated Beetleball|0|20}}, {{E|Will of the North Ball|0|20}}, {{E|Deep Sea Slider Ball|0|20}}, {{E|Hexed Colossus|6}}, {{E|Armorless Union Third Squad Leader|7}}, {{E|Sarkaz Lancer Leader|23}}, {{E|Sarkaz Worldcurser|14}}, {{E|Sarkaz Bladeweaver Leader|14}}, {{E|Pocket Sea Crawler|8}}, {{E|Nourished Swarmcaller|8}}, {{E|Greater Armored Burdenbeast|6}}, {{E|Guerrilla Shieldguard Leader|28}}
+|boss = 
+|eaddendum = 
+All Field Shooter are replaced with 'Longshot' Field Shooter.
+All Field Goalie are replaced with 'Brain Barrier' Field Goalie.
+All Field Bludgeoner are replaced with 'Basher' Field Bludgeoner.
+*Infused Originium Slug have Does not deduct [[Life Point|Life Points]].
+*Direswine have Does not deduct [[Life Point|Life Points]].
+*Magnificence have Does not deduct [[Life Point|Life Points]].
+*Iron Lampstand have Does not deduct [[Life Point|Life Points]].
+}}
+{{IG operations}}
+
+### act1multi_hard-football
+{{Construction}}
+{{IG operation info
+|code = S-4
+|name = Power Shot
+|season = 1
+|group = Positional Football, Expert
+|desc = {{Color|Condition: |muitem}}<br/>Elite Tactical Forwards have stronger kicks when shooting for the goal.<br/>Ball Mania Club Honorary Forwards require 3 Block when possessing a ball.<br/>Sportsmen United Veteran Forwards deal increased damage when shooting for the goal.<br/>The more goals your side has, the more Max HP, ATK, and Movement Speed the enemy footballers gain.<br/>Enemy footballers get up quicker after being knocked down.
+|level = Elite 2 Level 40
+|unit limit = 4
+|enemies = 1310, 1363
+|lp = 99
+|dp = 30
+|deployable = {{D|Football|1}} 
+|static = {{D|Positional Barrier|48}}, {{D|Turret|9}} 
+|terrain = 
+|addendum = 
+The SP generation rate is increased to 2 SP per second.
+,
+|obj1 = Score; Achieve a 1-goal difference.
+|obj2 = Score; Achieve a 2-goal difference.
+|obj2+ = Score; Achieve a 4-goal difference.
+|normal = {{E|Infused Originium Slug|25}}, {{E|Infused Glacial Originium Slug|25}}, {{E|Sniper Leader|14}}, {{E|Sarkaz Sentinel Leader|4}}, {{E|Exocellular Depositor|13}}, {{E|Ocean Stonecutter|4}}, {{E|Yeti Caster Leader|14}}
+|elite = {{E|Demolitionist Leader|7}}, {{E|Magnificence|6}}, {{E|Dublinn Evocator Leader|7}}, {{E|Direswine|20}}, {{E|Rainer Haribeast|7}}, {{E|Field Shooter|46}}, {{E|Field Goalie|55}}, {{E|Field Bludgeoner|35}}, {{E|RMA70 Spikeball|173}}, {{E|RMA70 Spikeball|0|25}}, {{E|Fluffy Pink Balloon|0|27}}, {{E|Compressed Ball|0|27}}, {{E|Infused Originium Ball|0|22}}, {{E|Originite Prime Ball|0|24}}, {{E|Perpetual Rebounder|0|21}}, {{E|Leaking Beetleball|0|20}}, {{E|Bloated Beetleball|0|20}}, {{E|Will of the North Ball|0|20}}, {{E|Deep Sea Slider Ball|0|20}}, {{E|Hexed Colossus|6}}, {{E|Armorless Union Third Squad Leader|7}}, {{E|Sarkaz Lancer Leader|23}}, {{E|Sarkaz Worldcurser|14}}, {{E|Sarkaz Bladeweaver Leader|14}}, {{E|Pocket Sea Crawler|8}}, {{E|Nourished Swarmcaller|8}}, {{E|Greater Armored Burdenbeast|6}}, {{E|Guerrilla Shieldguard Leader|28}}
+|boss = 
+|eaddendum = When enemy score behind, all enemies have HP, ATK and MSPD increased by 20.000000%, 15.000000% and 1.000000% per score different respectively
+All Field Shooter are replaced with 'Longshot' Field Shooter.
+All Field Goalie are replaced with 'Brain Barrier' Field Goalie.
+All Field Bludgeoner are replaced with 'Basher' Field Bludgeoner.
+Ball Mania Club Honorary Shooter, Elite Tactical Team Shooter, Sportsmen United Veteran Shooter and 'Longshot' Field Shooter have Football search radius to 1.5 tiles.
+All enemies have Football shot force increased by -20.000000%.
+Ball Mania Club Honorary Shooter have Football shot force increased by 12.000000%.
+Reduce all enemies break time by 40.000000%.
+*Infused Originium Slug have Does not deduct [[Life Point|Life Points]].
+*Direswine have Does not deduct [[Life Point|Life Points]].
+*Magnificence have Does not deduct [[Life Point|Life Points]].
+*Iron Lampstand have Does not deduct [[Life Point|Life Points]].
+}}
+{{IG operations}}
+
+### act1multi_fortress-rm01
+{{Construction}}
+{{IG operation info
+|code = DF-1
+|name = Teamfight Arena
+|season = 1
+|group = Bastion Defense, Beginner
+|desc = In Kazimierz's large-scale battle arenas, changing the field's terrain is not at all difficult if you have enough sponsors.
+|level = Elite 2 Level 1
+|unit limit = 2
+|enemies = 234, 306
+|lp = 10
+|dp = 50
+|deployable = {{D|Facility Builder|1}}, {{D|Mr. Boom|1}}, {{D|Expert Facility Builder|1}} 
+|static = {{D|Collapsed Junk Pile|1}}, {{D|Portable Exercise Rack|3}}, {{D|Recuperation Pod|4}}, {{D|Construction Workshop|5}}, {{D|Hydraulic Platform|20}}, {{D|Concrete Roadblock|22}}, {{D|Facility Builder|3}} 
+|terrain = 
+|addendum = 
+Survive for 120 seconds and have 65 seconds break time
+On break, recover up to 3 life points and increase next break time by 5 seconds
+Monument of Trial last for 300 seconds
+,
+|obj1 = Defense; Survive 3 waves.
+|obj2 = Defense; Survive 5 waves.
+|obj2+ = Defense; Survive 7 waves.
+|normal = {{E|Invisible Crossbowman Leader|0|26}}, {{E|Nameless Independent Knight|62}}, {{E|Nameless Elite Knight|54}}, {{E|Training Gloompincer|0|10}}, {{E|Vicious Training Gloompincer|0|30}}, {{E|Roar Knightclub Elite|4|30}}, {{E|Blackwater Originium Slug|0|33}}, {{E|Blackwater Originium Slug α|0|35}}
+|elite = {{E|Ironhead Forward|4}}, {{E|Long-Armed Pitcher|2}}, {{E|Monument to Force|1}}, {{E|Monument to Toughness|1}}, {{E|Monument to Accuracy|1}}, {{E|Monument to Passion|1}}, {{E|Monument to Swiftness|1}}, {{E|Bloodboil Knightclub Elite|22}}, {{E|Brassrust Olmer Ingra|1}}, {{E|Left-hand Tytus Topola|1}}, {{E|Plastic Szewczyk|1}}, {{E|Independent Knight Shielder|30}}, {{E|Elite Knight Shielder|20}}, {{E|Nova Knightclub Elite|9}}, {{E|The Candle Knight Viviana|1}}
+|boss = 
+|eaddendum = 
+*'Brassrust' Olmer Ingra have 30000 HP, 900 ATK and deduct 2 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*'Left-hand' Tytus Topola have 25000 HP, 1000 ATK and deduct 2 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*'Plastic' Szewczyk have 6200 HP, 750 ATK and deduct 2 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Roar Knightclub Elite have 500 ATK.
+*Invisible Crossbowman Leader have 450 ATK.
+*The Candle Knight Viviana have deduct 2 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Big Bob have 130000 HP, 2800 ATK, 1200 DEF and deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Skullshatterer have 140000 HP and deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*W have 100000 HP, 1200 ATK, 70 RES, deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]] and an attack range of 5 tiles.
+*Faust have 80000 HP, 50 RES, deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]] and an attack range of 99 tiles.
+*'The Big Ugly Thing' have 100000 HP, 800 ATK, 1800 DEF and deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+}}
+{{IG operations}}
+
+### act1multi_fortress-01
+{{Construction}}
+{{IG operation info
+|code = DF-2
+|name = Wetland Hurdle
+|season = 1
+|group = Bastion Defense, Beginner
+|desc = Wetland hurdles are a recent addition to team track events. Many spectators think it entertaining to see contestants valiantly braving the muddy mire and water.<br/>'''{{Color|<[[Mire]]>|muitem}}''' Gradually reduces the ASPD of Operators within, and the ASPD and Movement Speed of enemies within.<br/>{{Color|'''<[[Reeds]]>''' |muitem}}Operators within gain Camouflage.
+|level = Elite 2 Level 1
+|unit limit = 2
+|enemies = 189, 189
+|lp = 10
+|dp = 20
+|deployable = {{D|Facility Builder|1}}, {{D|Expert Facility Builder|1}} 
+|static = {{D|Collapsed Junk Pile|1}}, {{D|Construction Workshop|4}}, {{D|Recuperation Pod|3}}, {{D|Portable Exercise Rack|3}}, {{D|Hydraulic Platform|20}}, {{D|Concrete Roadblock|17}}, {{D|Facility Builder|3}}, {{D|Mire Control|1}} 
+|terrain = 
+The [[Active Originium]] effect deals 200 True damage every second, increases ATK and ASPD by 80% and 50, respectively, and lasts for 300 seconds. 
+|addendum = 
+Survive for 120 seconds and have 90 seconds break time
+On break, recover up to 5 life points and increase next break time by 10 seconds
+Monument of Trial last for 150 seconds
+,
+|obj1 = Defense; Survive 3 waves.
+|obj2 = Defense; Survive 5 waves.
+|obj2+ = Defense; Survive 7 waves.
+|normal = {{E|Dublinn Sniffer Hound|4}}, {{E|Dublinn Phalanx Commander|22}}, {{E|Dublinn Flying Soldier|6}}, {{E|Dublinn Flying Squad Leader|14}}, {{E|Special Forces Soldier|7}}, {{E|Special Forces Captain|4}}, {{E|Swamp Gloompincer|10}}, {{E|Enraged Swamp Gloompincer|8}}, {{E|Dublinn Cannoneer|16}}, {{E|Dublinn Scout|11}}, {{E|Dublinn Scout Leader|4}}, {{E|Dublinn Sniper|4}}, {{E|Dublinn Sniper Leader|18}}, {{E|Dublinn Phalanx Infantry|10}}
+|elite = {{E|Dublinn Companion Guard|3}}, {{E|Dublinn Elite Companion Guard|5}}, {{E|Dublinn Companion Shadowblade|6}}, {{E|Dublinn Elite Companion Shadowblade|5}}, {{E|Tombkeeper Grotesque|3}}, {{E|Enraged Tombkeeper Grotesque|2}}, {{E|Ironhead Forward|24}}, {{E|Long-Armed Pitcher|1}}, {{E|Monument to Force|1}}, {{E|Monument to Toughness|1}}, {{E|Monument to Accuracy|1}}, {{E|Monument to Passion|1}}, {{E|Monument to Swiftness|1}}
+|boss = {{E|Mandragora|1}}
+|eaddendum = 
+*Mandragora have 960 ATK.
+}}
+{{IG operations}}
+
+### act1multi_fortress-02
+{{Construction}}
+{{IG operation info
+|code = DF-3
+|name = Machine Inspection Passage
+|season = 1
+|group = Bastion Defense, Beginner
+|desc = Within this spacious inspection passage, rows of military machines march towards us neatly. Check the quality of their manufacturing with the most brutal methods you can think of!<br/>'''{{Color|<[[Gravity Switches]]>|muitem}}''' Gravity Switches and Planetary Debris: Moves along a set path, blocking lanes and dealing physical damage to units they touch. Can be moved by your units in adjacent tiles.
+|level = Elite 2 Level 1
+|unit limit = 2
+|enemies = 287, 287
+|lp = 10
+|dp = 50
+|deployable = {{D|Expert Facility Builder|1}}, {{D|Facility Builder|1}} 
+|static = {{D|Construction Workshop|4}}, {{D|Recuperation Pod|3}}, {{D|Portable Exercise Rack|3}}, {{D|Hydraulic Platform|21}}, {{D|Concrete Roadblock|19}}, {{D|Gravity|1}}, {{D|Facility Builder|4}}, {{D|Collapsed Junk Pile|1}} 
+|terrain = 
+|addendum = 
+Survive for 90 seconds and have 60 seconds break time
+On break, recover up to 3 life points and increase next break time by 5 seconds
+Monument of Trial last for 120 seconds
+,
+|obj1 = Defense; Survive 3 waves.
+|obj2 = Defense; Survive 5 waves.
+|obj2+ = Defense; Survive 7 waves.
+|normal = {{E|Military Hound|26}}, {{E|Arc Screenguard Captain|38}}, {{E|Elite Military Hound|46}}, {{E|Trimounts City Defender|10}}, {{E|Trimounts City Defender Captain|10}}, {{E|Arc Commando|14}}, {{E|Arc Commando Captain|3}}, {{E|Arc Screenguard|28}}, {{E|Rhine Engineering Member|6}}, {{E|Rhine Engineering Senior Member|12}}
+|elite = {{E|Ironhead Forward|1}}, {{E|Long-Armed Pitcher|1}}, {{E|Monument to Force|1}}, {{E|Monument to Toughness|1}}, {{E|Monument to Accuracy|1}}, {{E|Monument to Passion|1}}, {{E|Offender Production Model|16}}, {{E|Arc Frontliner|30}}, {{E|Arc Frontliner Leader|17}}, {{E|R-31 Heavy Power Armor|10}}, {{E|R-11 Assault Power Armor|10}}
+|boss = {{E|Planetary Debris|8}}
+|eaddendum = 
+}}
+{{IG operations}}
+
+### act1multi_fortress-ex-rm01
+{{Construction}}
+{{IG operation info
+|code = DF-4
+|name = Teamfight Arena
+|season = 1
+|group = Bastion Defense, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Additional enemies appear.<br/>Natural DP regeneration rate is decreased.
+|level = Elite 2 Level 1
+|unit limit = 2
+|enemies = 244, 316
+|lp = 5
+|dp = 50
+|deployable = {{D|Facility Builder|1}}, {{D|Mr. Boom|1}}, {{D|Expert Facility Builder|1}} 
+|static = {{D|Collapsed Junk Pile|1}}, {{D|Portable Exercise Rack|3}}, {{D|Recuperation Pod|4}}, {{D|Construction Workshop|5}}, {{D|Hydraulic Platform|20}}, {{D|Concrete Roadblock|22}}, {{D|Facility Builder|3}} 
+|terrain = 
+|addendum = 
+Survive for 120 seconds and have 65 seconds break time
+On break, recover up to 3 life points and increase next break time by 5 seconds
+Monument of Trial last for 300 seconds
+The automatic DP generation rate is reduced to 1 DP every 2 seconds.
+,
+|obj1 = Defense; Survive 3 waves.
+|obj2 = Defense; Survive 5 waves.
+|obj2+ = Defense; Survive 7 waves.
+|normal = {{E|Invisible Crossbowman Leader|0|26}}, {{E|Nameless Independent Knight|62}}, {{E|Nameless Elite Knight|54}}, {{E|Training Gloompincer|0|10}}, {{E|Vicious Training Gloompincer|0|30}}, {{E|Roar Knightclub Elite|4|30}}, {{E|Blackwater Originium Slug|0|33}}, {{E|Blackwater Originium Slug α|0|35}}, {{E|Sponsor Drone|3}}, {{E|Cheering Sponsor Drone|3}}
+|elite = {{E|Ironhead Forward|4}}, {{E|Long-Armed Pitcher|2}}, {{E|Monument to Force|1}}, {{E|Monument to Toughness|1}}, {{E|Monument to Accuracy|1}}, {{E|Monument to Passion|1}}, {{E|Monument to Swiftness|1}}, {{E|Bloodboil Knightclub Elite|22}}, {{E|Left-hand Tytus Topola|1}}, {{E|Plastic Szewczyk|1}}, {{E|Independent Knight Shielder|30}}, {{E|Elite Knight Shielder|20}}, {{E|Nova Knightclub Elite|9}}, {{E|The Candle Knight Viviana|1}}
+|boss = {{E|Big Bob|1}}, {{E|The Big Ugly Thing|1}}, {{E|Faust|1}}, {{E|Skullshatterer|1}}, {{E|W|1}}
+|eaddendum = 
+All enemies have their ATK, DEF and HP increased by 40%, 20% and 40%.
+All Ironhead Forward are replaced with 'Charger' Ironhead Forward.
+All Long-Armed Pitcher are replaced with 'True Shot' Long-Armed Pitcher.
+*'Brassrust' Olmer Ingra have 30000 HP, 900 ATK and deduct 2 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*'Left-hand' Tytus Topola have 25000 HP, 1000 ATK and deduct 2 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*'Plastic' Szewczyk have 6200 HP, 750 ATK and deduct 2 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Roar Knightclub Elite have 500 ATK.
+*Invisible Crossbowman Leader have 450 ATK.
+*The Candle Knight Viviana have deduct 2 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Big Bob have 130000 HP, 2800 ATK, 1200 DEF and deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*Skullshatterer have 140000 HP and deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+*W have 100000 HP, 1200 ATK, 70 RES, deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]] and an attack range of 5 tiles.
+*Faust have 80000 HP, 50 RES, deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]] and an attack range of 99 tiles.
+*'The Big Ugly Thing' have 100000 HP, 800 ATK, 1800 DEF and deduct 5 [[Life Point|Life Points]] upon entering a [[Protection Objective]].
+}}
+{{IG operations}}
+
+### act1multi_fortress-ex-01
+{{Construction}}
+{{IG operation info
+|code = DF-5
+|name = Wetland Hurdle
+|season = 1
+|group = Bastion Defense, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Additional enemies appear.<br/>Natural DP regeneration rate is decreased.<br/>'''{{Color|<[[Mire]]>|muitem}}''' Gradually reduces the ASPD of Operators within, and the ASPD and Movement Speed of enemies within.<br/>{{Color|'''<[[Reeds]]>''' |muitem}}Operators within gain Camouflage.
+|level = Elite 2 Level 1
+|unit limit = 2
+|enemies = 204, 204
+|lp = 5
+|dp = 20
+|deployable = {{D|Facility Builder|1}}, {{D|Expert Facility Builder|1}} 
+|static = {{D|Collapsed Junk Pile|1}}, {{D|Construction Workshop|4}}, {{D|Recuperation Pod|3}}, {{D|Portable Exercise Rack|3}}, {{D|Hydraulic Platform|20}}, {{D|Concrete Roadblock|17}}, {{D|Facility Builder|3}}, {{D|Mire Control|1}} 
+|terrain = 
+The [[Active Originium]] effect deals 200 True damage every second, increases ATK and ASPD by 80% and 50, respectively, and lasts for 300 seconds. 
+|addendum = 
+Survive for 120 seconds and have 90 seconds break time
+On break, recover up to 5 life points and increase next break time by 10 seconds
+Monument of Trial last for 150 seconds
+The automatic DP generation rate is reduced to 1 DP every 2 seconds.
+,
+|obj1 = Defense; Survive 3 waves.
+|obj2 = Defense; Survive 5 waves.
+|obj2+ = Defense; Survive 7 waves.
+|normal = {{E|Dublinn Sniffer Hound|4}}, {{E|Dublinn Flying Soldier|6}}, {{E|Dublinn Flying Squad Leader|14}}, {{E|Special Forces Soldier|7}}, {{E|Swamp Gloompincer|10}}, {{E|Enraged Swamp Gloompincer|8}}, {{E|Dublinn Flamechaser Soldier|10}}, {{E|Dublinn Flamechaser Elite Soldier|22}}, {{E|Dublinn Cannoneer|16}}, {{E|Dublinn Scout|11}}, {{E|Dublinn Flamecaller Captain|12}}, {{E|Dublinn Scout Leader|4}}, {{E|Dublinn Sniper Leader|11}}
+|elite = {{E|Dublinn Flamerazer|4}}, {{E|Dublinn Flamerazer Leader|5}}, {{E|Dublinn Companion Guard|3}}, {{E|Dublinn Elite Companion Guard|5}}, {{E|Dublinn Companion Shadowblade|6}}, {{E|Dublinn Elite Companion Shadowblade|5}}, {{E|Dublinn Evocator Leader|8}}, {{E|The Brigadier|1}}, {{E|Tombkeeper Grotesque|3}}, {{E|Enraged Tombkeeper Grotesque|2}}, {{E|Ironhead Forward|24}}, {{E|Long-Armed Pitcher|1}}, {{E|Monument to Force|1}}, {{E|Monument to Toughness|1}}, {{E|Monument to Accuracy|1}}, {{E|Monument to Passion|1}}, {{E|Monument to Swiftness|1}}
+|boss = {{E|The Leader|1}}
+|eaddendum = 
+All enemies have their ATK, DEF and HP increased by 30%.
+*Mandragora have 960 ATK.
+}}
+{{IG operations}}
+
+### act1multi_fortress-ex-02
+{{Construction}}
+{{IG operation info
+|code = DF-6
+|name = Machine Inspection Passage
+|season = 1
+|group = Bastion Defense, Advanced
+|desc = {{Color|Condition: |muitem}}<br/>Additional enemies appear.<br/>Natural DP regeneration rate is decreased.<br/>'''{{Color|<[[Gravity Switches]]>|muitem}}''' Gravity Switches and Planetary Debris: Moves along a set path, blocking lanes and dealing physical damage to units they touch. Can be moved by your units in adjacent tiles.
+|level = Elite 2 Level 1
+|unit limit = 2
+|enemies = 287, 287
+|lp = 5
+|dp = 50
+|deployable = {{D|Expert Facility Builder|1}}, {{D|Facility Builder|1}} 
+|static = {{D|Construction Workshop|4}}, {{D|Recuperation Pod|3}}, {{D|Portable Exercise Rack|3}}, {{D|Hydraulic Platform|21}}, {{D|Concrete Roadblock|19}}, {{D|Gravity|1}}, {{D|Facility Builder|4}}, {{D|Collapsed Junk Pile|1}} 
+|terrain = 
+|addendum = 
+Survive for 90 seconds and have 60 seconds break time
+On break, recover up to 3 life points and increase next break time by 5 seconds
+Monument of Trial last for 120 seconds
+The automatic DP generation rate is reduced to 1 DP every 2 seconds.
+,
+|obj1 = Defense; Survive 3 waves.
+|obj2 = Defense; Survive 5 waves.
+|obj2+ = Defense; Survive 7 waves.
+|normal = {{E|Military Hound|26}}, {{E|Arc Screenguard Captain|38}}, {{E|Elite Military Hound|46}}, {{E|Trimounts City Defender|10}}, {{E|Trimounts City Defender Captain|10}}, {{E|Arc Commando|14}}, {{E|Arc Commando Captain|3}}, {{E|Arc Screenguard|28}}, {{E|Rhine Engineering Member|6}}, {{E|Rhine Engineering Senior Member|12}}
+|elite = {{E|Ironhead Forward|1}}, {{E|Long-Armed Pitcher|1}}, {{E|Monument to Force|1}}, {{E|Monument to Toughness|1}}, {{E|Monument to Accuracy|1}}, {{E|Monument to Passion|1}}, {{E|Offender Production Model|16}}, {{E|Arc Frontliner|30}}, {{E|Arc Frontliner Leader|17}}, {{E|R-31 Heavy Power Armor|10}}, {{E|R-11 Assault Power Armor|10}}
+|boss = {{E|Planetary Debris|8}}
+|eaddendum = 
+All enemies have their ATK, DEF, HP and MSPD increased by 40%, 40%, 40% and 50%.
+All Ironhead Forward are replaced with 'Charger' Ironhead Forward.
+All Long-Armed Pitcher are replaced with 'True Shot' Long-Armed Pitcher.
+}}
+{{IG operations}}
+
+### act1multi_fortress-hard-01
+{{Construction}}
+{{IG operation info
+|code = S-5
+|name = Please Buy Souvenirs
+|season = 1
+|group = Bastion Defense, Expert
+|desc = Planning routes into the stadium has to be done carefully. If you want to, you could make every contestant go around five times to pass by a dozen souvenir stalls.
+|level = Elite 2 Level 1
+|unit limit = 2
+|enemies = 409, 409
+|lp = 10
+|dp = 50
+|deployable = {{D|Expert Facility Builder|1}}, {{D|Facility Builder|1}} 
+|static = {{D|Construction Workshop|4}}, {{D|Recuperation Pod|4}}, {{D|Portable Exercise Rack|3}}, {{D|Hydraulic Platform|30}}, {{D|Concrete Roadblock|21}}, {{D|Collapsed Junk Pile|2}}, {{D|Facility Builder|4}} 
+|terrain = 
+|addendum = 
+Survive for 100 seconds and have 60 seconds break time
+On break, recover up to 3 life points and increase next break time by 5 seconds
+Monument of Trial last for 120 seconds
+The automatic DP generation rate is reduced to 1 DP every 2 seconds.
+,
+|obj1 = Defense; Survive 3 waves.
+|obj2 = Defense; Survive 5 waves.
+|obj2+ = Defense; Survive 7 waves.
+|normal = {{E|Guerrilla Fighter|35}}, {{E|Guerrilla Fighter Leader|66}}
+|elite = {{E|Defense Crusher|42}}, {{E|Defense Crusher Leader|6}}, {{E|Charger Ironhead Forward|1}}, {{E|True Shot Long-Armed Pitcher|1}}, {{E|Monument to Force|1}}, {{E|Monument to Toughness|1}}, {{E|Monument to Accuracy|1}}, {{E|Monument to Passion|1}}, {{E|Enraged Possessed Bonethrower|18}}, {{E|Possessed Heavy Defender|28}}, {{E|Possessed Heavy Defender Leader|8}}, {{E|Enraged Possessed Soldier|46}}, {{E|Enraged Possessed Leader|14}}, {{E|Enraged Possessed Thrower|101}}, {{E|Guerrilla Shieldguard|19}}, {{E|Guerrilla Shieldguard Leader|17}}
+|boss = {{E|Big Bob|1}}, {{E|Big Adam|1}}, {{E|Crownslayer|1}}, {{E|Faust|1}}, {{E|Mephisto|1}}, {{E|Skullshatterer|1}}
+|eaddendum = 
+All enemies have their ATK, DEF, HP and MSPD increased by 50%, 50%, 60% and 50%.
+Big Bob and Big Adam have their MSPD increased by 50%.
+}}
+{{IG operations}}

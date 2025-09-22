@@ -635,4 +635,10 @@ def map_grid(grid_value : str) -> NoneType :
     
     grid_list = grid_value.replace("(", "").replace(")", "").split("|")
     printr(join_and(sorted([get_grid(coord) for coord in grid_list])))
-map_grid("(4,1)|(4,10)")
+#map_grid("(4,1)|(4,10)")
+
+def input_script():
+    with open("py/input_script.txt", 'r', encoding="utf-8") as file_text:
+        text = "".join(file_text.readlines())
+    print(wiki_story(text, join_str="\n"))
+input_script()
