@@ -109,7 +109,7 @@ def script_result(text : str | list | set | dict ,
                     show : bool = False,
                     indent : int | None = 4,
                     key_sort : bool = False,
-                    sort_keys : Callable = None,
+                    sort_keys : Callable = lambda x: x,
                     forced_txt : bool = False,
                     txt_nokey : bool = False,
                     no_tab : bool = False,
@@ -117,8 +117,8 @@ def script_result(text : str | list | set | dict ,
                     ) -> None:
     '''
         Output result
-            STR, LIST   >   TXT
-            DICT        >   JSON
+            STR, LIST, SET  >   TXT
+            DICT            >   JSON
     '''
     def dict_to_txt(text : dict, tab : int = 0) -> str:
         to_txt = []
@@ -144,10 +144,10 @@ def script_result(text : str | list | set | dict ,
                 filepath.write("\n".join(dict_to_txt(text)).replace(" ", " "))
         else :
             with open("py/script.json", "w", encoding = "utf-8") as filepath:
-                json.dump(text, filepath, indent = indent, ensure_ascii = False, sort_keys = sort_keys)
+                json.dump(text, filepath, indent = indent, ensure_ascii = False, sort_keys = key_sort)
     else:
         with open("py/script.json", "w", encoding = "utf-8") as filepath:
-            json.dump(text, filepath, separators = (",", ":"), ensure_ascii = False, sort_keys = sort_keys)
+            json.dump(text, filepath, separators = (",", ":"), ensure_ascii = False, sort_keys = key_sort)
     
     file = f'py/script.{"json" if isinstance(text, dict) and not forced_txt else "txt"}'
     print(f'\n{Y}Script Completed{RE} -> {R}{file}{RE}')

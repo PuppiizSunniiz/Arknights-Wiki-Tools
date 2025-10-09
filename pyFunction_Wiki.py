@@ -188,19 +188,20 @@ def wiki_text(candidate : tuple[str, list] | str) -> str:
 
     return desc.strip()
 
+def replace_apos_between(part : str) -> str:
+    between_match = re.search(r"^(|.+? )'([^']+?|[^(?:tis|twas|twere)].+?)'(?:( |\?|!|\.|,)(.+?|)|)$", part)
+    if between_match:
+        new_part = re.sub(r"^(|.+? )'([^']+?|[^(?:tis|twas|twere)].+?)'(?:( |\?|!|\.|,)(.+?|)|)$", r'\1"\2"\3\4', part)
+        return replace_apos_between(new_part)
+    else:
+        return part
+
 def wiki_story(story : str, newline : str = "\n", join_str : str = "<br/>") -> str:
-    def replace_between(part : str) -> str:
-        between_match = re.search(r"^(|.+? )'([^']+?|[^(?:tis|twas|twere)].+?)'(?:( |\?|!|\.)(.+?|)|)$", part)
-        if between_match:
-            new_part = re.sub(r"^(|.+? )'([^']+?|[^(?:tis|twas|twere)].+?)'(?:( |\?|!|\.)(.+?|)|)$", r'\1"\2"\3\4', part)
-            return replace_between(new_part)
-        else:
-            return part
     desc_list = story.split(newline)
     for i in range(len(desc_list)):
         desc = desc_list[i]
         # Between
-        desc = replace_between(desc)
+        desc = replace_apos_between(desc)
         # Start - End
         desc = re.sub(r"^'(.+?)'$", r'"\1"', desc)
         # Start -
@@ -211,7 +212,7 @@ def wiki_story(story : str, newline : str = "\n", join_str : str = "<br/>") -> s
     return join_str.join(desc_list)
 
 def wiki_stage(stage_desc : str, newline : str = "\n", join_str : str = "<br/>") -> str:
-    wiki_story(stage_desc, "\n", "\n")
+    stage_desc = wiki_story(stage_desc, "\n", "\n")
     # Stage Item
     stage_desc = re.sub(r"<@lv.item><(.+?)>( |)</>", r"'''<[[\1]]>'''\2", stage_desc)
     # Rem
