@@ -654,7 +654,7 @@ for stage in temp_script.keys():
     temp_out[stage] = {"runes" : temp_script[stage]["runes"], "globalBuffs" : temp_script[stage]["globalBuffs"]}
 #script_result(temp_out)
 
-printr(f'{30.100010000000:.0%}')
+#printr(f'{30.100010000000:.0%}')
 
 def enemy_wave_csv():
     all_stage_dict = {}
@@ -734,3 +734,5 @@ def enemy_wave_csv():
     script_result(script_txt, True)
     
 #enemy_wave_csv()
+
+printr(bin(639), bin(96), bool("1"), bool("0"))

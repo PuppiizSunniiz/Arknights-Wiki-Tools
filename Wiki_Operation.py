@@ -1,7 +1,7 @@
 import re
 from typing import Any, Literal
 from Wiki_Dict import ENEMY_NAMES_TL, ITEM_NAMES_TL, SKILL_NAMES_TL, TOKEN_NAMES_TL
-from pyFunction_Wiki import load_json, replace_apos_between, wiki_story, wiki_trim
+from pyFunction_Wiki import CLASS_PARSE_EN, load_json, replace_apos_between, wiki_story, wiki_trim
 from pyFunction import B, G, R, RE, Y, decimal_format, falsy_compare, join_and, json_load, printc, printr, script_result
 
 used_json = [
@@ -72,7 +72,7 @@ def wiki_enemies(event : str = "", show : bool = False) -> dict :
                 printr(f'\n{R}File path error {G}"{stage}" : {B}{stages[stage]["levelId"].lower()}{RE}')
                 exit()
             
-            for key in ["options", "mapData", "runes", "globalBuffs", "enemyDbRefs", "predefines", "hardPredefines", "routes", "waves"]:
+            for key in ["options", "mapData", "runes", "optionalRunes", "globalBuffs", "enemyDbRefs", "predefines", "hardPredefines", "routes", "waves"]:
                 data["stage"].setdefault(stage, {})[key] = stage_json[key]
                 if key == "enemyDbRefs":
                     for enemy in stage_json[key]:
@@ -146,14 +146,38 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
             "Other event operations" - ig
         
     '''
-    enemy_rune = ["enemy_attribute_mul", "char_attribute_mul", "level_enemy_replace", "level_hidden_group_enable", "level_hidden_group_disable", "env_gbuff_new_with_verify", "env_gbuff_new", "cooperate_enemy_side_shared", "enemy_talent_blackb_mul"]
-    non_enemy_rune = ["env_system_new", "global_cost_recovery_mul", "global_lifepoint", "map_tile_blackb_assign", "env_gbuff_new_with_verify", "env_gbuff_new", "char_attribute_add", "cbuff_max_cost", "char_skill_blackb_mul", "char_cost_add", "global_cost_recovery", "char_blockcnt_add", "char_skill_cd_mul"]
-    both_rune = ["env_gbuff_new_with_verify", "env_gbuff_new"]
-    skip_rune = ["env_035_act1break_boss[hud]", "global_placable_char_num_add"]
+    enemy_rune      = [
+                        "add_other_rune_blackb", 
+                        "char_attribute_mul", 
+                        "cooperate_enemy_side_shared", 
+                        "enemy_attribute_mul", "enemy_talent_blackb_mul", "enemy_dynamic_ability_new", "enemy_attribute_add", 
+                        "env_gbuff_new_with_verify", "env_gbuff_new", 
+                        "level_enemy_replace", "level_hidden_group_enable", "level_hidden_group_disable", 
+                    ]
+    non_enemy_rune  = [
+                        "cbuff_max_cost", 
+                        "char_attribute_add", "char_skill_blackb_mul", "char_cost_add", "char_blockcnt_add", "char_skill_cd_mul", "char_cost_mul", "char_respawntime_mul", 
+                        "env_gbuff_new", "env_gbuff_new_with_verify", 
+                        "env_system_new", 
+                        "global_cost_recovery_mul", "global_lifepoint", "global_cost_recovery", "global_forbid_location", 
+                        "map_tile_blackb_assign", 
+                    ]
+    both_rune       = ["env_gbuff_new_with_verify", "env_gbuff_new"]
+    skip_rune       = ["env_035_act1break_boss[hud]", "global_placable_char_num_add", "six_star_rune_alias", "global_initial_cost_add", "rune_alias"]
     
-    enemy_buffs = ["cooperate_enemy_catch_up", "cooperate_enemy_after_attack_harder"]
+    enemy_buffs     = ["cooperate_enemy_catch_up", "cooperate_enemy_after_attack_harder"]
     non_enemy_buffs = ["periodic_damage", "cooperate_fortress_global_buff", "character_in_magiccircuit_env"]
-    skip_buffs = ["strife_mode_feature", "act27sisde_enemy_global_buff", "mainline12_sightManager", "night_map_default"]
+    skip_buffs      = ["strife_mode_feature", "act27sisde_enemy_global_buff", "mainline12_sightManager", "night_map_default"]
+    
+    norm_env = [
+                {'key': 'env_017_act35side', 'attack_speed': -60.0, 'max_hp': 0.1, 'atk': 0.1},
+                {'key': 'env_012_act33side', 'stun_duration': 10.0},
+                {'ui_plugin_name': 'common_camera_move_ui_plugin', 'camera_plugin_name': 'common_camera_move_half_second_plugin'},
+            ]
+
+    env_name = [
+                    "env_017_act35side", "env_010_act31side_pollute", "mainline16_enemy_target_free", "env_005_mainline12_sightSystem"
+                ]
     
     def stage_level(level : str) -> str:
             if level in ["-", "推荐平均等级：-"] or not level:
@@ -189,7 +213,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         desc = re.sub(r'<@[A-Za-z\.1-9_]*?><(.*?)><\/>', r"'''<[[\1]]>'''", desc)
         # challenge condition
         if re.search(r'<@lv.fs>附加条件：<\/>\\n', desc):
-            desc = re.sub(r'<@lv.fs>附加条件：<\/>\\n', "", desc)
+            desc = desc.split("<@lv.fs>附加条件：</>\\n")[-1]
             desc = re.sub(r'<[^[](.*?)[^]\/]>', r"'''<[[\1]]>'''", desc)
         else:
             desc = re.sub(r'<([^[c/].*?[^]\/])>', r"'''<[[\1]]>'''", desc)
@@ -489,7 +513,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         #if tile_output: printc("tile_output", stage, tile_output)
         return tile_output
     
-    def tile_writer(def_data : list) -> str:
+    def tile_writer(rune_list : list, def_data : list) -> str:
         if not def_data: return ""
         tile_result = []
         for tile in def_data:
@@ -618,8 +642,13 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                         printc(f'New {Y}tile_creep{RE} case just drop : {B}{tile[tile_id]}{RE}')
                 case _ :
                     printr(f'new Terrain to add : {Y}{tile_id}\n\t{G}{tile[tile_id]["blackboard"]}\n\t{B}{tile[tile_id]["effects"]}{RE}')
-                    exit()
+                    #exit()
         
+        for rune in rune_list:
+            if rune["key"] == "global_forbid_location":
+                printr(rune)
+                exit()
+
         if tile_result:
             #printr(f'{B}tile_writer {G}{stage} {Y}{tile_result}{RE}')
             if len(tile_result) > 1:
@@ -629,7 +658,44 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         else:
             return ""
     
-    def addendum_writer(runes = [], buffs = [], DP = 1, maxPlayTime : float|bool = False, configBlackBoard = [], diff = "", head = "", foot = "", ig_ctrl = {}):
+    def map_grid(grid_value : str) :
+        def get_grid(coord : str):
+            X = coord.split(",")[0]
+            Y = coord.split(",")[1]
+            return f'{{{{Pos|{chr(ord("A") + int(X))}{int(Y) + 1}}}}}'
+        
+        grid_list = grid_value.replace("(", "").replace(")", "").split("|")
+        return join_and(sorted([get_grid(coord) for coord in grid_list]))
+    
+    def operator_rune(rune_data : list):
+        if rune_data["professionMask"] in [1023]:
+            match rune_data["buildableMask"]:
+                case "MELEE" | "RANGED":
+                    return f'{rune_data["buildableMask"].capitalize()} operators'
+                case 1 | 2:
+                    buildableMask = ["MELEE", "RANGED"]
+                    return f'{buildableMask[rune_data["buildableMask"] - 1]} operators'
+                case _ :
+                    return "operators"
+        elif rune_data["professionMask"]:
+            bin_classes = ["Token??", "Trap??", "Vanguard", "Specialist", "Caster", "Supporter", "Medic", "Defender", "Sniper", "Guard"]
+            rune_classes = []
+            if isinstance(rune_data["professionMask"], int):
+                rune_bin = f'{bin(rune_data["professionMask"]).split("0b", 1)[-1].zfill(10)}'
+                for string_i in range(len(rune_bin)):
+                    if int(rune_bin[string_i]):
+                        rune_classes.append(bin_classes[string_i])
+                if rune_classes:
+                    return f'{join_and(rune_classes)} operators'
+                else:
+                    return "operators"
+            else:
+                return f'<{join_and([CLASS_PARSE_EN[classes] for classes in rune_data["professionMask"].split("|")])}> operators'
+        else:
+            printr(f'New {Y}"professionMask"{RE} just drop : {rune_data}')
+            return "operators"
+    
+    def addendum_writer(runes = [], buffs = [], DP = 1, maxPlayTime : float|bool = False, configBlackBoard = [], diff = "", head = "", foot = "", ig_ctrl = {}, extra = ""):
         def ig_wave_addendum_writer(Blackboards):
             ig_writer = []
             ig_writer.append(f'\n<!-- {"|".join([f'{bb["key"]} : {bb["valueStr"]}' if bb["valueStr"] else f'{bb["key"]} : {bb["value"]}' for bb in Blackboards])} -->')
@@ -651,15 +717,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                     printc(f'{Y}New IG Wave case{RE} just drop !!! : ', new_Blackboards)
                     exit()
             return "\n".join(ig_writer)
-        norm_env = [
-                        {'key': 'env_017_act35side', 'attack_speed': -60.0, 'max_hp': 0.1, 'atk': 0.1},
-                        {'key': 'env_005_mainline12_sightSystem'},
-                        {'key': 'env_012_act33side', 'stun_duration': 10.0},
-                    ]
 
-        env_name = [
-                        "env_017_act35side", "env_010_act31side_pollute"
-                    ]
         addendum = []
         buff_writer = []
         if buffs:
@@ -673,7 +731,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                         case "periodic_damage":
                             damage = temp["blackboard"].pop("damage")
                             interval = temp["blackboard"].pop("interval")
-                            if temp["blackboard"]:
+                            if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
                                 printc(f'There new blackboard key in {Y}{buff["prefabKey"]}{RE} : {B}{temp["blackboard"]}{RE}')
                             else:
                                 buff_writer.append(f'\nThe [[Poison Haze]] deals {damage:.0f} True damage every {decimal_format(interval)} seconds to all friendly units on the map.')
@@ -683,14 +741,14 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             life_point      = decimal_format(temp["blackboard"].pop("life_point"))
                             rest_add        = decimal_format(temp["blackboard"].pop("rest_add"))
                             wave_time_last  = decimal_format(temp["blackboard"].pop("wave_time_last"))
-                            if temp["blackboard"]:
+                            if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
                                 printc(f'There new blackboard key in {Y}{buff["prefabKey"]}{RE} : {B}{temp["blackboard"]}{RE}')
                             else:
                                 buff_writer.append(f'\nSurvive for {wave_time} seconds and have {rest_time} seconds break time\nOn break, recover up to {life_point} life points and increase next break time by {rest_add} seconds\nMonument of Trial last for {wave_time_last} seconds')
                         case "character_in_magiccircuit_env":
                             sp_recover_ratio_minus  = temp["blackboard"].pop("sp_recover_ratio")
                             sp_recover_ratio_add    = temp["blackboard"].pop("character_in_magiccircuit[normal].sp_recover_ratio")
-                            if temp["blackboard"]:
+                            if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
                                 printc(f'There new blackboard key in {Y}{buff["prefabKey"]}{RE} : {B}{temp["blackboard"]}{RE}')
                                 exit()
                             else:
@@ -703,13 +761,13 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         if head: addendum.append(head)
 
         if DP > 99:
-            addendum.append(f'DP regeneration rate is reduced by 100%.')
+            addendum.append(f'The DP generation is disabled.')
         elif DP != 1:
             addendum.append(f'The automatic DP generation rate is {"reduced" if DP > 1 else "increased"} to 1 DP every {DP:g} seconds.')
-        if maxPlayTime:
+        if maxPlayTime > 0:
             addendum.append(f'Operation have {decimal_format(maxPlayTime)} seconds time limit.')
         if configBlackBoard:
-            configBlackBoard_skip = ["boss_branch_trigger_time", "enemy_wave_appear_time"]
+            configBlackBoard_skip = ["boss_branch_trigger_time", "enemy_wave_appear_time", "dialog_before_battle", "dialog_after_battle"]
             for config_bb in configBlackBoard:
                 if config_bb["key"] in configBlackBoard_skip:
                     continue
@@ -718,11 +776,12 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                         addendum.append(f'Maximum {decimal_format(config_bb["value"])} enemies allow.')
                     case _:
                         printr(f'New {Y}configBlackBoard{RE} key : {R}{config_bb["key"]}')
-                        exit()
+                        #exit()
             
         rune_writer = []
         for rune in runes:
             temp = {k:v for k,v in rune.items()}
+            skip_key = ["six_star_rune_alias",]
             if (rune["key"] in enemy_rune and rune["key"] not in both_rune) or rune["key"] in skip_rune:
                 continue
             if rune["key"] not in non_enemy_rune:
@@ -731,34 +790,50 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
             if rune["difficultyMask"] == "ALL" or rune["difficultyMask"] == diff:
                 match rune["key"]:
                     case "env_system_new":
-                        if rune["blackboard"] in norm_env or rune["blackboard"].get("key","") in env_name:
+                        rune_key = temp["blackboard"].pop("key") if rune["blackboard"] and "key" in rune["blackboard"] else ""
+                        if not rune["blackboard"] or (rune["blackboard"] and rune["blackboard"] in norm_env) or rune_key in env_name:
                             continue
-                        elif rune["blackboard"].pop("key") == "env_008_lightning_ally_enemy":
-                            lightning_interval  = rune["blackboard"].pop("interval")
-                            lightning_damage    = rune["blackboard"].pop("value")
-                            lightning_delay     = rune["blackboard"].pop("delay")
-                            lightning_level     = rune["blackboard"].pop("level")
-                            lightning_effect    = rune["blackboard"].pop("lightning_effect")
-                            lightning_times     = rune["blackboard"].pop("times")
-                            lightning_count     = rune["blackboard"].pop("cnt")
-                            if temp["blackboard"]:
+                        elif rune_key == "env_008_lightning_ally_enemy":
+                            lightning_interval  = temp["blackboard"].pop("interval")
+                            lightning_damage    = temp["blackboard"].pop("value")
+                            lightning_delay     = temp["blackboard"].pop("delay")
+                            lightning_level     = temp["blackboard"].pop("level")
+                            lightning_effect    = temp["blackboard"].pop("lightning_effect")
+                            lightning_times     = temp["blackboard"].pop("times")
+                            lightning_count     = temp["blackboard"].pop("cnt")
+                            if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
                                 printc(f'There new blackboard key in {Y}{rune["prefabKey"]}{RE} : {B}{temp["blackboard"]}{RE}')
                             else:
                                 rune_writer.append(f'\nLightning strikes {lightning_count:g} random tiles (range can overlap) every {lightning_interval:g} seconds, dealing {lightning_damage:g} True damage to units on those tiles within a cross area.')
-                        else :        
+                        else :
                             printc(f'New Environment just drop : {rune["blackboard"]}')
                     case "global_cost_recovery":
-                            scale = temp["blackboard"].pop("scale")
-                            if temp["blackboard"]:
-                                printc(f'There new blackboard key in {Y}{rune["prefabKey"]}{RE} : {B}{temp["blackboard"]}{RE}')
-                            else:
-                                rune_writer.append(f'\n(Possible Key Typo) The automatic DP generation rate is {"reduced" if scale > 1 else "increased"} to 1 DP every {decimal_format(scale)} seconds.')
+                        scale = temp["blackboard"].pop("scale")
+                        if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
+                            printc(f'There new blackboard key in {Y}{rune["prefabKey"]}{RE} : {B}{temp["blackboard"]}{RE}')
+                        else:
+                            rune_writer.append(f'\n(Possible Key Typo) The automatic DP generation rate is {"reduced" if scale > 1 else "increased"} to 1 DP every {decimal_format(scale)} seconds.')
                     case "global_cost_recovery_mul":
-                            scale = temp["blackboard"].pop("scale")
-                            if temp["blackboard"]:
+                        scale = temp["blackboard"].pop("scale") if "scale" in temp["blackboard"] else ""
+                        if not scale:
+                            continue
+                        if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
+                            if "prefabKey" in rune:
                                 printc(f'There new blackboard key in {Y}{rune["prefabKey"]}{RE} : {B}{temp["blackboard"]}{RE}')
-                            else:
-                                rune_writer.append(f'\nThe automatic DP generation rate is {"reduced" if scale > 1 else "increased"} to 1 DP every {decimal_format(scale)} seconds.')
+                            else :
+                                printc(f'There new blackboard key in {rune}')
+                        elif scale > 999:
+                            rune_writer.append(f'\nThe automatic DP generation is disabled.')
+                            continue
+                        else:
+                            rune_writer.append(f'\nThe automatic DP generation rate is {"reduced" if scale > 1 else "increased"} to 1 DP every {decimal_format(scale)} seconds.')
+                            continue
+                    case "global_forbid_location":
+                        location = temp["blackboard"].pop("location")
+                        if temp["blackboard"] and [key for key in rune["blackboard"] if key not in skip_rune]:
+                            printc(f'There new blackboard key in {rune}')
+                        else:
+                            rune_writer.append(f'\nFriendly units cannot be deployed on {map_grid(location)}.')
                     case "global_lifepoint":
                         # global_lifepoint()
                         continue
@@ -771,19 +846,19 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                         else :
                             printr(f'{Y}New {rune["key"]} just drop : {B}{rune["blackboard"]}')
                     case "env_gbuff_new_with_verify":
-                        if rune["blackboard"].get("key", "") == "cooperate_enemy_side_shared": # enemy
+                        if temp["blackboard"].get("key", "") == "cooperate_enemy_side_shared": # enemy
                             continue
-                        elif rune["blackboard"].pop("key") == "sandbox_rain":
-                            rain_interval   = rune["blackboard"].pop("interval", 1)
-                            rain_damage     = rune["blackboard"].pop("value", 20)
-                            if rune["blackboard"]:
+                        elif temp["blackboard"].pop("key") == "sandbox_rain":
+                            rain_interval   = temp["blackboard"].pop("interval", 1)
+                            rain_damage     = temp["blackboard"].pop("value", 20)
+                            if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
                                 printr(f'{Y}New {rune["key"]} BB just drop : {B}{rune["blackboard"]}')
                             else :
                                 rune_writer.append(f'\nDeals {rain_damage:g} Corrosion damage to all Operators every {"second" if rain_interval == 1 else f'{rain_interval:g} seconds'}.')
                         else :
                             printr(f'{Y}New {rune["key"]} just drop : {B}{rune["blackboard"]}')
                     case "env_gbuff_new":
-                        if rune["blackboard"].get("key", "") == "cooperate_get_branch":
+                        if rune["blackboard"].get("key", "") == "cooperate_get_branch" or rune["blackboard"].get("key", "") in env_name:
                             continue
                         elif rune["blackboard"].get("key", "") == "sp_recovery_reduction":
                             new_sp = 1 + rune["blackboard"].get("sp_recovery_per_sec")
@@ -791,8 +866,12 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                         else :
                             printr(f'{Y}New {rune["key"]} just drop : {B}{rune["blackboard"]}')
                     case "char_attribute_add":
-                        char_add : str = rune["blackboard"].pop("char")
-                        char_add_name = join_and([DB["json_characterEN"][char]["name"] if char in DB["json_characterEN"] else DB["json_character"][char]["appellation"]  for char in char_add.split("|")])
+                        try:
+                            char_add : str = temp["blackboard"].pop("char")
+                        except:
+                            printr('temp["blackboard"].pop("char") : Error', rune)
+                            continue
+                        char_add_name = join_and([DB["json_characterEN"][char]["name"] if char in DB["json_characterEN"] else (DB["json_character"][char]["appellation"] if DB["json_character"][char]["appellation"].strip() else f'{DB["json_character"][char]["name"]}({char})') for char in char_add.split("|")])
                         char_all_attribute = []
                         for char_attribute in rune["blackboard"].keys():
                             match char_attribute:
@@ -801,53 +880,69 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                                 case "max_hp":
                                     char_all_attribute.append(f'Max HP increased by {decimal_format(rune["blackboard"][char_attribute])}')
                                 case _:
+                                    if char_attribute == "rune_alias": continue
                                     printr(rune["blackboard"])
-                                    exit()
+                                    #exit()
                         rune_writer.append(f'\nAll {char_add_name} have {join_and(char_all_attribute)}.')
                     case "cbuff_max_cost":
-                        max_cost        = rune["blackboard"].pop("max_cost")
-                        max_cost_ceil   = rune["blackboard"].pop("max_cost_ceil")
-                        if rune["blackboard"]:
+                        max_cost        = temp["blackboard"].pop("max_cost")
+                        max_cost_ceil   = temp["blackboard"].pop("max_cost_ceil")
+                        if rune["blackboard"] and [key for key in rune["blackboard"] if key not in skip_rune]:
                             printr(f'{Y}New {rune["key"]} just drop : {B}{rune["blackboard"]}')
                             exit()
                         rune_writer.append(f'\nThe [[DP]] cap is reduced to {decimal_format(max_cost)}. ')
                     case "char_skill_cd_mul":
-                        char_skill_cd   = rune["blackboard"].pop("scale")
-                        if rune["blackboard"]:
+                        char_skill_cd   = temp["blackboard"].pop("scale")
+                        if rune["blackboard"] and [key for key in rune["blackboard"] if key not in skip_rune]:
                             printr(f'{Y}New {rune["key"]} bb just drop : {B}{rune["blackboard"]}')
                             exit()
                         rune_writer.append(f'\nAll skill cost reduce by {(1 - char_skill_cd)*100:g}%')
                     case "char_skill_blackb_mul":
-                        char_add : str = rune["blackboard"].pop("char").split("#")[0]
-                        hp_max = rune["blackboard"].pop("hp_max") if "hp_max" in rune["blackboard"].keys() else ""
-                        hp_x1 = rune["blackboard"].pop("hp_x1") if "hp_x1" in rune["blackboard"].keys() else ""
+                        char_add : str = temp["blackboard"].pop("char").split("#")[0]
+                        hp_max = temp["blackboard"].pop("hp_max") if "hp_max" in rune["blackboard"].keys() else ""
+                        hp_x1 = temp["blackboard"].pop("hp_x1") if "hp_x1" in rune["blackboard"].keys() else ""
                         if char_add in ["trap_179_mpctrl"]:
                             char_add_name = "<!--Multi-player controller-->"
                             rune_writer.append(f'\n<!--Multi-player controller--> have hp_x1 : {hp_x1} change by hp_max : {hp_max}')
                         else :
                             char_add_name = join_and([DB["json_characterEN"][char]["name"] if char in DB["json_characterEN"] else DB["json_character"][char]["appellation"]  for char in char_add.split("|")])
-                        if rune["blackboard"]:
+                        if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
                             printr(f'{Y}New {rune["key"]} bb just drop : {B}{rune["blackboard"]}')
                             exit()
                     case "char_cost_add":
-                        char_add : str = rune["blackboard"].pop("char_id")
-                        char_add_name = join_and([DB["json_characterEN"][char]["name"] if char in DB["json_characterEN"] else DB["json_character"][char]["appellation"]  for char in char_add.split("|")])
-                        cost_add = rune["blackboard"].pop("value")
+                        char_add : str = temp["blackboard"].pop("char_id") if "char_id" in rune["blackboard"] else ""
+                        char_add_name = join_and([DB["json_characterEN"][char]["name"] if char in DB["json_characterEN"] else DB["json_character"][char]["appellation"]  for char in char_add.split("|")]) if char_add else ""
+                        cost_add = temp["blackboard"].pop("value")
                         if char_add and cost_add:
                             rune_writer.append(f'\n{char_add_name} DP cost {"increased" if cost_add > 0 else "reduced"} by {decimal_format(abs(cost_add))}')
-                        if rune["blackboard"]:
-                            printr(f'{Y}New {rune["key"]} bb just drop : {B}{rune["blackboard"]}')
+                        elif cost_add:
+                            rune_writer.append(f'\nAll {operator_rune(rune)} DP cost {"increased" if cost_add > 0 else "reduced"} by {decimal_format(abs(cost_add))}')
+                        if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
+                            printr(f'{Y}New {rune["key"]} bb just drop : {B}{temp["blackboard"]}')
+                            exit()
+                    case "char_cost_mul":
+                        if not temp["blackboard"]:
+                            continue
+                        char_add : str = temp["blackboard"].pop("char_id") if "char_id" in rune["blackboard"] else ""
+                        char_add_name = join_and([DB["json_characterEN"][char]["name"] if char in DB["json_characterEN"] else DB["json_character"][char]["appellation"]  for char in char_add.split("|")]) if char_add else ""
+                        cost_mul = temp["blackboard"].pop("scale")
+                        if char_add and cost_mul:
+                            rune_writer.append(f'\n{char_add_name} DP cost {"increased" if cost_mul > 1 else "reduced"} by {abs(1 - cost_mul) * 100:g}%')
+                        elif cost_mul:
+                            rune_writer.append(f'\nAll {operator_rune(rune)} DP cost {"increased" if cost_mul > 1 else "reduced"} by {abs(1 - cost_mul) * 100:g}%')
+                        if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
+                            printr(f'{Y}New {rune["key"]} bb just drop : {B}{temp["blackboard"]}')
                             exit()
                     case "char_blockcnt_add":
-                        blockcnt_add = rune["blackboard"].pop("value")
+                        blockcnt_add = temp["blackboard"].pop("value")
                         if blockcnt_add:
                             rune_writer.append(f'\nAll allied units Block Count {"increased" if blockcnt_add > 0 else "reduced"} by {decimal_format(abs(blockcnt_add))}')
-                        if rune["blackboard"]:
-                            printr(f'{Y}New {rune["key"]} bb just drop : {B}{rune["blackboard"]}')
+                        if temp["blackboard"] and [key for key in temp["blackboard"].keys() if key not in skip_key]:
+                            printr(f'{Y}New {rune["key"]} bb just drop : {B}{temp["blackboard"]}')
                             exit()
                     case _:
                         printc(f'New case just drop :', {rune["key"]}, rune["blackboard"])
-                        exit()
+                        #exit()
         
         if event_type == "ig" and ig_ctrl:
             for token in ig_ctrl:
@@ -957,7 +1052,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         #if eaddendum: printc("eaddendum", stage, eaddendum)
         return eaddendum
     
-    def eaddendum_writer(eaddendum, runes = [], buffs = [], enemyDbRefs = {}, diff = "", mul = False):
+    def eaddendum_writer(eaddendum, runes = [], buffs = [], enemyDbRefs = {}, diff = "", extra = ""):
         def eaddendum_stat_writer(key, value):
             match key:
                 case "rangeRadius":
@@ -1016,7 +1111,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             "talentBlackboard" : "talentBlackboard",
                             "skills" : "skills",
                             "spData" : "spData"}  #, "enemy_exclude" : "Excluding"}
-        eaddendum_skip = ["name", "description", "spRecoveryPerSec"]
+        eaddendum_skip = ["name", "description", "spRecoveryPerSec", "rune_alias", "six_star_rune_alias"]
         eaddendum_hard_skip = ["name", "description"]
         
         buff_writer = []        
@@ -1065,6 +1160,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         eaddendum_result = buff_writer
         if runes:
             for rune in runes:
+                temp = {k:v for k,v in rune.items()}
                 if (rune["key"] in non_enemy_rune and rune["key"] not in both_rune) or rune["key"] in skip_rune or not rune["blackboard"]:
                     continue
                 if rune["key"] not in enemy_rune:
@@ -1091,8 +1187,8 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                                     printr(f'{Y}{key}{RE} is {R}not{RE} in {Y}eaddendum_dict !!! {R}({stage}){RE}')
                                     exit()
                             if temp_stat and temp_value:
-                                eaddendum_result.append(f'\n{wiki_story(char_name)} have {join_and(temp_stat)} increased by {join_and(set(temp_value) if len(set(temp_value)) == 1 else temp_value)}.')
-                        case "enemy_attribute_mul":
+                                eaddendum_result.append(f'\n{replace_apos_between(char_name) if char_name else "All allied unit"} have {join_and(temp_stat)} increased by {join_and(set(temp_value) if len(set(temp_value)) == 1 else temp_value)}.')
+                        case "enemy_attribute_mul" | "enemy_attribute_add":
                             temp_stat = []
                             temp_value = []
                             temp_exclude = []
@@ -1103,19 +1199,24 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                                 if key in eaddendum_skip or value == 0:
                                     continue
                                 elif key in eaddendum_dict.keys():
-                                    temp_stat.append(eaddendum_dict[key])
                                     if isinstance(value, str):
                                         temp_value.append(join_and(value.split("|")))
-                                    else :
+                                        temp_stat.append(eaddendum_dict[key])
+                                    elif value - 1:
                                         temp_value.append(f'{value - 1:.0%}')
+                                        temp_stat.append(eaddendum_dict[key])
+                                    else :continue
                                 elif key == "enemy":
                                     all_enemy = value.split("|")
-                                    enemy_name = join_and([big_data["enemies"][enemy]["data"]["name"] if enemy in big_data["enemies"].keys() else enemyDbRefs[enemy]["overwrittenData"]["name"]["m_value"] for enemy in all_enemy])
+                                    try:
+                                        enemy_name = join_and([big_data["enemies"][enemy]["data"]["name"] if enemy in big_data["enemies"].keys() else enemyDbRefs[enemy]["overwrittenData"]["name"]["m_value"] for enemy in all_enemy])
+                                    except:
+                                        enemy_name = join_and([big_data["enemies"][enemy]["data"]["name"] if enemy in big_data["enemies"].keys() else enemyDbRefs[enemy]["overwrittenData"]["name"]["m_value"] for enemy in all_enemy if enemy in enemyDbRefs])
                                 elif key == "enemy_exclude":
                                     temp_exclude.append(eaddendum_stat_writer(key, value))
                                 else:
                                     printr(f'{Y}{key}{RE} is {R}not{RE} in {Y}eaddendum_dict !!! {R}({stage}){RE}')
-                                    #exit()
+                                    exit()
                             if temp_stat and temp_value:
                                 eaddendum_result.append(f'\n{wiki_story(enemy_name) if enemy_name else "All enemies"} have their {join_and(temp_stat)} increased by {join_and(set(temp_value) if len(set(temp_value)) == 1 else temp_value)}{f' ({join_and(temp_exclude)})' if temp_exclude else ""}.')
                         case "level_enemy_replace":
@@ -1141,53 +1242,102 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             else :
                                 printr(f'{Y}New env_gbuff_new_with_verify just drop : {B}{rune["blackboard"]}, {G}{rune}')
                         case "env_gbuff_new":
-                            if rune["blackboard"].get("key", "") in ["cooperate_get_branch", "sp_recovery_reduction"]: # non enemy
+                            if rune["blackboard"].get("key", "") in ["cooperate_get_branch", "sp_recovery_reduction"] + env_name: # non enemy
                                 continue
                             printr(rune["blackboard"])
-                            exit()
+                            #exit()
                         case "cooperate_enemy_side_shared":
-                            share_enemy_id = rune["blackboard"].pop("enemy").split("|")
+                            share_enemy_id = temp["blackboard"].pop("enemy").split("|")
                             share_enemy = join_and([DB["json_enemy_handbookEN"]["enemyData"][enemy]["name"] if enemy in DB["json_enemy_handbookEN"]["enemyData"] else ENEMY_NAMES_TL.get(enemy, f'{big_data["enemies"][enemy]["data"]["name"]}({enemy})') for enemy in share_enemy_id if not re.match(r'enemy_.+?enemy_.+?', enemy)])
                             eaddendum_result.append(f'\n{wiki_story(share_enemy)} will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].')
-                            if rune["blackboard"] :
+                            if temp["blackboard"] :
                                 printr(f'New {Y}{rune["key"]}{RE} key just drop : {B}{rune["blackboard"]}')
                                 exit()
                         case "level_hidden_group_enable" | "level_hidden_group_disable":
-                            continue
+                            if diff == "SIX_STAR":
+                                eaddendum_result.append(f'\nEnable <{rune["blackboard"]["key"]}> enemies group.')
+                            else:
+                                continue
                         case "enemy_talent_blackb_mul":
                             match sorted(list(rune["blackboard"].keys())):
                                 case ["enemy", "searchBall.range_radius"] :
-                                    enemy_id = rune["blackboard"].pop("enemy").split("|")
+                                    enemy_id = temp["blackboard"].pop("enemy").split("|")
                                     enemy_name = join_and([DB["json_enemy_handbookEN"]["enemyData"][enemy]["name"] if enemy in DB["json_enemy_handbookEN"]["enemyData"] else ENEMY_NAMES_TL.get(enemy, f'{big_data["enemies"][enemy]["data"]["name"]}({enemy})') for enemy in enemy_id if not re.match(r'enemy_.+?enemy_.+?', enemy)])
-                                    searchBall = rune["blackboard"].pop("searchBall.range_radius")
+                                    searchBall = temp["blackboard"].pop("searchBall.range_radius")
                                     if searchBall :
                                         eaddendum_result.append(f'\n{wiki_story(enemy_name)} have Football search radius to {searchBall} tiles.')
                                         continue
                                 case ["football.slapshot_force"]:
-                                    slapshot_force = rune["blackboard"].pop("football.slapshot_force")
+                                    slapshot_force = temp["blackboard"].pop("football.slapshot_force")
                                     multi_force = slapshot_force - 1
                                     if slapshot_force :
                                         eaddendum_result.append(f'\nAll enemies have Goal shooting force {"reduced" if multi_force < 0 else "increased"} by {abs(multi_force)*100:g}%.')
                                         continue
                                 case ["enemy", "football.slapshot_force"]:
-                                    enemy_id = rune["blackboard"].pop("enemy").split("|")
+                                    enemy_id = temp["blackboard"].pop("enemy").split("|")
                                     enemy_name = join_and([DB["json_enemy_handbookEN"]["enemyData"][enemy]["name"] if enemy in DB["json_enemy_handbookEN"]["enemyData"] else ENEMY_NAMES_TL.get(enemy, f'{big_data["enemies"][enemy]["data"]["name"]}({enemy})') for enemy in enemy_id if not re.match(r'enemy_.+?enemy_.+?', enemy)])
-                                    slapshot_force = rune["blackboard"].pop("football.slapshot_force")
+                                    slapshot_force = temp["blackboard"].pop("football.slapshot_force")
                                     multi_force = slapshot_force - 1
                                     if slapshot_force :
                                         eaddendum_result.append(f'\n{wiki_story(enemy_name)} have Goal shooting force {"reduced" if multi_force < 0 else "increased"} by {abs(multi_force)*100:g}%.')
                                         continue
                                 case ["Reborn.duration"]:
-                                    Reborn_duration = rune["blackboard"].pop("Reborn.duration")
+                                    Reborn_duration = temp["blackboard"].pop("Reborn.duration")
                                     if Reborn_duration :
                                         eaddendum_result.append(f'\nReduce all enemies break time by {(1 - Reborn_duration)*100:g}%.')
                                         continue
                                 case _ :
-                                    printr(f'New {Y}{rune["key"]}{RE} key just drop : {B}{rune["blackboard"]}')
+                                    printr(f'New {Y}{rune["key"]}{RE} key just drop : {B}{temp["blackboard"]}')
+                                    #exit()
+                        case "add_other_rune_blackb":
+                            temp_stat = []
+                            temp_value = []
+                            temp_exclude = []
+                            all_enemy = []
+                            enemy_name = ""
+                            for key in rune["blackboard"]:
+                                value = rune["blackboard"][key]
+                                if key in eaddendum_skip or value == 0:
+                                    continue
+                                elif key in eaddendum_dict.keys():
+                                    if isinstance(value, str):
+                                        temp_value.append(join_and(value.split("|")))
+                                        temp_stat.append(eaddendum_dict[key])
+                                    elif value:
+                                        temp_value.append(f'{value:.0%}')
+                                        temp_stat.append(eaddendum_dict[key])
+                                    else :continue
+                                elif key == "enemy":
+                                    all_enemy = value.split("|")
+                                    try:
+                                        enemy_name = join_and([big_data["enemies"][enemy]["data"]["name"] if enemy in big_data["enemies"].keys() else enemyDbRefs[enemy]["overwrittenData"]["name"]["m_value"] for enemy in all_enemy])
+                                    except:
+                                        enemy_name = join_and([big_data["enemies"][enemy]["data"]["name"] if enemy in big_data["enemies"].keys() else enemyDbRefs[enemy]["overwrittenData"]["name"]["m_value"] for enemy in all_enemy if enemy in enemyDbRefs])
+                                elif key == "enemy_exclude":
+                                    temp_exclude.append(eaddendum_stat_writer(key, value))
+                                else:
+                                    printr(f'{Y}{key}{RE} is {R}not{RE} in {Y}eaddendum_dict !!! {R}({stage}){RE}')
                                     exit()
+                            if temp_stat and temp_value:
+                                eaddendum_result.append(f'{wiki_story(enemy_name) if enemy_name else "All enemies"} have their {join_and(temp_stat)} increased by {join_and(set(temp_value) if len(set(temp_value)) == 1 else temp_value)}{f' ({join_and(temp_exclude)})' if temp_exclude else ""} additionally to <{rune["blackboard"]["rune_alias"]}>.')
+                        case "enemy_dynamic_ability_new":
+                            known_key = {
+                                            "invisible" : "{{G|Invisible}}",
+                                        }
+                            match [key for key in rune["blackboard"]]:
+                                case ["enemy", "key"]:
+                                    all_enemy = value.split("|")
+                                    try:
+                                        enemy_name = join_and([big_data["enemies"][enemy]["data"]["name"] if enemy in big_data["enemies"].keys() else enemyDbRefs[enemy]["overwrittenData"]["name"]["m_value"] for enemy in all_enemy])
+                                    except:
+                                        enemy_name = join_and([big_data["enemies"][enemy]["data"]["name"] if enemy in big_data["enemies"].keys() else enemyDbRefs[enemy]["overwrittenData"]["name"]["m_value"] for enemy in all_enemy if enemy in enemyDbRefs])
+                                    enemy_gain = known_key.get(rune["blackboard"]["key"], f'new attribute <{rune["blackboard"]["key"]}>')
+                                    if rune["blackboard"]["key"] not in known_key:
+                                        printr(f'New Key for {rune["key"]} : {rune[rune["blackboard"]["key"]]}')
+                                    eaddendum_result.append(f'{replace_apos_between(enemy_name)} gain {enemy_gain}')
                         case _:
                             printc(f'{Y}{stage}{RE} New enemy rune key just drop : {B}{rune["key"]}{RE}', rune)
-                            exit()
+                            #exit()
                 #else: printr(f'New Difficulty to add : {Y}{rune["difficultyMask"]}{RE}')
         
         # Individual enemies
@@ -1203,7 +1353,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                         continue
                     if k not in eaddendum_dict:
                         printr(f'{Y}{k}{RE} is {R}not{RE} in {G}eaddendum_dict !!!{RE} {R}({stage}, {Y}{enemy_key}{R}){RE}')
-                        exit()
+                        #exit()
                     else:
                         parsing = eaddendum_stat_writer(k, v)
                         if parsing : eaddendum_parse.append(parsing)
@@ -1228,8 +1378,27 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         new_rune_list = [new_rune for new_rune in[rune["key"] for rune in rune_list] if new_rune not in (enemy_rune + non_enemy_rune + skip_rune)]
         if new_rune_list != []:
             printr(f'{Y}{stage}{RE} There {R}new rune(s){RE} in town !!! : {B}{new_rune_list}{RE}')
-            exit()
+            #exit()
         return rune_list
+    
+    def strategic_simulation(stage_id : str ,optionalRunes_data : dict[str, list], diff : str):
+        simulation_parser = {
+            "rune_level1_1" : "1a",
+            "rune_level1_2" : "1b",
+            "rune_level2_1" : "2a",
+            "rune_level2_2" : "2b",
+        }
+        simulation_writer = []
+        stage_id = stage_id.split("#", 1)[0]
+        for simulation in optionalRunes_data.keys():
+            simulation_suffix = simulation_parser[simulation]
+            simulation_id = f'{stage_id}_{simulation_suffix}'
+            simulation_writer.append(f'|ss{simulation_suffix} = {DB["json_stageEN"]["sixStarRuneData"][simulation_id]["runeDesc"] if simulation_id in DB["json_stageEN"]["sixStarRuneData"] else DB["json_stage"]["sixStarRuneData"][simulation_id]["runeDesc"]}')
+            simulation_writer.append(f'<!--{addendum_writer(rune_lister(optionalRunes_data[simulation]), diff=diff)}-->')
+            simulation_writer.append(f'<!--{eaddendum_writer([], rune_lister(optionalRunes_data[simulation]), diff=diff)}-->')
+            #printr(simulation_writer)
+            #exit()
+        return "\n".join(simulation_writer)
     
     def global_buff_lister(def_data : list) -> list:
         global_buff = []
@@ -1269,6 +1438,15 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             return int(default + blackboard["value"])
         return default
 
+    def global_dp(def_data, default, diff = "ALL"):
+        if def_data:
+            for rune in def_data:
+                if rune["key"] == "global_initial_cost_add" and diff == rune["difficultyMask"]:
+                    for blackboard in rune["blackboard"]:
+                        if blackboard["key"] == "value":
+                            return int(default + blackboard["value"])
+        return default
+
     def operators_predefine_writer(def_comp_data, def_preauto_data, def_auto_data, fixed):
         #printt("stage, fixed, def_comp_data, def_preauto_data, def_auto_data\n", stage, fixed, def_comp_data, def_preauto_data, def_auto_data ,mode="c")
         def elite_parse(elite):
@@ -1280,7 +1458,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         
         def op_lister(op, group):
             op_id = op["inst"].get("characterKey", op["alias"])
-            op_name = DB["json_characterEN"][op_id]["name"] if op_id in DB["json_characterEN"] else DB["json_characterEN"][op_id]["appellation"]
+            op_name = DB["json_characterEN"][op_id]["name"] if op_id in DB["json_characterEN"] else DB["json_character"][op_id]["appellation"]
             op_elite = elite_parse(op["inst"].get("phase", 0))
             op_level = op["inst"].get("level", 1)
             op_skill = op["skillIndex"]
@@ -1402,14 +1580,14 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
     
     def stage_article_data(data : dict, stage : str, mode : str, diff : str = "") -> dict:            
         def drop_lister(def_data : list) -> dict:
-            drop_types = ["COMPLETE", "NORMAL", "ADDITIONAL", "SPECIAL"]
+            drop_types = ["COMPLETE", "NORMAL", "ADDITIONAL", "SPECIAL", "CONDITION_DROP"]
             drop_list = {k:{} for k in drop_types}
             drop_rates = {"ALWAYS": 1, "ALMOST": 2, "USUAL": 3, "OFTEN": 4, "SOMETIMES": 5}
             for drop in def_data:
                 if drop["dropType"] == "COMPLETE":
                     drop_list["COMPLETE"][drop["id"]] = drop
                 else:
-                    drop_list["NORMAL"][drop["id"]] = drop
+                    drop_list[drop["dropType"]][drop["id"]] = drop
             drop_output = {k:[] for k in drop_types}
             for drop_type in drop_types:
                 for drop in sorted(drop_list[drop_type].keys(), key = lambda k : -100000000000 if k == "4002" else DB["json_item"]["items"][k]["sortId"]):
@@ -1419,7 +1597,6 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                         drop_output[drop_type].append(f'{{{{I|{drop_name}}}}}')
                     else:
                         drop_output[drop_type].append(f'{{{{I|{drop_name}|rate={drop_rate}}}}}')
-            
             return {k:" ".join(v) for k,v in drop_output.items()}
             
         match mode :
@@ -1445,6 +1622,8 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                 match diff:
                     case "hard" :
                         stage_id = stage + "#f#"
+                    case "six":
+                        stage_id = stage + "#s"
                     case _ :
                         stage_id = stage
                 diff_type = data["stage_data"][stage_id]["difficulty"]
@@ -1453,11 +1632,11 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             "cond"          : data["stage_data"][stage_id]["description"] if diff else "",
                             "level"         : stage_level(data["stage_data"][stage_id]["dangerLevel"]),
                             "sanity"        : data["stage_data"][stage_id]["apCost"],
-                            "drill"         : data["stage_data"][stage_id]["practiceTicketCost"] if isinstance(data["stage_data"][stage_id]["practiceTicketCost"], int) and data["stage_data"][stage_id]["practiceTicketCost"] > 0 else "",
+                            "drill"         : data["stage_data"][stage_id]["practiceTicketCost"] if isinstance(data["stage_data"][stage_id]["practiceTicketCost"], int) and data["stage_data"][stage_id]["practiceTicketCost"] > 0 else 0,
                             "unit_limit"    : global_deploy(data["stage"][stage]["runes"], data["stage"][stage]["options"]["characterLimit"], diff_type),
                             "enemies"       : sum(data["enemies_stage"][stage]["counter"][0:2]),
                             "lp"            : global_lifepoint(data["stage"][stage]["runes"], data["stage"][stage]["options"]["maxLifePoint"], diff_type),
-                            "dp"            : data["stage"][stage]["options"]["initialCost"],
+                            "dp"            : global_dp(data["stage"][stage]["runes"], data["stage"][stage]["options"]["initialCost"], diff_type),
                             "dp_regen"      : data["stage"][stage]["options"]["costIncreaseTime"],
                             "maxPlayTime"   : data["stage"][stage]["options"]["maxPlayTime"],
                             "configBlackBoard" : data["stage"][stage]["options"]["configBlackBoard"],
@@ -1469,6 +1648,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             "regdrops"      : drop_data.get("NORMAL", ""),
                             "specdrops"     : drop_data.get("SPECIAL", ""),
                             "extradrops"    : drop_data.get("ADDITIONAL", ""),
+                            "optionalRunes" : data["stage"][stage]["optionalRunes"],
                             "normal"        : enemies_data.get("NORMAL", ""),
                             "elite"         : enemies_data.get("ELITE", ""),
                             "boss"          : enemies_data.get("BOSS", ""),
@@ -1488,7 +1668,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                 exit()
                 return {}
     
-    def stage_article_writer(data, mode):
+    def stage_article_writer(data : dict[str, Any], mode : Literal["info", "data"], extra : str = "", extra_2 : str = ""):
         
         def event_type_writer():
             event_return = (event_name if event_name else event_code) if event_code else ""
@@ -1548,7 +1728,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
             # https://arknights.wiki.gg/wiki/Template:Operation_data/doc
             case "data":
                 return f'''{{{{Operation data
-                            |cond = {desc_cond_writer(data["cond"])}
+                            |{"adverse " if extra == "Adverse" else ""}cond = {desc_cond_writer(data["cond"])}
                             |level = {data["level"]}
                             |sanity = {data["sanity"]}
                             |drill = {data["drill"]}
@@ -1558,12 +1738,13 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             |dp = {data["dp"]}
                             |deployable = {data["deployable"]}
                             |static = {data["static"] if data["static"] else ""}
-                            |terrain = {tile_writer(data["terrain"])}
+                            |terrain = {tile_writer(data["rune"], data["terrain"])}
                             |addendum = {addendum_writer(data["rune"], data["globalBuffs"], maxPlayTime = data["maxPlayTime"], DP = data["dp_regen"], configBlackBoard = data["configBlackBoard"], diff = data["diff_type"])}
                             |firstdrop = {data["firstdrop"]}
                             |regdrops = {data["regdrops"]}
                             |specdrops = {data["specdrops"]}
                             |extradrops = {data["extradrops"]}
+                            {strategic_simulation(data["stage_id"], data["optionalRunes"], diff = data["diff_type"]) if extra_2 == "simulation" else ""}
                             |normal = {data["normal"]}
                             |elite = {data["elite"]}
                             |boss = {data["boss"]}
@@ -2035,18 +2216,22 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         
     for stage in big_data["stage"].keys():
         if mode_info == "sidestory":
+            if stage.endswith(("#f#", "#s")): continue
+            is6star = False
+            ishard = False
             stage_info = stage_article_data(big_data, stage, "info")
             stage_data = stage_article_data(big_data, stage, "data")
-            if big_data["stage_data"][stage]["hardStagedId"]:
+            if big_data["stage_data"][stage]["sixStarStageId"]:
+                is6star = True
+                stage_data_6star = stage_article_data(big_data, stage, "data", "six")
+                page_footer = "Main Theme operations"
+            
+            elif big_data["stage_data"][stage]["hardStagedId"]:
                 ishard = True
                 stage_data_hard = stage_article_data(big_data, stage, "data", "hard")
             
-            if big_data["stage_data"][stage]["sixStarStageId"]:
-                is6star = True
-                stage_data_6star = stage_article_data(big_data, stage, "data", "sandbox")
-            
             if is6star:
-                stage_article = [stage_article_writer(stage_info, "info"), "<tabber>", "Normal Mode=", stage_article_writer(stage_data, "data"), f'|-|{"Adverse Environment" if event_type == "episode" else "Challenge Mode"}=', stage_article_writer(stage_data_hard, "data"), "|-|Strategic Simulation=", stage_article_writer(stage_data_6star, "data"), "</tabber>", f'{{{{{page_footer}}}}}']
+                stage_article = [stage_article_writer(stage_info, "info"), "<tabber>", "Normal Mode=", stage_article_writer(stage_data, "data"), f'|-|{"Adverse Environment" if event_type == "episode" else "Challenge Mode"}=', stage_article_writer(stage_data_6star, "data", "Adverse"), "|-|Strategic Simulation=", stage_article_writer(stage_data_6star, "data", "Adverse", "simulation"), "</tabber>", f'{{{{{page_footer}}}}}']
             elif ishard:
                 stage_article = [stage_article_writer(stage_info, "info"), "<tabber>", "Normal Mode=", stage_article_writer(stage_data, "data"), "|-|Challenge Mode=", stage_article_writer(stage_data_hard, "data"), "</tabber>", f'{{{{{page_footer}}}}}']
             else:
@@ -2104,11 +2289,12 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
     script_result(big_data["stage"])
     return article_data
     
-#wiki_article("act40side", "sidestory")
+# main
+script_result(wiki_article("act3mainss", "episode"))
 
 # Event
 #script_result(wiki_article("act45side", "event"), True)
-script_result(wiki_article("act1vhalfidle", "event"), True)
+#script_result(wiki_article("act1vhalfidle", "event"), True)
 
 # Trials for Navigator #04
 #script_result(wiki_article("act4bossrush", "tn", "Trials for Navigator #04"))

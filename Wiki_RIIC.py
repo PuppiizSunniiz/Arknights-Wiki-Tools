@@ -4,6 +4,7 @@ from pyFunction_Wiki import load_json, wiki_text
 from pyFunction import printr, script_result
 
 used_json = [
+                "json_building",
                 "json_buildingEN"
             ]
 DB = load_json(used_json)
@@ -14,8 +15,10 @@ def riic_name_trim(name : str) -> str:
 
 def wiki_base_skill(show : bool = False):
     temp_base_skill = {}
-    json_buff = DB["json_buildingEN"]["buffs"]
+    json_buff       = DB["json_building"]["buffs"]
+    json_buff_EN    = DB["json_buildingEN"]["buffs"]
     for skill in json_buff.keys():
+        if skill in json_buff_EN.keys(): continue
         riic_buff_name = riic_name_trim(json_buff[skill]["buffName"])
         riic_buff_room = json_buff[skill]["roomType"]
         riic_buff_icon = json_buff[skill]["skillIcon"]

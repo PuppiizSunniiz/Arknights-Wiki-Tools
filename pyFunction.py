@@ -12,11 +12,11 @@ B = '\033[34m'
 RE = '\033[0m'
 
 def printr(*arg):
-    print(f'{R}[:{inspect.currentframe().f_back.f_lineno}]{RE}', *arg, RE)
+    print(f'{R}[:{inspect.currentframe().f_back.f_lineno:<4}]{RE}', *arg, RE)
 
 def printc(*arg):
     all_arg = [*arg]
-    print(f'{R}[:{inspect.currentframe().f_back.f_lineno}]{RE}', " ".join([f'{G}{all_arg[i]}' if i % 2 == 1 else f'{B}{all_arg[i]}' for i in range(len(all_arg))]), RE) # type: ignore
+    print(f'{R}[:{inspect.currentframe().f_back.f_lineno:<4}]{RE}', " ".join([f'{G}{all_arg[i]}' if i % 2 == 1 else f'{B}{all_arg[i]}' for i in range(len(all_arg))]), RE) # type: ignore
 
 def printt(*arg, mode = ""):
     file = __file__
