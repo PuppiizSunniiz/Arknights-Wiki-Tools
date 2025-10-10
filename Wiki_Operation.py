@@ -19,6 +19,7 @@ used_json = [
                 "json_skillEN",
                 "json_stage",
                 "json_stageEN",
+                "json_uniequip",
                 "json_zone",
                 "json_zoneEN"
             ]
@@ -59,14 +60,14 @@ def wiki_enemies(event : str = "", show : bool = False) -> dict :
                     stages[stage][key] = EN_stage[stage][key]
                 
 
-            if stage.find("#f#") == -1: data["zone"][CN_stage[stage]["zoneId"]].setdefault("stages", []).append(CN_stage[stage]["code"])
+            if not stage.endswith(("#f#", "#s")) : data["zone"][CN_stage[stage]["zoneId"]].setdefault("stages", []).append(CN_stage[stage]["code"])
     
     data["stage_data"] = stages
     
     for stage in stages.keys():
         if stage.find("easy_") != -1: continue
         #printr(stage)
-        if stage.find("#f#") == -1 and stages[stage]["levelId"]:
+        if not stage.endswith(("#f#", "#s")) and stages[stage]["levelId"]:
             stage_json = json_load(rf'json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\{stages[stage]["levelId"].lower()}.json')
             if not isinstance(stage_json, dict):
                 printr(f'\n{R}File path error {G}"{stage}" : {B}{stages[stage]["levelId"].lower()}{RE}')
@@ -1254,10 +1255,8 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                                 printr(f'New {Y}{rune["key"]}{RE} key just drop : {B}{rune["blackboard"]}')
                                 exit()
                         case "level_hidden_group_enable" | "level_hidden_group_disable":
-                            if diff == "SIX_STAR":
-                                eaddendum_result.append(f'\nEnable <{rune["blackboard"]["key"]}> enemies group.')
-                            else:
-                                continue
+                            prefix = "Enable" if rune["key"] in ["level_hidden_group_enable"] else "Disable"
+                            eaddendum_result.append(f'\n<!--{prefix} <{rune["blackboard"]["key"]}> enemies group.-->')
                         case "enemy_talent_blackb_mul":
                             match sorted(list(rune["blackboard"].keys())):
                                 case ["enemy", "searchBall.range_radius"] :
@@ -1448,7 +1447,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         return default
 
     def operators_predefine_writer(def_comp_data, def_preauto_data, def_auto_data, fixed):
-        #printt("stage, fixed, def_comp_data, def_preauto_data, def_auto_data\n", stage, fixed, def_comp_data, def_preauto_data, def_auto_data ,mode="c")
+        #if def_preauto_data : printc("stage, fixed, def_comp_data, def_preauto_data, def_auto_data\n", stage, fixed, def_comp_data, def_preauto_data, def_auto_data)
         def elite_parse(elite):
             if elite.find("PHASE") != -1:
                 return elite[-1]
@@ -1467,13 +1466,13 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
             op_mod = op["uniEquipIds"]
             
             group[op_id] = {
-                                "name" : op_name, 
-                                "elite" : op_elite, 
-                                "level" : op_level, 
-                                "skill" : op_skill, 
-                                "skilllv" : op_sklv, 
-                                "trust" : op_trust, 
-                                "mod" : op_mod
+                                "name"      : op_name, 
+                                "elite"     : op_elite, 
+                                "level"     : op_level, 
+                                "skill"     : op_skill, 
+                                "skilllv"   : op_sklv, 
+                                "trust"     : op_trust, 
+                                "mod"       : op_mod
                             }
             return f'\n\t{op_name} has {op_trust} trust' 
         
@@ -1495,7 +1494,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                 op_elite = lister[op_id]["elite"]
                 op_level = lister[op_id]["level"]
                 skill_id = DB["json_character"][op_id]["skills"][lister[op_id]["skill"]]["skillId"]
-                skill_name = DB["json_skillEN"][skill_id]["levels"][0]["name"] if skill_id in DB["json_skillEN"] else SKILL_NAMES_TL.get(skill_name, f'{DB["json_skill"][skill_id]["levels"][0]["name"]}({skill_id})')
+                skill_name = DB["json_skillEN"][skill_id]["levels"][0]["name"] if skill_id in DB["json_skillEN"] else SKILL_NAMES_TL.get(skill_id, f'{DB["json_skill"][skill_id]["levels"][0]["name"]}({skill_id})')
                 skill_lv = skill_mastery(lister[op_id]["skilllv"])
                 
                 trust = lister[op_id]["trust"]
@@ -1505,7 +1504,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                 if lister[op_id]["mod"]:
                     mod_key = lister[op_id]["mod"][0]["key"]
                     mod_lv = lister[op_id]["mod"][0]["level"]
-                    mod_abb = f'{DB["json_uniequip"]["equipDict"][mod_key]["typeIcon"].upper()}'.replace("-D", "-Δ").replace("-A", "-α")
+                    mod_abb = f'{DB["json_uniequip"]["equipDict"][mod_key]["typeIcon"].upper()}'.replace("-D", "-Δ").replace("-A", "-α").replace("-B", "-β")
                     
                     all_mod.append([op_name, f'uses {mod_abb} {'[[Operator Module]]' if mod_count == 0 else 'Operator Module'} at Stage {mod_lv}.'])
                     mod_count += 1
@@ -1530,44 +1529,44 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         
         if fixed:
             predefine_result += "|fixed = true"
-            if def_comp_data:
-                for op in def_comp_data:
-                    comp_op += op_lister(op, comp)
-                predefine_result += op_writer("|comp", comp, mod_count)
-            else:
-                predefine_result += "\n|comp = None"
-            
-            if def_preauto_data:
-                for op in def_preauto_data:
-                    if op["hidden"]:
-                        auto_op += op_lister(op, auto)
-                    else:
-                        pre_op += op_lister(op, pre)
-                predefine_result += op_writer("|auto", auto, mod_count)
-                predefine_result += op_writer("|pre", pre, mod_count)
-            
-            predefine_result += "\n|saddendum = \n"
-            
-            if len(all_op) > 1:
-                if len(all_trust) == 1:
-                    predefine_result += f'All Operators have {all_trust[0]}% [[Trust]].'
+        if def_comp_data:
+            for op in def_comp_data:
+                comp_op += op_lister(op, comp)
+            predefine_result += op_writer("|comp", comp, mod_count)
+        else:
+            predefine_result += "\n|comp = None"
+        
+        if def_preauto_data:
+            for op in def_preauto_data:
+                if op["hidden"]:
+                    auto_op += op_lister(op, auto)
                 else:
-                    predefine_result += f'''$1 and $2 have $3% [[Trust]].
-                                        <!--
-                                        Comp = {comp_op}
-                                        
-                                        Auto = {auto_op}
-                                        
-                                        Pre = {pre_op}
-                                        -->'''.replace("                                        ", "")
-                    #exit()
+                    pre_op += op_lister(op, pre)
+            predefine_result += op_writer("|auto", auto, mod_count)
+            predefine_result += op_writer("|pre", pre, mod_count)
+        
+        predefine_result += "\n|saddendum = \n"
+        
+        if len(all_op) > 1:
+            if len(all_trust) == 1:
+                predefine_result += f'All Operators have {all_trust[0]}% [[Trust]].'
+            else:
+                predefine_result += f'''$1 and $2 have $3% [[Trust]].
+                                    <!--
+                                    Comp = {comp_op}
+                                    
+                                    Auto = {auto_op}
+                                    
+                                    Pre = {pre_op}
+                                    -->'''.replace("                                        ", "")
+                #exit()
 
-                if all_mod:
-                    for mod in all_mod:
-                        predefine_result += f'\n*{mod[0]} {mod[1]}'
-            elif len(all_op) == 1:
-                predefine_result += f'{all_op[0]} has {all_trust[0]}% [[Trust]]{f' and {all_mod[0][1]}' if all_mod else ""}.'
-            
+            if all_mod:
+                for mod in all_mod:
+                    predefine_result += f'\n*{mod[0]} {mod[1]}'
+        elif len(all_op) == 1:
+            predefine_result += f'{all_op[0]} has {all_trust[0]}% [[Trust]]{f' and {all_mod[0][1]}' if all_mod else ""}.'
+        
         return predefine_result
     
     def auto_deploy_lister(waves):
@@ -1672,7 +1671,9 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         
         def event_type_writer():
             event_return = (event_name if event_name else event_code) if event_code else ""
-            if event_type and event_return:
+            if event_type == "episode":
+                return f'|episode = {DB["json_zone"]["zones"][list(big_data["zone"].keys())[0]]["zoneNameTitleCurrent"]}'
+            elif event_type and event_return:
                 return f'|{event_type} = {event_name}'
             else:
                 return f'''|episode = {event_return}
@@ -1727,6 +1728,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
             
             # https://arknights.wiki.gg/wiki/Template:Operation_data/doc
             case "data":
+                #if operators_predefine_writer(data["comp"], data["pre_auto"], data["auto"], data["fixed"]) : printr("operators_predefine_writer", operators_predefine_writer(data["comp"], data["pre_auto"], data["auto"], data["fixed"]))
                 return f'''{{{{Operation data
                             |{"adverse " if extra == "Adverse" else ""}cond = {desc_cond_writer(data["cond"])}
                             |level = {data["level"]}
@@ -2286,7 +2288,8 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         break
         enemy_article_writer(big_data["enemies"][enemy])
     #printc(sorted(data["enemies"].keys()))
-    script_result(big_data["stage"])
+    script_result(big_data)
+    #script_result(big_data["stage"])
     return article_data
     
 # main
