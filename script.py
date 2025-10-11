@@ -733,6 +733,26 @@ def enemy_wave_csv():
                     script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}')
     script_result(script_txt, True)
     
-#enemy_wave_csv()
+enemy_wave_csv()
 
-printr(bin(639), bin(96), bool("1"), bool("0"))
+#printr(bin(639), bin(96), bool("1"), bool("0"))
+
+def editor_trim():
+    temp_editor = []
+    with open("editor.txt", "r", encoding="utf-8") as editor_file:
+        editor_line = editor_file.readlines()
+        for line in editor_line:
+            if not line.startswith(("[")):
+                temp_editor.append(line)
+            elif line.startswith(("[name=")):
+                temp_editor.append(re.sub(r'^\[name="(.+?|)"\](.+?)$', r'\1\t\2', line))
+            elif line.startswith(("[Decision(options=")):
+                temp_editor.append(f'Doctor\t{" / ".join(re.match(r'^\[Decision\(options="(.+?)".+?$', line).group(1).split(";"))}')
+            elif line.startswith(("[Dialog(head=")):
+                char_id = re.match(r'^\[Dialog\(head="(.+?|)".+?\](.+?)$',line).group(1)
+                char_name = DB["json_characterEN"][char_id]["name"] if char_id in DB["json_characterEN"] else DB["json_character"][char_id]["appellation"]
+                temp_editor.append(re.sub(r'^\[Dialog\(head="(.+?|)".+?\](.+?)$', rf'{char_name}\t\2', line))
+    with open("editor.txt", "w", encoding="utf-8") as editor_file:
+        editor_file.write("\n".join(temp_editor).replace(" ", " ").replace("’", "'").replace("’", "'"))
+
+#editor_trim()

@@ -774,7 +774,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                     continue
                 match config_bb["key"]:
                     case "max_enemy_capacity":
-                        addendum.append(f'Maximum {decimal_format(config_bb["value"])} enemies allow.')
+                        addendum.append(f'<!--Maximum {decimal_format(config_bb["value"])} enemies allow.-->')
                     case _:
                         printr(f'New {Y}configBlackBoard{RE} key : {R}{config_bb["key"]}')
                         #exit()
@@ -1073,13 +1073,18 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                     return f'Excluding -> {enemy_name_search(value.split("|"))}'
                 case "talentBlackboard":
                     talentskip = [
-                        [{'key': 'sleepwalking.unmove_duration', 'value': 0.1, 'valueStr': None}]
+                        [{'key': 'sleepwalking.unmove_duration', 'value': 0.0, 'valueStr': None}], [{'key': 'sleepwalking.unmove_duration', 'value': 0.1, 'valueStr': None}]
                     ]
                     if len(value) == 1 and value[0]["value"] == 0.0 and value[0]["valueStr"] == None or value in talentskip:
                         return False
-                    else:
-                        printr(key, value)
-                        return f'<!--{key} : {value}-->'
+                    elif len(value) == 1:
+                        match value[0]["key"]:
+                            case "sleepwalking.unmove_duration":
+                                return f'<pre spawn won\'t move> for {value[0]["value"]:g} seconds'
+                            case _:
+                                pass
+                    printr(key, value)
+                    return f'<!--{key} : {value}-->'
                 case _ :
                     try:
                         return f'{decimal_format(value)} {eaddendum_dict[key]}'
@@ -1533,7 +1538,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
             for op in def_comp_data:
                 comp_op += op_lister(op, comp)
             predefine_result += op_writer("|comp", comp, mod_count)
-        else:
+        elif fixed:
             predefine_result += "\n|comp = None"
         
         if def_preauto_data:
@@ -1545,13 +1550,11 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
             predefine_result += op_writer("|auto", auto, mod_count)
             predefine_result += op_writer("|pre", pre, mod_count)
         
-        predefine_result += "\n|saddendum = \n"
-        
         if len(all_op) > 1:
             if len(all_trust) == 1:
-                predefine_result += f'All Operators have {all_trust[0]}% [[Trust]].'
+                predefine_result += f'\n|saddendum = \nAll Operators have {all_trust[0]}% [[Trust]].'
             else:
-                predefine_result += f'''$1 and $2 have $3% [[Trust]].
+                predefine_result += f'''\n|saddendum = \n$1 and $2 have $3% [[Trust]].
                                     <!--
                                     Comp = {comp_op}
                                     
@@ -1565,7 +1568,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                 for mod in all_mod:
                     predefine_result += f'\n*{mod[0]} {mod[1]}'
         elif len(all_op) == 1:
-            predefine_result += f'{all_op[0]} has {all_trust[0]}% [[Trust]]{f' and {all_mod[0][1]}' if all_mod else ""}.'
+            predefine_result += f'{all_op[0]} has {all_trust[0]}% [[Trust]]{f' and {all_mod[0][1]}' if all_mod else ""}'
         
         return predefine_result
     
@@ -1606,7 +1609,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             "stage_id" : stage,
                             "code" : code,
                             "name" : data["stage_data"][stage]["name"],
-                            "part" : data["zone"][part]["name"],
+                            "part" : data["zone"][part]["name"] if data["zone"][part]["name"] else "",
                             "prev" : data["zone"][part]["stages"][data["zone"][part]["stages"].index(code) - 1] if data["zone"][part]["stages"].index(code) - 1 in range(len(data["zone"][part]["stages"])) else "",
                             "next" : data["zone"][part]["stages"][data["zone"][part]["stages"].index(code) + 1] if data["zone"][part]["stages"].index(code) + 1 in range(len(data["zone"][part]["stages"])) else "",
                             "desc" : data["stage_data"][stage]["description"],
@@ -1631,7 +1634,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             "cond"          : data["stage_data"][stage_id]["description"] if diff else "",
                             "level"         : stage_level(data["stage_data"][stage_id]["dangerLevel"]),
                             "sanity"        : data["stage_data"][stage_id]["apCost"],
-                            "drill"         : data["stage_data"][stage_id]["practiceTicketCost"] if isinstance(data["stage_data"][stage_id]["practiceTicketCost"], int) and data["stage_data"][stage_id]["practiceTicketCost"] > 0 else 0,
+                            "drill"         : data["stage_data"][stage_id]["practiceTicketCost"] if isinstance(data["stage_data"][stage_id]["practiceTicketCost"], int) and data["stage_data"][stage_id]["practiceTicketCost"] > 0 else "",
                             "unit_limit"    : global_deploy(data["stage"][stage]["runes"], data["stage"][stage]["options"]["characterLimit"], diff_type),
                             "enemies"       : sum(data["enemies_stage"][stage]["counter"][0:2]),
                             "lp"            : global_lifepoint(data["stage"][stage]["runes"], data["stage"][stage]["options"]["maxLifePoint"], diff_type),
@@ -1729,6 +1732,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
             # https://arknights.wiki.gg/wiki/Template:Operation_data/doc
             case "data":
                 #if operators_predefine_writer(data["comp"], data["pre_auto"], data["auto"], data["fixed"]) : printr("operators_predefine_writer", operators_predefine_writer(data["comp"], data["pre_auto"], data["auto"], data["fixed"]))
+                #printr(data["stage_id"], data["diff_type"])
                 return f'''{{{{Operation data
                             |{"adverse " if extra == "Adverse" else ""}cond = {desc_cond_writer(data["cond"])}
                             |level = {data["level"]}
@@ -2293,11 +2297,11 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
     return article_data
     
 # main
-script_result(wiki_article("act3mainss", "episode"))
+#script_result(wiki_article("act3mainss", "episode"))
 
 # Event
 #script_result(wiki_article("act45side", "event"), True)
-#script_result(wiki_article("act1vhalfidle", "event"), True)
+script_result(wiki_article("act1vhalfidle", "event", "Rebuilding Mandate"), True)
 
 # Trials for Navigator #04
 #script_result(wiki_article("act4bossrush", "tn", "Trials for Navigator #04"))
