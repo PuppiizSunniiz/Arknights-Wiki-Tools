@@ -196,10 +196,23 @@ def replace_apos_between(part : str) -> str:
     else:
         return part
 
+def wiki_cleanup(txt :str) -> str:
+    clean_sheet = {
+                    r'( ?\\n| ?\n)'   : "<br/>",
+                    r'(’)'          : "'",
+                    r'( - )'        : " &ndash; "
+                }
+
+    for pattern, repl in clean_sheet.items():
+        txt = re.sub(pattern, repl, txt)
+    return txt #.replace(" <br/>", "<br/>")
+
 def wiki_story(story : str, newline : str = "\n", join_str : str = "<br/>") -> str:
     desc_list = story.split(newline)
     for i in range(len(desc_list)):
         desc = desc_list[i]
+        # Clean-up
+        desc = wiki_cleanup(desc)
         # Between
         desc = replace_apos_between(desc)
         # Start - End
@@ -209,7 +222,7 @@ def wiki_story(story : str, newline : str = "\n", join_str : str = "<br/>") -> s
         # - End
         desc = re.sub(r"^([^'])(.+?)'$", r'\1\2"', desc)
         desc_list[i] = desc
-    return join_str.join(desc_list)
+    return join_str.join(desc_list).replace(" <br/>", "<br/>")
 
 def wiki_stage(stage_desc : str, newline : str = "\n", join_str : str = "<br/>") -> str:
     stage_desc = wiki_story(stage_desc, "\n", "\n")

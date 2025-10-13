@@ -162,6 +162,12 @@ def join_and(text_list : list | set) -> str :
         return_text = return_text.replace(" and ", ", ", len(text_list) - 2)
     return return_text
 
+def join_or(text_list : list | set) -> str :
+    return_text = " or ".join(text_list)
+    if len(text_list) >= 3:
+        return_text = return_text.replace(" or ", ", ", len(text_list) - 2)
+    return return_text
+
 def falsy_compare(a, b) -> bool:
     return not bool(a) and not bool(b) or a == b
 
