@@ -35,6 +35,14 @@ def json_load(filepath : str, temp = False):
         with open(f'C:/Github/AN-EN-Tags/{filepath}', 'r', encoding = 'utf-8') as file:
             return json.load(file)
 
+def txt_load(filepath : str, temp = False):
+    if temp:
+        with open(f'{filepath}', 'r', encoding = 'utf-8') as file:
+            return file.readlines()
+    else:
+        with open(f'C:/Github/AN-EN-Tags/{filepath}', 'r', encoding = 'utf-8') as file:
+            return file.readlines()
+
 def epoch(time) -> str :
     return f'{TimeFormat(datetime.fromtimestamp(time))} is {time_diff(datetime.fromtimestamp(time))}'
 
@@ -131,6 +139,10 @@ def script_result(text : str | list | set | dict ,
                 value_text = (f'\n{text[key]}').replace("\n", f'\n{"\t" * (tab + (len(key) + 3) // 4 + 1)}') if text[key] and "\n" in text[key] else text[key]
                 to_txt += [f'{"\t" * tab}{value_text}'] if txt_nokey else [f'{"\t" * tab}{key} : {value_text}']
         return to_txt
+    
+    if not text:
+        print(f'\n{Y}Script Result is {R}Empty')
+        exit()
     
     if isinstance(text, str):
         with open("py/script.txt", "w", encoding = "utf-8") as filepath:

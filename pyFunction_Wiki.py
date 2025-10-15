@@ -196,32 +196,43 @@ def replace_apos_between(part : str) -> str:
     else:
         return part
 
-def wiki_cleanup(txt :str) -> str:
+def wiki_cleanup(txt :str, all_clean : bool) -> str:
     clean_sheet = {
                     r'( ?\\n| ?\n)'     : "<br/>",
                     r'(’)'              : "'",
-                    r'( - )'            : " &ndash; ",
                     r'(。)'             : ".",
                     r'(…)'              : "...",
                     r'，'               : ", ",
-                    r'—'                : "&mdash;",
                     r'(“|”)'            : "\"",
                     r'【'               : " [",
                     r'】'               : "] ",
                     r'（'               : " (",
                     r'）'               : ") ",
+                    r'！'               : "!",
+                }
+    
+    more_sheet = {
+                    r'( - )'            : " &ndash; ",
+                    r'—'                : "&mdash;",
                 }
 
     for pattern, repl in clean_sheet.items():
         txt = re.sub(pattern, repl, txt)
+    
+    if all_clean:
+        for pattern, repl in more_sheet.items():
+            txt = re.sub(pattern, repl, txt)
+    
     return txt #.replace(" <br/>", "<br/>")
 
-def wiki_story(story : str, newline : str = "\n", join_str : str = "<br/>") -> str:
+def wiki_story(story : str|list[str], newline : str = "\n", join_str : str = "<br/>", clean_all : bool = True) -> str:
+    if isinstance(story, list):
+        story = newline.join(story)
     desc_list = story.split(newline)
     for i in range(len(desc_list)):
         desc = desc_list[i]
         # Clean-up
-        desc = wiki_cleanup(desc)
+        desc = wiki_cleanup(desc, clean_all)
         # Between
         desc = replace_apos_between(desc)
         # Start - End

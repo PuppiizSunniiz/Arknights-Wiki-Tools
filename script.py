@@ -658,14 +658,15 @@ for stage in temp_script.keys():
 
 def enemy_wave_csv():
     all_stage_dict = {}
-    all_stage = glob.glob(r'json\gamedata\ArknightsGameData_YoStar\en_US\gamedata\levels\activities\act1multi\*')
+    all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\obt\main\*16-*')
     for stage in all_stage:
         stage_id = stage.split("\\")[-1].split(".json")[0]
-        stage_json = json_load(stage)
+        stage_json = json_load(stage, temp=True)
         all_stage_dict[stage_id] = {
                                         "options"       : stage_json["options"],
                                         "runes"         : stage_json["runes"],
                                         "globalBuffs"   : stage_json["globalBuffs"],
+                                        "branches"      : stage_json["branches"],
                                     }
         stage_waves = []
         for wave in stage_json["waves"]:
@@ -723,13 +724,29 @@ def enemy_wave_csv():
                     randomSpawnGroupKey     = action["randomSpawnGroupKey"] or "-"
                     randomSpawnGroupPackKey = action["randomSpawnGroupPackKey"] or "-"
                     try :
-                        key_name    = DB["json_enemy_handbookEN"]["enemyData"][action["key"]]["name"] if action["key"].startswith("enemy") else DB["json_characterEN"][action["key"].split("#")[0]]["name"]
-                        key_id      = DB["json_enemy_handbookEN"]["enemyData"][action["key"]]["enemyIndex"] if action["key"].startswith("enemy") else "-"
-                        key_class   = DB["json_enemy_handbookEN"]["enemyData"][action["key"]]["enemyLevel"] if action["key"].startswith("enemy") else "-"
+                        key_name    = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["name"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else (DB["json_characterEN"][action["key"].split("#")[0]]["name"] if action["key"].startswith(("char", "token", "trap")) else action["key"])
+                        key_id      = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else "-"
+                        key_class   = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else "-"
                     except KeyError:
-                        key_name    = action["key"]
-                        key_id      = "-"
-                        key_class   = "-"
+                        key_name    = f'{DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["name"]}({action["key"]})' if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else (f'{DB["json_character"][action["key"].split("#")[0]]["name"]}({action["key"]})' if action["key"].startswith(("char", "token", "trap")) else action["key"])
+                        key_id      = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
+                        key_class   = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
+                    script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}')
+    if all_stage_dict[stage]["branches"]:
+        for branch in all_stage_dict[stage]["branches"]:
+            for k in range(len(all_stage_dict[stage]["branches"]["phases"])):
+                for action in range(len(all_stage_dict[stage]["branches"]["phases"][k]["action"])):
+                    hiddenGroup             = f'{branch} | {action["hiddenGroup"]}' if action["hiddenGroup"] else branch
+                    randomSpawnGroupKey     = action["randomSpawnGroupKey"] or "-"
+                    randomSpawnGroupPackKey = action["randomSpawnGroupPackKey"] or "-"
+                    try :
+                        key_name    = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["name"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else (DB["json_characterEN"][action["key"].split("#")[0]]["name"] if action["key"].startswith(("char", "token", "trap")) else action["key"])
+                        key_id      = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else "-"
+                        key_class   = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else "-"
+                    except KeyError:
+                        key_name    = f'{DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["name"]}({action["key"]})' if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else (f'{DB["json_character"][action["key"].split("#")[0]]["name"]}({action["key"]})' if action["key"].startswith(("char", "token", "trap")) else action["key"])
+                        key_id      = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
+                        key_class   = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
                     script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}')
     script_result(script_txt, True)
     
