@@ -1,5 +1,4 @@
 import re
-from typing import Literal
 from pyFunction import B, G, R, RE, Y, json_load, printc, printr, script_result, txt_load
 from pyFunction_Wiki import load_json, replace_apos_between, wiki_story
 
@@ -10,29 +9,19 @@ used_json = [
 
 DB = load_json(used_json)
 
-def get_story_json(story_key : str, stage_key : Literal["storyCode", "storyName"]):
+def get_story(story_key : str) -> list[tuple[str, str]]:
     story_json = []
-    for actvity in DB["json_story_reviewEN"]:
-        infoUnlockDatas = DB["json_story_reviewEN"][actvity]["infoUnlockDatas"]
+    for story_set in DB["json_story_reviewEN"]:
+        infoUnlockDatas = DB["json_story_reviewEN"][story_set]["infoUnlockDatas"]
         if infoUnlockDatas:
             for story in infoUnlockDatas:
-                if story[stage_key] == story_key:
+                if story["storyCode"] == story_key or story["storyName"].capitalize() == story_key.capitalize():
                     story_json.append((story.get("storyInfo", ""), story["storyTxt"]))
     if story_json:
         return story_json
     else:
         printr(f'{Y}Story not found')
         exit()
-
-def get_story(stage_code : str = "", stage_name : str = ""):
-    if stage_code:
-        return get_story_json(stage_code, "storyCode")
-    elif stage_name:
-        return get_story_json(stage_name, "storyName")
-    else:
-        printr(f'{R}HOW DID YOU GET HERE')
-        exit()
-        
     
 def story_head(story_file : str):
     head_json = txt_load(fr'json\gamedata\ArknightsGameData_YoStar\en_US\gamedata\story\[uc]{story_file}.txt')
@@ -94,11 +83,13 @@ def story_cell(story_file : str):
                     "[Image]", "[image]", "[ImageTween", 
                     "[interlude", 
                     "[largebgtween", 
-                    "[Music", 
+                    "[Music", "[music",  
                     "[SoundVolume(", 
                     "[stop", "[Stop", 
                     "[subtitle]", "[Subtitle]", 
-                    "[Play", "[play", )
+                    "[Play", "[play", 
+                    "[warp", 
+                )
     cell_json = txt_load(fr'json\gamedata\ArknightsGameData_YoStar\en_US\gamedata\story\{story_file}.txt')
     
     for line in cell_json:
@@ -125,7 +116,7 @@ def story_cell(story_file : str):
                 
             cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue = transcript_cell(cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue)
         elif line.startswith(("[Decision(options=", "[Predicate(")):
-            printc(line, doctor_predicate)
+            #printc(line, doctor_predicate)
             if line.startswith("[Decision(options="):
                 if prev_name != "Doctor" : cell_list, prev_dialogue = end_cell(prev_name, cell_list, prev_dialogue)
                 line_match  = re.match(r'\[Decision\(options="(.+?)", ?values="(.+?)"\)]', line)
@@ -147,7 +138,7 @@ def story_cell(story_file : str):
                     curr_index = doctor_predicate.split(";").index(curr_predicate)
                     curr_line = wiki_story(doctor_decision[curr_index], clean_all = all_clean)
                     curr_dialogue = f'{{{{sc|{curr_name}|{curr_line}'
-                    printc(curr_line, curr_index)
+                    #printc(curr_line, curr_index)
                     
                     if prev_predicate and curr_predicate != prev_predicate != doctor_predicate:
                         cell_list, prev_dialogue = end_cell(prev_name, cell_list, prev_dialogue)
@@ -162,7 +153,7 @@ def story_cell(story_file : str):
                         isBranch = True
                     
                     cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue = transcript_cell(cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue)
-                    printc(prev_predicate, curr_predicate, prev_dialogue)
+                    #printc(prev_predicate, curr_predicate, prev_dialogue)
                     prev_predicate = curr_predicate
                 # ex. [Predicate(references="1;2")]
                 elif curr_predicate == doctor_predicate and curr_predicate != doctor_predicate.split(";")[0]:
@@ -193,7 +184,7 @@ def story_cell(story_file : str):
                     curr_line = wiki_story(doctor_decision[curr_index], clean_all = all_clean)
                     curr_dialogue = f'{{{{sc|{curr_name}|{curr_line}'
                     
-                    printr(curr_index, doctor_predicate, curr_line)
+                    #printr(curr_index, doctor_predicate, curr_line)
                     cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue = transcript_cell(cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue)
                     doctor_decision = []
                     doctor_predicate = ""
@@ -218,14 +209,14 @@ def story_cell(story_file : str):
     cell_list, prev_dialogue = end_cell(prev_name, cell_list, prev_dialogue)
     return "\n".join(cell_list)
 
-def wiki_story_transcript(stage_code : str = "", stage_name : str = ""):
+def wiki_story_transcript(story_key : str = ""):
     story_files = []
     story_article = []
-    if bool(stage_code) + bool(stage_name) != 1 :
-        printr(f'Choose {R}one{RE} BAKA !!! :\n{G}Stage ID : {stage_code}\n{B}Stage name : {stage_name}')
+    if not story_key :
+        printr(f'{Y}Story ID/name Doko ??? : "{story_key}"')
         exit()
     else:
-        story_files = get_story(stage_code, stage_name)
+        story_files = get_story(story_key)
         for story_file in story_files:
             if story_file[0]:
                 story_article.append(story_head(story_file[0]))
@@ -233,16 +224,15 @@ def wiki_story_transcript(stage_code : str = "", stage_name : str = ""):
             story_article.append("{{Table end}}")
     script_result(story_article, True)
 
-stage_code  = "15-15"
-stage_name  = ""
+story_key   = "Originium Slugs and Hops"
 skip_cut    = False # True False
 all_clean   = False # True False
-wiki_story_transcript(stage_code.strip(), stage_name.strip())
+wiki_story_transcript(story_key.strip())
 
 
 ############################################################################################################################################
 # Find with Regex ON (.*)
-#   ^(|.+?[\. (?:|<br\/>|<br>)])'([^'(?:<br\/>|<br>)].+?|[^(?:tis|twas|twere|<br\/>|<br>)].+?)'(?:( |\?|!|\.|,|<br\/>|<br>|\|)(.+?|)|)$
+#   ^(|.+?[\. (?:|<br\/>|<br>)])(?<!')'(?!')([^'(?:<br\/>|<br>)].+?|[^(?:tis|twas|twere|<br\/>|<br>)].+?)(?<!')'(?!')(?:( |\?|!|\.|,|<br\/>|<br>|\|)(.+?|)|)$
 ############################################################################################################################################
 # Replace
 #   $1"$2"$3$4
