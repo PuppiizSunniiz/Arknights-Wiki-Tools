@@ -189,9 +189,18 @@ def wiki_text(candidate : tuple[str, list] | str) -> str:
     return desc.strip()
 
 def replace_apos_between(part : str) -> str:
-    between_match = re.search(r"^(|.+? )'([^']+?|[^(?:tis|twas|twere)].+?)'(?:( |\?|!|\.|,)(.+?|)|)$", part)
+    ############################################################################################################################################
+    # Find with Regex ON (.*)
+    #   ^(|.+?[\. (?:|<br\/>|<br>)])'([^'(?:<br\/>|<br>)].+?|[^(?:tis|twas|twere|<br\/>|<br>)].+?)'(?:( |\?|!|\.|,|<br\/>|<br>|\|)(.+?|)|)$
+    ############################################################################################################################################
+    # Replace
+    #   $1"$2"$3$4
+    ############################################################################################################################################
+    
+    apos_match = r"^(|.+?[\. (?:|<br\/>|<br>)])'([^'(?:<br\/>|<br>)].+?|[^(?:tis|twas|twere|<br\/>|<br>)].+?)'(?:( |\?|!|\.|,|<br\/>|<br>|\|)(.+?|)|)$"
+    between_match = re.search(apos_match, part) 
     if between_match:
-        new_part = re.sub(r"^(|.+? )'([^']+?|[^(?:tis|twas|twere)].+?)'(?:( |\?|!|\.|,)(.+?|)|)$", r'\1"\2"\3\4', part)
+        new_part = re.sub(apos_match, r'\1"\2"\3\4', part) 
         return replace_apos_between(new_part)
     else:
         return part
@@ -209,6 +218,7 @@ def wiki_cleanup(txt :str, all_clean : bool) -> str:
                     r'（'               : " (",
                     r'）'               : ") ",
                     r'！'               : "!",
+                    r'(\t|\\t)'         : " ",
                 }
     
     more_sheet = {
@@ -224,6 +234,14 @@ def wiki_cleanup(txt :str, all_clean : bool) -> str:
             txt = re.sub(pattern, repl, txt)
     
     return txt #.replace(" <br/>", "<br/>")
+
+def wiki_story_color(desc : str) -> str:
+    color_match = r'<color=#(.+?)>(.+?)<\/color>'
+    if re.match(color_match, desc):
+        desc = re.sub(color_match, r'{{Color|\2|code=\1}}', desc)
+        return wiki_story_color(desc)
+    else:
+        return desc
 
 def wiki_story(story : str|list[str], newline : str = "\n", join_str : str = "<br/>", clean_all : bool = True) -> str:
     if isinstance(story, list):
@@ -241,6 +259,8 @@ def wiki_story(story : str|list[str], newline : str = "\n", join_str : str = "<b
         desc = re.sub(r"^'(.+?)([^'])$", r'"\1\2', desc)
         # - End
         desc = re.sub(r"^([^'])(.+?)'$", r'\1\2"', desc)
+        # Color
+        desc = wiki_story_color(desc)
         desc_list[i] = desc
     return join_str.join(desc_list).replace(" <br/>", "<br/>").strip()
 

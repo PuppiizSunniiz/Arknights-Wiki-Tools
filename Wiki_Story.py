@@ -1,6 +1,6 @@
 import re
 from typing import Literal
-from pyFunction import B, G, R, RE, Y, json_load, printr, script_result, txt_load
+from pyFunction import B, G, R, RE, Y, json_load, printc, printr, script_result, txt_load
 from pyFunction_Wiki import load_json, replace_apos_between, wiki_story
 
 
@@ -66,27 +66,57 @@ def story_cell(story_file : str):
         # Mid conversation
         elif curr_name == prev_name:
             prev_dialogue += f'<br/>{curr_line}'
-        printr(prev_dialogue)
+        #printr(prev_dialogue)
         return cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue
 
     cell_list       : list[str] = []
     doctor_decision : list[str] = []
     doctor_predicate            = ""
     prev_predicate              = ""
+    isBranch                    = False
     prev_name                   = ""
     prev_dialogue               = ""
     
-    cut_list = ("[Image(", "[Background(", "[playsound(", "[ImageTween", "[PlaySound")
-    skip_list = ("[HEADER", "[charslot", "[Blocker", "[delay", "[Delay", "[stopmusic]", "[Dialog]", "[subtitle]", "[PlayMusic", "[stopmusic", "[CameraShake(", "[stopSound", "[Image]", "[playMusic")
+    cut_list = ("[Image(", "[Background(", "[playsound(", "[PlaySound(", "[image(", "[gridbg(", "[largebg", )
+    skip_list = (
+                    "[animtextclean]", 
+                    "[backgroundTween", "[bgeffect", "[Background]", "[BackgroundTween", 
+                    "[Blocker", 
+                    "[Camera", 
+                    "[char", "[Char", 
+                    "[curtain", 
+                    "[delay", "[Delay", 
+                    "[Dialog]", "[dialog]", "[Dialog(", 
+                    "[Effect(", 
+                    "[focus", 
+                    "[gridbg]", 
+                    "[HEADER",  
+                    "[Image]", "[image]", "[ImageTween", 
+                    "[interlude", 
+                    "[largebgtween", 
+                    "[Music", 
+                    "[SoundVolume(", 
+                    "[stop", "[Stop", 
+                    "[subtitle]", "[Subtitle]", 
+                    "[Play", "[play", )
     cell_json = txt_load(fr'json\gamedata\ArknightsGameData_YoStar\en_US\gamedata\story\{story_file}.txt')
     
     for line in cell_json:
-        if line.startswith(("[name=", "[multiline(name=", "[Subtitle(text=")):
-            DIALOUGE = line.startswith(("[name=", "[multiline(name=")) # Dialouge / Subtitle
+        if line.startswith(("[name=", "[multiline(name=")):
             dialogue_match = re.match(r'^.+?name="(.+?)"\)?](?:\s*|)(.+?)$', line)
-            curr_name = replace_apos_between(dialogue_match.group(1)) if DIALOUGE else "[Subtitle]"
-            curr_line = wiki_story(dialogue_match.group(2), clean_all = all_clean) if DIALOUGE else wiki_story(re.match(r'^\[Subtitle\(text="(.+?)",.+?$', line).group(1))
-            curr_dialogue = f'{{{{sc|{curr_name}|{curr_line}' if DIALOUGE else f'{{{{sc|{curr_line}'
+            curr_name = replace_apos_between(dialogue_match.group(1))
+            curr_line = wiki_story(dialogue_match.group(2), clean_all = all_clean)
+            curr_dialogue = f'{{{{sc|{curr_name}|{curr_line}'
+            cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue = transcript_cell(cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue)
+        elif line.startswith(("[Sticker(", "[Subtitle(text=")):
+            dialogue_match = re.match(r'^\[.+?text="(.+?)" ?,.+?$', line)
+            if not dialogue_match:
+                cell_list, prev_dialogue = end_cell(prev_name, cell_list, prev_dialogue)
+                prev_name = ""
+                continue
+            curr_name = "[Subtitle]"
+            curr_line = wiki_story(dialogue_match.group(1))
+            curr_dialogue = f'{{{{sc|{curr_line}'
             cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue = transcript_cell(cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue)
         elif not line.startswith("["):
             curr_name = "[Speech]"
@@ -95,34 +125,57 @@ def story_cell(story_file : str):
                 
             cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue = transcript_cell(cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue)
         elif line.startswith(("[Decision(options=", "[Predicate(")):
+            printc(line, doctor_predicate)
             if line.startswith("[Decision(options="):
                 if prev_name != "Doctor" : cell_list, prev_dialogue = end_cell(prev_name, cell_list, prev_dialogue)
                 line_match  = re.match(r'\[Decision\(options="(.+?)", ?values="(.+?)"\)]', line)
-                doctor_decision = line_match.group(1).split(";")
-                doctor_predicate = line_match.group(2)
+                curr_decision = line_match.group(1).split(";")
+                curr_predicate = line_match.group(2)
+                # New line in Curr Branch
+                if doctor_predicate and curr_predicate != doctor_predicate:
+                    curr_index = doctor_predicate.split(";").index(curr_predicate)
+                    doctor_decision[curr_index] = curr_decision[0]
+                elif not doctor_predicate:
+                    #cell_list, prev_dialogue = end_cell(prev_name, cell_list, prev_dialogue)
+                    doctor_decision = curr_decision
+                    doctor_predicate = curr_predicate
             elif line.startswith("[Predicate("):
                 curr_predicate  = re.match(r'\[Predicate\(references="(.+?)"\)\]', line).group(1)
-                if curr_predicate != doctor_predicate:
+                # Start Branch
+                if doctor_predicate and curr_predicate != doctor_predicate:
                     curr_name = "Doctor"
                     curr_index = doctor_predicate.split(";").index(curr_predicate)
                     curr_line = wiki_story(doctor_decision[curr_index], clean_all = all_clean)
                     curr_dialogue = f'{{{{sc|{curr_name}|{curr_line}'
-                    cell_list, prev_dialogue = end_cell(prev_name, cell_list, prev_dialogue)
+                    printc(curr_line, curr_index)
+                    
+                    if prev_predicate and curr_predicate != prev_predicate != doctor_predicate:
+                        cell_list, prev_dialogue = end_cell(prev_name, cell_list, prev_dialogue)
+                        prev_name = ""
+                        isBranch = False
+                    
                     if curr_index == 0:
-                        cell_list.append("{{sc|mode=branchstart}}")
+                        if not isBranch : cell_list.append("{{sc|mode=branchstart}}")
+                        isBranch = True
                     else:
-                        cell_list.append("{{sc|mode=branch}}")
+                        if not isBranch : cell_list.append("{{sc|mode=branch}}")
+                        isBranch = True
                     
                     cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue = transcript_cell(cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue)
+                    printc(prev_predicate, curr_predicate, prev_dialogue)
                     prev_predicate = curr_predicate
                 # ex. [Predicate(references="1;2")]
                 elif curr_predicate == doctor_predicate and curr_predicate != doctor_predicate.split(";")[0]:
+                    # Branch end
                     if prev_predicate:
                         cell_list, prev_dialogue = end_cell(prev_name, cell_list, prev_dialogue)
                         cell_list.append("{{sc|mode=branchend}}")
                         doctor_decision = []
                         doctor_predicate = ""
                         prev_predicate = ""
+                        prev_name = ""
+                        isBranch = False
+                    # No Branch
                     else:
                         curr_name = "Doctor"
                         curr_line = wiki_story((" / ").join(doctor_decision), clean_all = all_clean)
@@ -132,12 +185,15 @@ def story_cell(story_file : str):
                         doctor_decision = []
                         doctor_predicate = ""
                         prev_predicate = ""
-                # ex. [Predicate(references="1")]
+                # ex. [Predicate(references="1")] -> Branch / Only Choice
                 else:
                     curr_name = "Doctor"
-                    curr_line = wiki_story(doctor_decision[0], clean_all = all_clean)
+                    curr_index = doctor_predicate.split(";").index(curr_predicate)
+                    
+                    curr_line = wiki_story(doctor_decision[curr_index], clean_all = all_clean)
                     curr_dialogue = f'{{{{sc|{curr_name}|{curr_line}'
-                        
+                    
+                    printr(curr_index, doctor_predicate, curr_line)
                     cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue = transcript_cell(cell_list, prev_name, prev_dialogue, curr_name, curr_line, curr_dialogue)
                     doctor_decision = []
                     doctor_predicate = ""
@@ -146,8 +202,8 @@ def story_cell(story_file : str):
         elif line.startswith(cut_list):
             if skip_cut:
                 continue
-            elif line.startswith(("[playsound(", "[PlaySound")):
-                if cell_list[-1].endswith("|mode=action}}") and not prev_dialogue: continue
+            elif line.startswith(("[playsound(", "[PlaySound(")):
+                if cell_list and cell_list[-1].endswith("|mode=action}}") and not prev_dialogue: continue
                 cell_list, prev_dialogue = end_cell(prev_name, cell_list, prev_dialogue)
                 cell_list.append(f'{{{{sc||mode=action}}}}')
                 prev_name = ""
@@ -177,8 +233,17 @@ def wiki_story_transcript(stage_code : str = "", stage_name : str = ""):
             story_article.append("{{Table end}}")
     script_result(story_article, True)
 
-stage_code  = "EA-ST-3"
+stage_code  = "15-15"
 stage_name  = ""
 skip_cut    = False # True False
 all_clean   = False # True False
-wiki_story_transcript(stage_code, stage_name)
+wiki_story_transcript(stage_code.strip(), stage_name.strip())
+
+
+############################################################################################################################################
+# Find with Regex ON (.*)
+#   ^(|.+?[\. (?:|<br\/>|<br>)])'([^'(?:<br\/>|<br>)].+?|[^(?:tis|twas|twere|<br\/>|<br>)].+?)'(?:( |\?|!|\.|,|<br\/>|<br>|\|)(.+?|)|)$
+############################################################################################################################################
+# Replace
+#   $1"$2"$3$4
+############################################################################################################################################
