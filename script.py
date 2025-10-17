@@ -6,7 +6,7 @@ from typing import Literal
 import pandas as pd
 
 from pyFunction import R, G, B, Y, RE, json_load, printr, script_result
-from pyFunction_Wiki import CLASS_PARSE_EN, range_template, wiki_stage, wiki_story
+from pyFunction_Wiki import CLASS_PARSE_EN, range_template, replace_apos_between, wiki_stage, wiki_story, wiki_trim
 
 ################################################################################################################################################################################################################################################
 # JSON
@@ -142,9 +142,6 @@ def decimal_format(dec : float) -> str:
         return f'{dec:.1f}'
     else:
         return f'{dec:.0f}'
-
-def wiki_trim(text : str) -> str:
-    return text.replace("'", "").replace('"', "").replace("?", "")
 
 ################################################################################################################################################################################################################################################
 # Old Script
@@ -648,10 +645,10 @@ def input_script(script : Literal["txt", "json"] = "txt"):
         return json_load("py/input_script.json", temp=True)
 
 #print(wiki_story(input_script(), join_str="\n"))
-temp_script = input_script("json")
-temp_out = {}
-for stage in temp_script.keys():
-    temp_out[stage] = {"runes" : temp_script[stage]["runes"], "globalBuffs" : temp_script[stage]["globalBuffs"]}
+#temp_script = input_script("json")
+#temp_out = {}
+#for stage in temp_script.keys():
+#    temp_out[stage] = {"runes" : temp_script[stage]["runes"], "globalBuffs" : temp_script[stage]["globalBuffs"]}
 #script_result(temp_out)
 
 #printr(f'{30.100010000000:.0%}')
@@ -750,7 +747,7 @@ def enemy_wave_csv():
                     script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}')
     script_result(script_txt, True)
     
-enemy_wave_csv()
+#enemy_wave_csv()
 
 #printr(bin(639), bin(96), bool("1"), bool("0"))
 
@@ -773,3 +770,32 @@ def editor_trim():
         editor_file.write("\n".join(temp_editor).replace(" ", " ").replace("’", "'").replace("’", "'"))
 
 #editor_trim()
+
+def crimson_plays():
+    plays_list = []
+    plays_json = input_script("json")
+    for play in plays_json:
+        play_name = replace_apos_between(plays_json[play]["name"])
+        prev_play_name = play_name.split("Crimson ")[-1]
+        prev_play_link = f'{wiki_trim(prev_play_name, False)}|{prev_play_name}' if wiki_trim(prev_play_name, False) != prev_play_name else prev_play_name
+        play_article_desc = f"'''{play_name}''' is a [[Play#Crimson Troupe Plays|Crimson Troupe Play]] variant of [[{prev_play_link}]] in [[Phantom & Crimson Solitaire]]."
+        play_article = f'''
+                        {{{{Item infobox
+                        |name = {wiki_trim(plays_json[play]["name"], False)}
+                        |title = {play_name}
+                        |type = [[Phantom & Crimson Solitaire]] [[Play]]}}}}
+                        {play_article_desc}
+
+                        {{{{Item description|{wiki_story(plays_json[play]["usage"])}|{wiki_story(plays_json[play]["description"])}}}}}
+
+                        ==Effect==
+                        {{{{Stub}}}}
+
+                        {{{{IS items}}}}
+                        [[Category:Plays]]
+                        '''.replace("                        ","")
+        play_module = f'["{wiki_trim(plays_json[play]["name"], False)}"]={{name="{wiki_trim(plays_json[play]["name"], False).replace('"','\\"')}", title="{play_name}", use="{wiki_story(plays_json[play]["usage"])}", desc="{wiki_story(plays_json[play]["description"])}"}}'
+                        
+        plays_list.append(play_module)
+    script_result(plays_list, True)
+crimson_plays()

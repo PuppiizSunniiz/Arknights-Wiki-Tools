@@ -133,8 +133,11 @@ def load_json(json_load_list : str | list = []) -> dict :
                 }
     return {new_json:json_load(json_list[new_json]) for new_json in json_load_list}
 
-def wiki_trim(text : str) -> str:
-    return text.replace("'", "").replace('"', "").replace("?", "")
+def wiki_trim(text : str, replace_all : bool = True) -> str:
+    if replace_all:
+        return replace_apos_between(text).replace("'", "").replace('"', "").replace("?", "")
+    else:
+        return replace_apos_between(text).replace('"', "").replace("?", "")
 
 def wiki_text(candidate : tuple[str, list] | str) -> str:
     '''
