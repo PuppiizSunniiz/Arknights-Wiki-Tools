@@ -1,6 +1,9 @@
+import json
 import re
 from typing import Literal
-from pyFunction import B, R, RE, Y, printr, script_result
+
+import requests
+from pyFunction import B, R, RE, Y, json_load, printr, script_result
 from pyFunction_Wiki import load_json, wiki_story
 
 used_json = [
@@ -8,6 +11,9 @@ used_json = [
                 "json_charwordEN",
             ]
 DB = load_json(used_json)
+
+DB["json_charwordEN"] = json_load(r"py\input_script.json", True)
+#DB["json_charwordEN"] = json.loads(requests.get("https://raw.githubusercontent.com/ArknightsAssets/ArknightsGamedata/refs/heads/master/en/gamedata/excel/charword_table.json").text)
 
 DEFAULT = {1: 'Appointed as Assistant', 2: 'Talk 1', 3: 'Talk 2', 4: 'Talk 3', 5: 'Talk after Promotion 1', 6: 'Talk after Promotion 2', 7: 'Talk after Trust Increase 1', 8: 'Talk after Trust Increase 2', 9: 'Talk after Trust Increase 3', 10: 'Idle', 11: 'Onboard', 12: 'Watching Battle Record', 13: 'Promotion 1', 14: 'Promotion 2', 17: 'Added to Squad', 18: 'Appointed as Squad Leader', 19: 'Depart', 20: 'Begin Operation', 21: 'Selecting Operator 1', 22: 'Selecting Operator 2', 23: 'Deployment 1', 24: 'Deployment 2', 25: 'In Battle 1', 26: 'In Battle 2', 27: 'In Battle 3', 28: 'In Battle 4', 29: '4-star Result', 30: '3-star Result', 31: 'Sub 3-star Result', 32: 'Operation Failure', 33: 'Assigned to Facility', 34: 'Tap', 36: 'Trust Tap', 37: 'Title', 38: "New Year's blessing", 42: 'Greeting', 43: 'Birthday', 44: 'Anniversary Celebration'}
 
@@ -45,13 +51,34 @@ def wiki_operator_dialogue(operator_list : list[str] | str, server : Literal["CN
             article_writer.append(f'\n{operator_id}\n{{{{Operator tab}}}}\n{{{{Operator dialogue head}}}}')
             for i in range(len(sort_list)):
                 if sort_list[i] in dialogue_dict:
-                    article_writer.append(f'{{{{Operator dialogue cell|no={i + 1 if mode == 1 else sort_list[i]}|dialogue={dialogue_dict[sort_list[i]]}|jp=|cn=|en=|kr=}}}}')
+                    article_writer.append(f'{{{{Operator dialogue cell|no={i + 1 if mode == 1 else sort_list[i]}{f'|dialogue={dialogue_dict[sort_list[i]]}' if sort_list[i] != 37 else ""}|jp={"true" if jp else ""}|cn={"true" if cn else ""}|en={"true" if en and sort_list[i] != 43 else ""}|kr={"true" if kr and sort_list[i] != 43 else ""}}}}}')
                 
     if article_writer:
         article_writer.append("{{Table end}}")
         script_result(article_writer, True)
 
-OP_DIALOGUE_LIST    = "char_194_leto"
+'''
+    "skinWords": [
+        "char_003_kalts_boc#6",
+        "char_1012_skadi2_iteration#2",
+        "char_1016_agoat2_epoque#34",
+        "char_1032_excu2_sale#12",
+        "char_1035_wisdel_sale#14",
+        "char_113_cqbw_epoque#7",
+        "char_2024_chyue_cfa#1",
+        "char_245_cello_sale#12",
+        "char_249_mlyss_boc#8",
+        "char_4064_mlynar_epoque#28",
+        "char_472_pasngr_epoque#17"
+    ],
+'''
+
+jp = True   # True False
+cn = True   # True False
+en = True   # True False
+kr = True   # True False
+
+OP_DIALOGUE_LIST    = "char_240_wyvern"
 dialogue_cell       = 1
 
 wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST)

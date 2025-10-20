@@ -151,7 +151,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                         "add_other_rune_blackb", 
                         "char_attribute_mul", 
                         "cooperate_enemy_side_shared", 
-                        "enemy_attribute_mul", "enemy_talent_blackb_mul", "enemy_dynamic_ability_new", "enemy_attribute_add", "enemy_skill_cd_mul", "enemy_talent_blackb_add", "enemy_attackradius_mul",
+                        "enemy_attribute_mul", "enemy_talent_blackb_mul", "enemy_dynamic_ability_new", "enemy_attribute_add", "enemy_skill_cd_mul", "enemy_talent_blackb_add", "enemy_attackradius_mul", "enemy_skill_blackb_mul", 
                         "env_gbuff_new_with_verify", "env_gbuff_new", 
                         "level_enemy_replace", "level_hidden_group_enable", "level_hidden_group_disable", 
                     ]
@@ -161,6 +161,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                         "env_gbuff_new", "env_gbuff_new_with_verify", 
                         "env_system_new", 
                         "global_cost_recovery_mul", "global_lifepoint", "global_cost_recovery", "global_forbid_location", "global_placable_char_num_add", "global_initial_cost_add",
+                        "level_predefines_enable", 
                         "map_tile_blackb_assign", 
                     ]
     both_rune       = ["env_gbuff_new_with_verify", "env_gbuff_new"]
@@ -177,7 +178,9 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
             ]
 
     env_name = [
-                    "env_017_act35side", "env_010_act31side_pollute", "mainline16_enemy_target_free", "env_005_mainline12_sightSystem", "env_v066_mainline16_ctrl"
+                    "defense_buff_add_if_cancelable_buff[enemy]",
+                    "env_017_act35side", "env_010_act31side_pollute", "env_005_mainline12_sightSystem", "env_v066_mainline16_ctrl", "env_act42side_level_ctrl", 
+                    "mainline16_enemy_target_free", 
                 ]
     
     def stage_level(level : str) -> str:
@@ -506,7 +509,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
     def tile_lister(def_data : list) -> list:
         tile_output = []
         tile_skip = ["tile_wall", "tile_road", "tile_floor", "tile_toxichill", "tile_toxicroad", "tile_toxicwall", "tile_toxic", "tile_reed", "tile_reedw", "tile_mire", "tile_yinyang_wall", "tile_yinyang_road", "tile_stairs", "tile_passable_wall", "tile_passable_wall_forbidden", "tile_rcm_operator", "tile_wooden_wall", "tile_empty", "tile_deepsea", "tile_pollution_roadf"]
-        tlle_full_skip = ["tile_start", "tile_end", "tile_forbidden", "tile_telin", "tile_telout", "tile_hole", "tile_fence_bound", "tile_flystart", "tile_smog", "tile_start_cooperate", "tile_end_cooperate", "tile_allygoal", "tile_football", "tile_enemygoal", "tile_green", "tile_ristar_road", "tile_ristar_road_forbidden", "tile_grvtybtn"]
+        tlle_full_skip = ["tile_start", "tile_end", "tile_forbidden", "tile_telin", "tile_telout", "tile_hole", "tile_fence_bound", "tile_flystart", "tile_smog", "tile_start_cooperate", "tile_end_cooperate", "tile_allygoal", "tile_football", "tile_enemygoal", "tile_green", "tile_ristar_road", "tile_ristar_road_forbidden", "tile_grvtybtn", "tile_sleep_wall", "tile_sleep_road"]
         for tile in def_data:
             if (tile["tileKey"] in tile_skip and not tile["blackboard"] and not tile["effects"]) or tile["tileKey"] in tlle_full_skip:
                 continue
@@ -643,6 +646,18 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                         continue
                     else :
                         printc(f'New {Y}tile_creep{RE} case just drop : {B}{tile[tile_id]}{RE}')
+                case "tile_gazebo":
+                    aspd = 0
+                    atk = 0
+                    for blackboard in tile[tile_id]["blackboard"]:
+                        match blackboard["key"]:
+                            case "attack_speed":
+                                aspd = blackboard["value"]
+                            case "atk_scale":
+                                atk = blackboard["value"]
+                            case _:
+                                printc(f'New {Y}tile_infection{RE} case just drop : {B}{tile[tile_id]}{RE}')
+                    tile_result.append(f'[[Anti-Air Rune]] reduce the ASPD of friendly units on it by {abs(aspd):g} but increases the damage they dealt against aerial enemies by {(atk - 1)*100:g}%.')
                 case _ :
                     printr(f'new Terrain to add : {Y}{tile_id}\n\t{G}{tile[tile_id]["blackboard"]}\n\t{B}{tile[tile_id]["effects"]}{RE}')
                     #exit()
@@ -975,8 +990,18 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             printr(f'{Y}New {rune["key"]} bb just drop : {B}{temp["blackboard"]}')
                         if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
                             printr(f'{Y}New {rune["key"]} bb just drop : {B}{temp["blackboard"]}')
+                    case "level_predefines_enable":
+                        predefines = [[], []]
+                        for k,v in rune["blackboard"].items():
+                            predefines[int(v)].append(k)
+                        if predefines[0]:
+                            char_name = [DB["json_characterEN"][char_id.split("#")[0]]["name"] if char_id.split("#")[0] in DB["json_characterEN"] else DB["json_character"][char_id.split("#")[0]]["appellation"] for char_id in predefines[0]]
+                            rune_writer.append(f'\n{join_and(set(char_name))} no longer appear')
+                        if predefines[1]:
+                            char_name = [DB["json_characterEN"][char_id.split("#")[0]]["name"] if char_id.split("#")[0] in DB["json_characterEN"] else DB["json_character"][char_id.split("#")[0]]["appellation"] for char_id in predefines[1]]
+                            rune_writer.append(f'\n{join_and(set(char_name))} appear')
                     case _:
-                        printc(f'New case just drop :', rune["key"], rune["blackboard"])
+                        printc(f'{Y}{stage}{RE} New case just drop :', rune["key"], rune["blackboard"])
                         #exit()
         
         if event_type == "ig" and ig_ctrl:
@@ -1039,7 +1064,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                                                     blackboard_list.append(blackboard)
                                                     continue
                                                 case _ :
-                                                    printr(f'new blackboard key {Y}{blackboard["key"]}{RE} for : {Y}{enemy_id}{R}({stage_key}){RE}')
+                                                    printr(f'{Y}{stage}{RE} new blackboard key {Y}{blackboard["key"]}{RE} for : {Y}{enemy_id}{R}({stage_key}){RE}')
                                     if blackboard_list:
                                         enemy_overwrittenData[key] = blackboard_list
                                 case "skills":
@@ -1062,10 +1087,13 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                                                                     elif bb_key["key"] != bb["key"]:
                                                                         continue
                                                                     else:
-                                                                        skills_list.update({f'Skill-BB-{bb_key["key"]}':bb_key["valueStr"] if bb_key["valueStr"] else bb_key["value"]})
+                                                                        skills_list.setdefault(skill_key["prefabKey"], {})
+                                                                        skills_list[skill_key["prefabKey"]].update({f'Skill-BB-{bb_key["key"]}':bb_key["valueStr"] if bb_key["valueStr"] else bb_key["value"]})
                                                         elif skill_key[s_key] != skill[s_key]:
-                                                                skills_list.update({s_key:skill_key[s_key]})
+                                                            skills_list.setdefault(skill_key["prefabKey"], {})
+                                                            skills_list[skill_key["prefabKey"]].update({s_key:skill_key[s_key]})
                                     if skills_list:
+                                        printc(skills_list)
                                         enemy_overwrittenData[key] = skills_list
                                 case "spData":
                                     spData_list = {}
@@ -1119,7 +1147,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                                 return f'(will escape to nearest position) {map_grid(value[0]["valueStr"], "or")}'
                             case _:
                                 pass
-                    printr(key, value)
+                    printc(f'{Y}{stage}{RE}', key, value)
                     return f'<!--{key} : {value}-->'
                 case _ :
                     try:
@@ -1365,7 +1393,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             known_key = {
                                             "invisible" : "{{G|Invisible}}",
                                         }
-                            match [key for key in rune["blackboard"]]:
+                            match sorted([key for key in rune["blackboard"].keys()]):
                                 case ["enemy", "key"]:
                                     get_enemy = rune["blackboard"]["enemy"].split("|")
                                     try:
@@ -1377,7 +1405,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                                         printr(f'New Key for {rune["key"]} : {rune[rune["blackboard"]["key"]]}')
                                     eaddendum_result.append(f'{replace_apos_between(enemy_name)} gain {enemy_gain}')
                                 case _:
-                                    printr(f'New key for {rune["key"]} just drop : {rune["blackboard"]}')
+                                    printr(f'{Y}{stage}{RE} New key for {rune["key"]} just drop : {rune["blackboard"]}')
                         case "enemy_skill_cd_mul"| "enemy_attackradius_mul":
                             attribute_dict = {
                                                     "enemy_skill_cd_mul"        : "ability cooldowns",
@@ -2349,10 +2377,10 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
     return article_data
     
 # main
-script_result(wiki_article("act3mainss", "episode"))
+#script_result(wiki_article("act3mainss", "episode"))
 
 # Event
-#script_result(wiki_article("act45side", "event"), True)
+script_result(wiki_article("act42side", "event"), True)
 #script_result(wiki_article("act1vhalfidle", "event", "Rebuilding Mandate"), True)
 
 # Trials for Navigator #04

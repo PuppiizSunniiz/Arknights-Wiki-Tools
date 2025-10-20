@@ -227,6 +227,7 @@ def wiki_cleanup(txt :str, all_clean : bool) -> str:
                 }
     
     more_sheet = {
+                    r'–'                : "&ndash;",
                     r'( - )'            : " &ndash; ",
                     r'—'                : "&mdash;",
                 }
