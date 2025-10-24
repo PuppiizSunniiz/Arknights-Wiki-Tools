@@ -48,10 +48,21 @@ def wiki_operator_dialogue(operator_list : list[str] | str, server : Literal["CN
                 voiceText   = charword_table_json["charWords"][dialogue_key]["voiceText"]
                 dialogue_dict[voiceIndex] = wiki_story(voiceText)
         if dialogue_dict:
-            article_writer.append(f'\n{operator_id}\n{{{{Operator tab}}}}\n{{{{Operator dialogue head}}}}')
+            #article_writer.append(f'\n{operator_id}\n{{{{Operator tab}}}}\n{{{{Operator dialogue head}}}}')
+            article_writer.append(f'{{{{Operator tab}}}}\n{{{{Operator dialogue head}}}}')
             for i in range(len(sort_list)):
                 if sort_list[i] in dialogue_dict:
-                    article_writer.append(f'{{{{Operator dialogue cell|no={i + 1 if mode == 1 else sort_list[i]}{f'|dialogue={dialogue_dict[sort_list[i]]}' if sort_list[i] != 37 else ""}|jp={"true" if jp else ""}|cn={"true" if cn else ""}|en={"true" if en and sort_list[i] != 43 else ""}|kr={"true" if kr and sort_list[i] != 43 else ""}}}}}')
+                    cell_template       = "Operator dialogue cell2" if mode == 2 else "Operator dialogue cell"
+                    dialogue_no         = i + 1 if mode == 1 else sort_list[i]
+                    dialogue_desc       = dialogue_dict[sort_list[i]].replace("*", "&ast;") if dialogue_dict[sort_list[i]].startswith("*") else (dialogue_dict[sort_list[i]] if sort_list[i] != 37 else (f'|dialogue=\'\'[[Arknights]].\'\'' if mode == 2 else ""))
+                    dialogue_outfit     = f'|outfit={outfit}' if outfit else ""
+                    dialogue_jp         = "|jp=true" if jp else ""
+                    dialogue_cn         = "|cn=true" if cn else ""
+                    dialogue_en         = "|en=true" if en and sort_list[i] != 43 else ""
+                    dialogue_kr         = "|kr=true" if kr and sort_list[i] != 43 else ""
+                    dialogue_other      = f'|otherlang={otherlang}' if otherlang else ""
+                    dialogue_dialect    = f'|dialect={dialect}' if dialect else ""
+                    article_writer.append(f'{{{{{cell_template}|no={dialogue_no}{f'|dialogue={dialogue_desc}'}{dialogue_outfit}{dialogue_jp}{dialogue_cn}{dialogue_dialect}{dialogue_en}{dialogue_kr}{dialogue_other}}}}}')
                 
     if article_writer:
         article_writer.append("{{Table end}}")
@@ -59,17 +70,17 @@ def wiki_operator_dialogue(operator_list : list[str] | str, server : Literal["CN
 
 '''
     "skinWords": [
-        "char_003_kalts_boc#6",
-        "char_1012_skadi2_iteration#2",
-        "char_1016_agoat2_epoque#34",
-        "char_1032_excu2_sale#12",
-        "char_1035_wisdel_sale#14",
-        "char_113_cqbw_epoque#7",
-        "char_2024_chyue_cfa#1",
-        "char_245_cello_sale#12",
-        "char_249_mlyss_boc#8",
-        "char_4064_mlynar_epoque#28",
-        "char_472_pasngr_epoque#17"
+        "char_003_kalts_boc#6",             #kal
+        "char_1012_skadi2_iteration#2",     #skya
+        "char_1016_agoat2_epoque#34",       #eyja
+        "char_1032_excu2_sale#12",          #excu
+        "char_1035_wisdel_sale#14",         #wis
+        "char_113_cqbw_epoque#7",           #w
+        "char_2024_chyue_cfa#1",            #K
+        "char_245_cello_sale#12",           #tutu
+        "char_249_mlyss_boc#8",             #mumu
+        "char_4064_mlynar_epoque#28",       #uncle
+        "char_472_pasngr_epoque#17"         #pass
     ],
 '''
 
@@ -77,8 +88,16 @@ jp = True   # True False
 cn = True   # True False
 en = True   # True False
 kr = True   # True False
+otherlang = ""  #IT RU etc.
+dialect = "Cantonese"
+outfit = ""
 
-OP_DIALOGUE_LIST    = "char_240_wyvern"
+OP_DIALOGUE_LIST    = "char_136_hsguma"
 dialogue_cell       = 1
 
-wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST)
+wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST, dialogue_cell = dialogue_cell)
+
+#https://raw.githubusercontent.com/ArknightsAssets/ArknightsGamedata/refs/heads/master/en/gamedata/excel/charword_table.json
+#https://arknights.wiki.gg/wiki/Caper/Dialogue#cite_ref-1
+#   (^\{\{Operator dialogue cell\|.+?)\}\}$
+#   $1|jp=true|cn=true|en=true|kr=true}}
