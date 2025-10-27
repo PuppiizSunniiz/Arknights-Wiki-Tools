@@ -9,7 +9,7 @@ from pyFunction_Wiki import replace_apos_between
 def activity_medal(activity : str):
     def wikitrim_method(desc : str) -> str:
         if desc:
-            trim_desc = desc.split(", ", 1)[-1]
+            trim_desc = re.sub("^During the event (.+?), ", "", desc)
             return replace_apos_between(trim_desc[0].upper() + trim_desc[1:])
         else:
             return "Awarded once all other {{Color|Event name goes here|code=f00}} medals are obtained."
@@ -50,4 +50,4 @@ def activity_medal(activity : str):
         #printr(medal_text)
     script_result(medal_text, True)
     
-activity_medal("42side")
+activity_medal("medal_player_recruitcount_11")

@@ -194,8 +194,8 @@ def wiki_text(candidate : tuple[str, list] | str) -> str:
 def replace_apos_between(part : str) -> str:
     ############################################################################################################################################
     # Find with Regex ON (.*)
-    #   too strict : ^(|.+?[\. (?:|<br\/>|<br>)])(?<!')'(?!em |n |tis|twas|twere|<br\/>|<br>)([^' ].+?[^']*)(?<!')'(?!')(?:( |\?|!|\.|,|<br\/>|<br>|\|)(.+?|)|)$
-    #   too greedy : (^|[\s\.\|=]|<br>|<br\/>)'(?!em |n |tis|twas|twere|<br\/>|<br>)([^' ].+?[^']*)'([!,&\.\s\?\]]|<br\/>|<br>|\||$)
+    #   too strict : ^(|.+?[\. (?:|<br\/>|<br>)])(?<!')'(?!em[ \.]|n[ \.]|tis|twas|twere|<br\/>|<br>)([^' ].+?[^']*)(?<!')'(?!')(?:( |\?|!|\.|,|<br\/>|<br>|\|)(.+?|)|)$
+    #   too greedy : (^|[\s\.\|=;]|<br>|<br\/>)'(?!em[ \.]|n[ \.]|tis|twas|twere|<br\/>|<br>)([^' ].+?[^']*)'([!,&\.\s\?\]]|<br\/>|<br>|\||$)
     #   
     ############################################################################################################################################
     # Replace
@@ -214,8 +214,8 @@ def replace_apos_between(part : str) -> str:
     #   I was in the Convalescent Garden, and I saw the plant almanac Perfumer's compiling. Lots of gaps, no way to fill them in as of yet. See, a good plant hunter fills the blanks with their 'prey.' A great plant hunter not only does that, they also get the author to leave them plenty more new blanks.
     #
     ############################################################################################################################################
-    #apos_match = r"^(|.+?[\. (?:|<br\/>|<br>)])(?<!')'(?!em |n |tis|twas|twere|<br\/>|<br>)([^' ].+?[^']*)(?<!')'(?!')(?:( |\?|!|\.|,|<br\/>|<br>|\|)(.+?|)|)$"
-    apos_match = r"(^|[\s\.\|=]|<br>|<br\/>)'(?!em |n |tis|twas|twere|<br\/>|<br>)([^' ].+?[^']*)'([!,&\.\s\?\]]|<br\/>|<br>|\||$)"
+    #apos_match = r"^(|.+?[\. (?:|<br\/>|<br>)])(?<!')'(?!em[ \.]|n[ \.]|tis|twas|twere|<br\/>|<br>)([^' ].+?[^']*)(?<!')'(?!')(?:( |\?|!|\.|,|<br\/>|<br>|\|)(.+?|)|)$"
+    apos_match = r"(^|[\s\.\|=;]|<br>|<br\/>)'(?!em[ \.]|n[ \.]|tis|twas|twere|<br\/>|<br>)([^' ].+?[^']*)'([!,&\.\s\?\]]|<br\/>|<br>|\||$)"
     between_match = re.search(apos_match, part) 
     if between_match:
         #new_part = re.sub(apos_match, r'\1"\2"\3\4', part)
