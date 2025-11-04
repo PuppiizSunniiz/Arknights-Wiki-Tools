@@ -14,8 +14,18 @@ used_json = [
                 "json_charwordEN",
                 "json_character",
                 "json_characterEN",
+                "json_char_patch",
+                "json_char_patchEN",
             ]
 DB = load_json(used_json)
+DB["json_character"].update(DB["json_char_patch"]["patchChars"])
+DB["json_characterEN"].update(DB["json_char_patchEN"]["patchChars"])
+
+# Manual
+birthday_check      = json_load(r"C:\GitHub\AN-EN-Tags\temp\birthday_voicelines.json", temp=True)
+#birthday_check      = json.loads(requests.get("https://raw.githubusercontent.com/PuppiizSunniiz/AN-EN-Tags/refs/heads/main/temp/birthday_voicelines.json").text)
+combine_charword    = json_load(r"C:\GitHub\AN-EN-Tags\json/puppiiz/charword_table.json", temp=True)
+#combine_charword    = json.loads(requests.get("https://raw.githubusercontent.com/PuppiizSunniiz/AN-EN-Tags/refs/heads/main/json/puppiiz/charword_table.json").text)
 
 #DB["json_charwordEN"] = json_load(r"py\input_script.json", True)
 #DB["json_charwordEN"] = json.loads(requests.get("https://raw.githubusercontent.com/ArknightsAssets/ArknightsGamedata/refs/heads/master/en/gamedata/excel/charword_table.json").text)
@@ -28,11 +38,21 @@ DIALOGUE_CELL_SORT_2 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 18, 1
 SERVER      = []
 SERVER_DIR  = []
 
-def wiki_operator_dialogue(operator_list : list[str] | str, server : Literal["CN", "EN"] = "EN", dialogue_cell : Literal[1, "1", 2, "2"] = 1, audio : bool = False):
+category = ""
+
+def wiki_operator_dialogue(operator_list : list[str] | str, 
+                           voice_data : list[str | bool], 
+                           server : Literal["CN", "EN"] = "EN", 
+                           dialogue_cell : Literal[1, "1", 2, "2"] = 1, 
+                           audio : bool = False):
+    
     if isinstance(operator_list, str):
-        operator_list = [operator_list.replace("@", "_")]
+        operator_real_id= operator_list.rsplit("_", 1)[0].split("#")[0] if operator_list.count("_") >= 3 else operator_list.split("#")[0]
+        operator_name   = DB["json_characterEN"][operator_real_id]["name"] if operator_real_id in DB["json_characterEN"] else DB["json_character"][operator_real_id]["appellation"]
+        operator_list   = [operator_list.replace("@", "_")]
     else:
-        operator_list = [operator.replace("@", "_") for operator in operator_list]
+        operator_name   = ""
+        operator_list   = [operator.replace("@", "_") for operator in operator_list]
         
     article_writer = []
     charword_table_json = DB["json_charwordEN"] if server == "EN" else DB["json_charword"]
@@ -51,6 +71,16 @@ def wiki_operator_dialogue(operator_list : list[str] | str, server : Literal["CN
         for operator_id in operator_list:
             dialogue_dict = {}
             
+            crossover   = voice_data[0]
+            jp          = voice_data[1] if manual else ("JP" in combine_charword["voiceLangDict"][operator_id])
+            cn          = voice_data[2] if manual else ("CN_MANDARIN" in combine_charword["voiceLangDict"][operator_id])
+            en          = voice_data[3] if manual else ("EN" in combine_charword["voiceLangDict"][operator_id])
+            kr          = voice_data[4] if manual else ("KR" in combine_charword["voiceLangDict"][operator_id])
+            otherlang_l = "" if manual else ([lang for lang in combine_charword["voiceLangDict"][operator_id] if lang not in ["CN_MANDARIN", "JP", "EN", "KR", "CN_TOPOLECT", "LINKAGE"]])
+            otherlang   = lang_dict.get(otherlang_l[0], otherlang_l[0]) if otherlang_l else voice_data[5]
+            dialect     = voice_data[6] if manual else (dialect_dict[operator_id] if "CN_TOPOLECT" in combine_charword["voiceLangDict"][operator_id] else "")
+            outfit      = voice_data[7]
+                
             for dialogue_key in charword_table_json["charWords"]:
                 if re.match(rf'{operator_id}_CN_\d\d\d', dialogue_key):
                     voiceIndex  = charword_table_json["charWords"][dialogue_key]["voiceIndex"]
@@ -58,18 +88,20 @@ def wiki_operator_dialogue(operator_list : list[str] | str, server : Literal["CN
                     voiceText   = charword_table_json["charWords"][dialogue_key]["voiceText"]
                     dialogue_dict[voiceIndex] = wiki_story(voiceText) if server == "EN" else voiceText
             if dialogue_dict:
-                #article_writer.append(f'\n{operator_id}\n{{{{Operator tab}}}}\n{{{{Operator dialogue head}}}}')
-                article_writer.append(f'{{{{Operator tab}}}}{f'\n{{{{Translation|article}}}}' if server == "CN" else ""}\n{{{{Operator dialogue head}}}}')
+                if manual:
+                    article_writer.append(f'\n{operator_id}\n{{{{Operator tab}}}}\n{{{{Operator dialogue head}}}}')
+                else:
+                    article_writer.append(f'{{{{Operator tab}}}}{f'\n{{{{Translation|article}}}}' if server == "CN" else ""}\n{{{{Operator dialogue head}}}}')
                 for i in range(len(sort_list)):
                     if sort_list[i] in dialogue_dict:
                         cell_template       = "Operator dialogue cell2" if mode == 2 else "Operator dialogue cell"
                         dialogue_no         = i + 1 if mode == 1 else sort_list[i]
-                        dialogue_desc       = f'|dialogue={dialogue_dict[sort_list[i]].replace("*", "&ast;")}' if dialogue_dict[sort_list[i]].startswith("*") else (f'|dialogue={dialogue_dict[sort_list[i]]}' if sort_list[i] != 37 else (f'|dialogue=\'\'[[Arknights]].\'\'' if mode == 2 else ""))
+                        dialogue_desc       = f'|dialogue={dialogue_dict[sort_list[i]].replace("*", "&ast;")}' if dialogue_dict[sort_list[i]].startswith("**") else (f'|dialogue={dialogue_dict[sort_list[i]]}' if sort_list[i] != 37 else (f'|dialogue=\'\'[[Arknights]].\'\'' if mode == 2 else ""))
                         dialogue_outfit     = f'|outfit={outfit}' if outfit else ""
                         dialogue_jp         = "|jp=true" if jp else ""
                         dialogue_cn         = "|cn=true" if cn else ""
-                        dialogue_en         = "|en=true" if en and sort_list[i] != 43 else ""
-                        dialogue_kr         = "|kr=true" if kr and sort_list[i] != 43 else ""
+                        dialogue_en         = "|en=true" if (en and (sort_list[i] != 43) or (sort_list[i] == 43 and operator_id in birthday_check["EN"])) else ""
+                        dialogue_kr         = "|kr=true" if (kr and (sort_list[i] != 43) or (sort_list[i] == 43 and operator_id in birthday_check["KR"])) else ""
                         dialogue_other      = f'|otherlang={otherlang}' if otherlang else ""
                         dialogue_dialect    = f'|dialect={dialect}' if dialect and cn else ""
                         if crossover:
@@ -97,7 +129,7 @@ def wiki_operator_dialogue(operator_list : list[str] | str, server : Literal["CN
                                         schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_custom", name_out = f'-{otherlang.upper()}', op_id = operator_id)
 
     if article_writer:
-        article_writer.append("{{Table end}}")
+        article_writer.append(f'{{{{Table end}}}}{f'\n\n[[Category:Operator audio]]\n[[Category:{operator_name}]]' if audio_category and operator_name else ""}')
         script_result(article_writer, True)
 
 def schedule_wiki_audio(executor, tasks, **kwargs):
@@ -105,11 +137,11 @@ def schedule_wiki_audio(executor, tasks, **kwargs):
     tasks.append(future)
 
 def wiki_audio(no_in : int, no_out : int, op_id : str, dir_in : str = "", name_out : str = "", ):
-    op_real_id  = op_id.rsplit("_", 1)[0] if op_id.count("_") >= 3 else op_id
-    op_name     = DB["json_characterEN"][op_real_id]["name"] if op_real_id in DB["json_characterEN"] else DB["json_character"][op_real_id]["appellation"]
-    op_name     = f'{op_name}-{outfit}' if outfit else op_name
-    input_file  = rf'E:\dyn\audio\sound_beta_2\voice{dir_in}\{op_id}\CN_{str(no_in).zfill(3)}.wav'
-    output_file = rf'E:\Wiki Audio\{op_id}\{op_name}-{str(no_out).zfill(3)}{name_out}.ogg'
+    op_real_id      = op_id.rsplit("_", op_id.count("_") - 2)[0].split("#")[0] if op_id.count("_") >= 3 else op_id.split("#")[0]
+    op_real_name    = DB["json_characterEN"][op_real_id]["name"] if op_real_id in DB["json_characterEN"] else DB["json_character"][op_real_id]["appellation"]
+    op_name         = f'{op_real_name}-{outfit}' if outfit else op_real_name
+    input_file      = rf'E:\dyn\audio\sound_beta_2\voice{dir_in}\{op_id}\CN_{str(no_in).zfill(3)}.wav'
+    output_file     = rf'E:\Wiki Audio\{op_id}\{op_name}-{str(no_out).zfill(3)}{name_out}.ogg'
     
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     #printc(op_id)
@@ -121,10 +153,43 @@ def wiki_audio(no_in : int, no_out : int, op_id : str, dir_in : str = "", name_o
                 "-i", input_file,         # input file
                 "-c:a", "libvorbis",      # use Vorbis codec (for .ogg)
                 "-qscale:a", "5",         # quality 0–10 (6 = great for wiki)
+                "-metadata", f'comment={name_out.replace("-", "", 1) if name_out else "JP"}',
                 output_file
             ]
     subprocess.run(cmd, stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL)
 
+
+dialect_dict = {
+                "char_2014_nian"    : "Sichuanese",
+                "char_2015_dusk"    : "Suzhounese",
+                "char_2023_ling"    : "Guanzhonghua",
+                "char_010_chen"     : "Cantonese",
+                "char_1013_chen2"   : "Cantonese",
+                "char_136_hsguma"   : "Cantonese",
+                "char_455_nothin"   : "Nankinese",
+                "char_241_panda"    : "Cheng-Yu",
+                "char_308_swire"    : "Cantonese",
+                "char_2024_chyue"   : "Wuhanese",
+                "char_4080_lin"     : "Cantonese",
+                "char_473_mberry"   : "Jinanhua",
+                "char_383_snsant"   : "Hangzhouhua",
+                "char_322_lmlee"    : "Cantonese",
+                "char_226_hmau"     : "Cantonese",
+                "char_225_haak"     : "Cantonese",
+                "char_243_waaifu"   : "Cantonese",
+                "char_1033_swire2"  : "Cantonese",
+                "char_4121_zuole"   : "Henanese",
+                "char_2025_shu"     : "Hokkien",
+                "char_2026_yu"      : "Jinanhua",
+                "char_1044_hsgma2"  : "Cantonese"
+            }
+lang_dict = {
+                "ITA"   : "IT",
+                "GER"   : "DE",
+                "RUS"   : "RU",
+                "FRE"   : "FR",
+                "SPA"   : "ES",
+}
 '''
     char_2014_nian      Nian				        Sichuanese
     char_2015_dusk      Dusk				        Suzhounese
@@ -149,7 +214,6 @@ def wiki_audio(no_in : int, no_out : int, op_id : str, dir_in : str = "", name_o
     char_2026_yu        Yu					        Jinanhua
     char_1044_hsgma2    Hoshiguma the Breacher		Cantonese
 '''
-
 '''
     "skinWords": [
         "char_003_kalts_boc#6",             #kal
@@ -163,28 +227,59 @@ def wiki_audio(no_in : int, no_out : int, op_id : str, dir_in : str = "", name_o
         "char_249_mlyss_boc#8",             #mumu
         "char_4064_mlynar_epoque#28",       #uncle
         "char_472_pasngr_epoque#17"         #pass
+        char_1038_whitw2_sale#15            #dumbdumb
+        "char_4134_cetsyr_epoque#50"        #Theresa
     ],
 '''
 
-crossover   = False  # True False
-jp          = True  # True False
-cn          = True  # True False
-en          = True  # True False
-kr          = True  # True False
-otherlang   = ""    # DE FR IT RU etc.
-dialect     = ""    # TBU
-outfit      = ""
+crossover       = False  # True False
+jp              = True  # True False
+cn              = True  # True False
+en              = True  # True False
+kr              = True  # True False
+otherlang       = ""    # DE FR IT RU etc.
+dialect         = ""    # TBU
+outfit          = ""
+op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = "char_4188_confes"
+OP_DIALOGUE_LIST    = "char_1037_amiya3"
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
-audio               = True
+audio               = True  # True False
+manual              = False  # True False
+audio_category      = True
 
-wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST, server = server, dialogue_cell = dialogue_cell, audio = audio)
+wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST, server = server, dialogue_cell = dialogue_cell, audio = audio, voice_data = op_voice_data)
 
 #https://raw.githubusercontent.com/ArknightsAssets/ArknightsGamedata/refs/heads/master/en/gamedata/excel/charword_table.json
 #https://arknights.wiki.gg/wiki/Caper/Dialogue#cite_ref-1
 #   (^\{\{Operator dialogue cell\|.+?(?<!=true))\}\}$
 #   $1|jp=true|cn=true|en=true|kr=true}}
 #
-#   [[Category:Operator audio]]
+'''
+[[Category:Operator audio]]
+[[Category:Cuora]]
+'''
+'''
+    "char_204_platnm": {            Platinum    5
+        "JP": "Ai Kayano"
+    },
+    "char_401_elysm": {             Ely         5
+        "JP": "Morikubo Showtaro"
+    },
+    "char_230_savage": {            Savage      5
+        "JP": "Fujimura Ayumi"
+    },
+    "char_136_hsguma": {            Hoshi       6
+        "CN_MANDARIN": "X. Chai"
+    },
+    "char_473_mberry": {            Mul         5
+        "CN_MANDARIN": "X. Chai"
+    },
+    "char_144_red": {               Red         5
+        "CN_MANDARIN": "X. Chai"
+    },
+    "char_103_angel": {             Exu         6
+        "EN": "Leonora Haig"
+    }
+'''

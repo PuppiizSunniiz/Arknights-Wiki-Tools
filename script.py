@@ -798,4 +798,20 @@ def crimson_plays():
                         
         plays_list.append(play_module)
     script_result(plays_list, True)
-crimson_plays()
+#crimson_plays()
+
+def nation_track():
+    tracker = {}
+    #character_table = json_load(r"py\character_table.json", temp=True)
+    character_table = DB["json_characterEN"]
+    for char in character_table:
+        if not [x for x in character_table[char]["mainPower"].values() if x]:
+            continue
+        else:
+            tracker[char] = {
+                                "main"      : character_table[char]["mainPower"],
+                                "hidden"    : character_table[char]["subPower"],
+                            }
+    tracker = {k:tracker[k] for k in sorted(tracker.keys())}
+    script_result(tracker, True,)
+nation_track()

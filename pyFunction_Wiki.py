@@ -230,7 +230,7 @@ def wiki_cleanup(txt :str, all_clean : bool) -> str:
                     r'(’)'              : "'",
                     r'(。)'             : ".",
                     r'(…)'              : "...",
-                    r'，'               : ", ",
+                    r'(，|、| +, )'     : ", ",
                     r'(“|”)'            : "\"",
                     r'【'               : " [",
                     r'】'               : "] ",
@@ -240,11 +240,11 @@ def wiki_cleanup(txt :str, all_clean : bool) -> str:
                     r'！'               : "!",
                     r'(\t|\\t)'         : " ",
                     r'[  ]+'            : " ",
-                    r' +, '             : ", "
+                    r'％'              	: "%",
                 }
     
     more_sheet = {
-                    r'––'               : "&mdash;",
+                    #r'––'               : "&mdash;",
                     r'·'                : "&bull;",
                     #r'-'                : "&dash;",
                     r'–'                : "&ndash;",
