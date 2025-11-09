@@ -814,4 +814,22 @@ def nation_track():
                             }
     tracker = {k:tracker[k] for k in sorted(tracker.keys())}
     script_result(tracker, True,)
-nation_track()
+#nation_track()
+
+def hot_diff():
+    new_hot = {abInfos["name"]:abInfos for abInfos in json_load(r"py\hot_update_list (23-07-05-12-45-41-2d576e).json", True)["abInfos"]}
+    old_hot = {abInfos["name"]:abInfos for abInfos in json_load(r"py\hot_update_list (23-06-25-13-09-13-327c56).json", True)["abInfos"]}
+    diff_hot = {"key" : []}
+    '''
+    for abInfos in new_hot:
+        if abInfos not in old_hot or new_hot[abInfos]["md5"] != old_hot[abInfos]["md5"]:
+            diff_hot["key"].append(abInfos)
+            diff_hot[abInfos]   = new_hot[abInfos]
+    '''
+    for abInfos in old_hot:
+        if abInfos not in new_hot or new_hot[abInfos]["md5"] != old_hot[abInfos]["md5"]:
+            diff_hot["key"].append(abInfos)
+            diff_hot[abInfos]   = old_hot[abInfos]
+    
+    script_result(diff_hot, True)
+hot_diff()

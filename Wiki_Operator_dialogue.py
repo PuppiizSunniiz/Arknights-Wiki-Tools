@@ -78,7 +78,7 @@ def wiki_operator_dialogue(operator_list : list[str] | str,
             kr          = voice_data[4] if manual else ("KR" in combine_charword["voiceLangDict"][operator_id])
             otherlang_l = "" if manual else ([lang for lang in combine_charword["voiceLangDict"][operator_id] if lang not in ["CN_MANDARIN", "JP", "EN", "KR", "CN_TOPOLECT", "LINKAGE"]])
             otherlang   = lang_dict.get(otherlang_l[0], otherlang_l[0]) if otherlang_l else voice_data[5]
-            dialect     = voice_data[6] if manual else (dialect_dict[operator_id] if "CN_TOPOLECT" in combine_charword["voiceLangDict"][operator_id] else "")
+            dialect     = voice_data[6] if manual else (dialect_dict.get(operator_id, "Unknown") if "CN_TOPOLECT" in combine_charword["voiceLangDict"][operator_id] else "")
             outfit      = voice_data[7]
                 
             for dialogue_key in charword_table_json["charWords"]:
@@ -141,7 +141,7 @@ def wiki_audio(no_in : int, no_out : int, op_id : str, dir_in : str = "", name_o
     op_real_name    = DB["json_characterEN"][op_real_id]["name"] if op_real_id in DB["json_characterEN"] else DB["json_character"][op_real_id]["appellation"]
     op_name         = f'{op_real_name}-{outfit}' if outfit else op_real_name
     input_file      = rf'E:\dyn\audio\sound_beta_2\voice{dir_in}\{op_id}\CN_{str(no_in).zfill(3)}.wav'
-    output_file     = rf'E:\Wiki Audio\{op_id}\{op_name}-{str(no_out).zfill(3)}{name_out}.ogg'
+    output_file     = rf'E:\Wiki Audio\{op_real_id}\{op_name}-{str(no_out).zfill(3)}{name_out}.ogg'
     
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     #printc(op_id)
@@ -242,7 +242,7 @@ dialect         = ""    # TBU
 outfit          = ""
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = "char_1037_amiya3"
+OP_DIALOGUE_LIST    = "char_1027_greyy2"
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
 audio               = True  # True False
@@ -256,16 +256,10 @@ wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST, server = server, dialog
 #   (^\{\{Operator dialogue cell\|.+?(?<!=true))\}\}$
 #   $1|jp=true|cn=true|en=true|kr=true}}
 #
-'''
-[[Category:Operator audio]]
-[[Category:Cuora]]
-'''
+#   {{Operator dialogue head|note='''CHY''' denotes the <u>Ch</u>eng-<u>Y</u>u Chinese dialect voiceline.}}
 '''
     "char_204_platnm": {            Platinum    5
         "JP": "Ai Kayano"
-    },
-    "char_401_elysm": {             Ely         5
-        "JP": "Morikubo Showtaro"
     },
     "char_230_savage": {            Savage      5
         "JP": "Fujimura Ayumi"

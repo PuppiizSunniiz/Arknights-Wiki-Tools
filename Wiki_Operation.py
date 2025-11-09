@@ -591,7 +591,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                         continue
                     else :
                         printc(f'New tile_floor / tile_road case just drop : {tile[tile_id]}')
-                        exit()
+                        #exit()
                 case "tile_defup":
                     if len(tile[tile_id]["blackboard"]) == 1 and tile[tile_id]["blackboard"][0]["key"] == "def":
                         defense = tile[tile_id]["blackboard"][0]["value"]
@@ -665,7 +665,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         for rune in rune_list:
             if rune["key"] == "global_forbid_location":
                 printr(rune)
-                exit()
+                #exit()
 
         if tile_result:
             #printr(f'{B}tile_writer {G}{stage} {Y}{tile_result}{RE}')
@@ -906,16 +906,18 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                     case "cbuff_max_cost":
                         max_cost        = temp["blackboard"].pop("max_cost")
                         max_cost_ceil   = temp["blackboard"].pop("max_cost_ceil")
-                        if rune["blackboard"] and [key for key in rune["blackboard"] if key not in skip_rune]:
+                        if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
                             printr(f'{Y}New {rune["key"]} just drop : {B}{rune["blackboard"]}')
                             exit()
                         rune_writer.append(f'\nThe [[DP]] cap is reduced to {decimal_format(max_cost)}. ')
                     case "char_skill_cd_mul":
                         char_skill_cd   = temp["blackboard"].pop("scale")
-                        if rune["blackboard"] and [key for key in rune["blackboard"] if key not in skip_rune]:
+                        char_add = temp["blackboard"].pop("char") if "char" in rune["blackboard"] else ""
+                        char_add_name = join_and([DB["json_characterEN"][char]["name"] if char in DB["json_characterEN"] else DB["json_character"][char]["appellation"]  for char in char_add.split("|")]) if char_add else ""
+                        if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
                             printr(f'{Y}New {rune["key"]} bb just drop : {B}{rune["blackboard"]}')
                             exit()
-                        rune_writer.append(f'\nAll skill cost reduce by {(1 - char_skill_cd)*100:g}%')
+                        rune_writer.append(f'\n{char_add_name if char_add_name else "All"} skill cost reduce by {(1 - char_skill_cd)*100:g}%')
                     case "char_skill_blackb_mul":
                         char_add : str = temp["blackboard"].pop("char").split("#")[0]
                         hp_max = temp["blackboard"].pop("hp_max") if "hp_max" in rune["blackboard"].keys() else ""
@@ -942,7 +944,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                     case "char_cost_mul":
                         if not temp["blackboard"]:
                             continue
-                        char_add : str = temp["blackboard"].pop("char_id") if "char_id" in rune["blackboard"] else ""
+                        char_add : str = temp["blackboard"].pop("char_id", "") or temp["blackboard"].pop("char", "") if "char_id" in rune["blackboard"] or "char" in rune["blackboard"] else ""
                         char_add_name = join_and([DB["json_characterEN"][char]["name"] if char in DB["json_characterEN"] else DB["json_character"][char]["appellation"]  for char in char_add.split("|")]) if char_add else ""
                         cost_mul = temp["blackboard"].pop("scale")
                         if char_add and cost_mul:
@@ -2380,7 +2382,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
 #script_result(wiki_article("act3mainss", "episode"))
 
 # Event
-script_result(wiki_article("act42side", "event"), True)
+script_result(wiki_article("act46side", "event"), True)
 #script_result(wiki_article("act1vhalfidle", "event", "Rebuilding Mandate"), True)
 
 # Trials for Navigator #04
