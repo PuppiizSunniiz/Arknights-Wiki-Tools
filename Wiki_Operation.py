@@ -36,12 +36,11 @@ def wiki_enemies(event : str = "", show : bool = False) -> dict :
                 temp[key] = enemy_data[lv]["enemyData"][key]
         return temp
         
-    data = {"zone" : {}, "stage" : {}, "enemies" : {}, "enemy_type" : {}}
-    ACT = event if event else "act43side" # "act43side" = Act or Die
+    data = {"zone" : {}, "zone_node" : {}, "stage" : {}, "enemies" : {}, "enemy_type" : {}}
     ZonetoAct = DB["json_activity"]["zoneToActivity"]
-    actzone = [zone for zone in ZonetoAct.keys() if ZonetoAct[zone] == ACT]
+    actzone = [zone for zone in ZonetoAct.keys() if ZonetoAct[zone] == event]
     if not actzone:
-        printr(f'There no zone in this activity : {ACT}')
+        printr(f'There no zone in this activity : {event}')
         exit()
     for zone in actzone:
         if zone in DB["json_zoneEN"]["zones"].keys():
@@ -58,9 +57,17 @@ def wiki_enemies(event : str = "", show : bool = False) -> dict :
             if stage in EN_stage:
                 for key in ["name", "description"]:
                     stages[stage][key] = EN_stage[stage][key]
-                
 
-            if not stage.endswith(("#f#", "#s")) : data["zone"][CN_stage[stage]["zoneId"]].setdefault("stages", []).append(CN_stage[stage]["code"])
+            if not stage.endswith(("#f#", "#s")):
+                data["zone"][CN_stage[stage]["zoneId"]].setdefault("stages", []).append(CN_stage[stage]["code"])
+                data["zone_node"].setdefault(stage, {"prev":[], "next":[]})
+                for condition in CN_stage[stage]["unlockCondition"]:
+                    if CN_stage[condition["stageId"]]["zoneId"] not in actzone:
+                        continue
+                    if condition["stageId"] not in data["zone_node"][stage]["prev"]:
+                        data["zone_node"][stage]["prev"].append(condition["stageId"])
+                    if stage not in data["zone_node"][condition["stageId"]]["next"]:
+                        data["zone_node"][condition["stageId"]]["next"].append(stage)
     
     data["stage_data"] = stages
     
@@ -175,6 +182,8 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                 {'key': 'env_017_act35side', 'attack_speed': -60.0, 'max_hp': 0.1, 'atk': 0.1},
                 {'key': 'env_012_act33side', 'stun_duration': 10.0},
                 {'ui_plugin_name': 'common_camera_move_ui_plugin', 'camera_plugin_name': 'common_camera_move_half_second_plugin'},
+                {'key': 'env_037_act46side', 'enemy_avalanche_damage': 5000.0, 'char_avalanche_damage_fail': 5000.0, 'stun': 10.0, 'char_avalanche_damage_success': 750.0, 'char_sp': 3.0},
+                {'key': 'env_037_act46side', 'enemy_avalanche_damage': 5000.0, 'char_avalanche_damage_fail': 5000.0, 'stun': 10.0, 'char_avalanche_damage_success': 750.0, 'char_sp': 3.0, 'ui_plugin_name': 'common_camera_move_ui_plugin', 'camera_plugin_name': 'common_camera_move_plugin'},
             ]
 
     env_name = [
@@ -793,7 +802,9 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                     case "max_enemy_capacity":
                         addendum.append(f'<!--Maximum {decimal_format(config_bb["value"])} enemies allow.-->')
                     case _:
-                        printr(f'New {Y}configBlackBoard{RE} key : {R}{config_bb["key"]}')
+                        if config_bb["key"].startswith("rect_") or config_bb["key"] in ["enable_war_fog", "enable_camera", "CAMERA_VIEW_LEVEL", "CAMERA_START_GRID", "construct_view_scale"] or (config_bb["key"] in ["disable_character_gbuff", "disable_enemy_gbuff"] and not config_bb["value"]):
+                            continue
+                        printr(f'New {Y}configBlackBoard{RE} key : {R}{config_bb["key"]} - {Y}{config_bb["value"]}')
                         #exit()
             
         rune_writer = []
@@ -1662,6 +1673,18 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                     if action["actionType"] == "ACTIVATE_PREDEFINED" and action["key"].split("_") == "char":
                         ops.append(action["key"])
     
+    def prev_next_stage(prev_stage : list[str] = [], next_stage : list[str] = []):
+        article_data = []
+        if prev_stage:
+            for stage in prev_stage:
+                prev_index = prev_stage.index(stage) + 1
+                article_data.append(f'|prev{"" if prev_index == 1 else prev_index} = {stage}')
+        if next_stage:
+            for stage in next_stage:
+                next_index = next_stage.index(stage) + 1
+                article_data.append(f'|next{"" if next_index == 1 else next_index} = {stage}')
+        return "\n".join(article_data)
+    
     def stage_article_data(data : dict, stage : str, mode : str, diff : str = "") -> dict:            
         def drop_lister(def_data : list) -> dict:
             drop_types = ["COMPLETE", "NORMAL", "ADDITIONAL", "SPECIAL", "CONDITION_DROP"]
@@ -1692,8 +1715,8 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             "code" : code,
                             "name" : data["stage_data"][stage]["name"],
                             "part" : data["zone"][part]["name"] if data["zone"][part]["name"] else "",
-                            "prev" : data["zone"][part]["stages"][data["zone"][part]["stages"].index(code) - 1] if data["zone"][part]["stages"].index(code) - 1 in range(len(data["zone"][part]["stages"])) else "",
-                            "next" : data["zone"][part]["stages"][data["zone"][part]["stages"].index(code) + 1] if data["zone"][part]["stages"].index(code) + 1 in range(len(data["zone"][part]["stages"])) else "",
+                            "prev" : [data["stage_data"][prev_stage]["code"] for prev_stage in data["zone_node"][stage]["prev"]],
+                            "next" : [data["stage_data"][next_stage]["code"] for next_stage in data["zone_node"][stage]["next"]],
                             "desc" : data["stage_data"][stage]["description"],
                             "note" : "",
                             "map name" : "",
@@ -1804,8 +1827,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             |name = {data["name"]}
                             {event_type_writer()}
                             |part = {data["part"]}
-                            |prev = {data["prev"]}
-                            |next = {data["next"]}
+                            {prev_next_stage(data["prev"], data["next"])}
                             |desc = {desc_cond_writer(data["desc"])}
                             |note = {data["note"]}
                             {stage_type_writer()}
@@ -2382,7 +2404,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
 #script_result(wiki_article("act3mainss", "episode"))
 
 # Event
-script_result(wiki_article("act46side", "event"), True)
+script_result(wiki_article("act46side", "event", "Retracing Our Steps 1101"), True)
 #script_result(wiki_article("act1vhalfidle", "event", "Rebuilding Mandate"), True)
 
 # Trials for Navigator #04
