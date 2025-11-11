@@ -43,11 +43,13 @@ category = ""
 def wiki_operator_dialogue(operator_list : list[str] | str, 
                            voice_data : list[str | bool], 
                            server : Literal["CN", "EN"] = "EN", 
+                           force_server : bool = False,
                            dialogue_cell : Literal[1, "1", 2, "2"] = 1, 
                            audio : bool = False):
     
     if isinstance(operator_list, str):
         operator_real_id= operator_list.rsplit("_", 1)[0].split("#")[0] if operator_list.count("_") >= 3 else operator_list.split("#")[0]
+        if force_server: server = "CN" if operator_real_id not in DB["json_characterEN"] else "EN"
         operator_name   = DB["json_characterEN"][operator_real_id]["name"] if operator_real_id in DB["json_characterEN"] else DB["json_character"][operator_real_id]["appellation"]
         operator_list   = [operator_list.replace("@", "_")]
     else:
@@ -242,14 +244,15 @@ dialect         = ""    # TBU
 outfit          = ""
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = "char_1027_greyy2"
+OP_DIALOGUE_LIST    = "char_388_mint"
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
+force_server        = True
 audio               = True  # True False
 manual              = False  # True False
 audio_category      = True
 
-wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST, server = server, dialogue_cell = dialogue_cell, audio = audio, voice_data = op_voice_data)
+wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST, server = server, force_server = force_server, dialogue_cell = dialogue_cell, audio = audio, voice_data = op_voice_data)
 
 #https://raw.githubusercontent.com/ArknightsAssets/ArknightsGamedata/refs/heads/master/en/gamedata/excel/charword_table.json
 #https://arknights.wiki.gg/wiki/Caper/Dialogue#cite_ref-1
