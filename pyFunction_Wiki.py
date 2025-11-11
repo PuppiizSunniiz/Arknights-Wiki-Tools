@@ -317,6 +317,12 @@ def blackboarding(blackboard : list, desc : str):
                 #printr(match_bbkey, bb["valueStr"], bb["value"], match_format)
                 return re.sub(r'(\+|-|)\{([^\{\}:]*)(?::([^\{\}:]*)|)\}', f'{match_symbol}{bb["valueStr"] if bb["valueStr"] else (f'{bb["value"]:.{match_format}}' if match_format else f'{decimal_format(bb["value"])}')}', desc)
 
+def mini_blackboard(blackboard_list : list[dict]) -> dict:
+    mini = {}
+    for blackboard in blackboard_list:
+        mini[blackboard["key"]] = blackboard["valueStr"] if blackboard["valueStr"] else blackboard["value"]
+    return mini
+
 def spType(sp_type : str|int):
     match sp_type:
         case "INCREASE_WITH_TIME":
