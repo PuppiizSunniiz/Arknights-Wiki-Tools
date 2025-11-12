@@ -318,6 +318,7 @@ def blackboarding(blackboard : list, desc : str):
                 return re.sub(r'(\+|-|)\{([^\{\}:]*)(?::([^\{\}:]*)|)\}', f'{match_symbol}{bb["valueStr"] if bb["valueStr"] else (f'{bb["value"]:.{match_format}}' if match_format else f'{decimal_format(bb["value"])}')}', desc)
 
 def mini_blackboard(blackboard_list : list[dict]) -> dict:
+    if not blackboard_list: return {}
     mini = {}
     for blackboard in blackboard_list:
         mini[blackboard["key"]] = blackboard["valueStr"] if blackboard["valueStr"] else blackboard["value"]

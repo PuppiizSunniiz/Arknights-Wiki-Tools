@@ -30,6 +30,13 @@ ENEMY_NAMES_TL = {
                     "enemy_8011_mcndog_2" : "Structural Principle",
                     "enemy_8011_mcndog_3" : "Structural Principle"
                 }
-ITEM_NAMES_TL = {"act43side_token_phantom" : "Mysterious Black Shadow"}
+ITEM_NAMES_TL = {
+                    "act43side_token_phantom"   : "Mysterious Black Shadow",
+                    "act46side_token_detector"  : "Multipurpose Snow Detector",
+                }
+PART_NAMES_TL = {
+                    "圣巡之旅"  : "Holy Tour",
+                    "变革之路"  : "Path of Change",
+                }
 TOKEN_NAMES_TL = {}
 SKILL_NAMES_TL = {}

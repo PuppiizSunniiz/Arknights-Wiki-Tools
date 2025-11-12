@@ -1,6 +1,6 @@
 import re
 from typing import Any, Literal
-from Wiki_Dict import ENEMY_NAMES_TL, ITEM_NAMES_TL, SKILL_NAMES_TL, TOKEN_NAMES_TL
+from Wiki_Dict import ENEMY_NAMES_TL, ITEM_NAMES_TL, PART_NAMES_TL, SKILL_NAMES_TL, TOKEN_NAMES_TL
 from pyFunction_Wiki import CLASS_PARSE_EN, load_json, mini_blackboard, replace_apos_between, wiki_story, wiki_trim
 from pyFunction import B, G, R, RE, Y, decimal_format, falsy_compare, join_and, join_or, json_load, printc, printr, script_result
 
@@ -140,7 +140,13 @@ def wiki_enemies(event : str = "", show : bool = False) -> dict :
     #script_result(data, show)
     return data
     
-def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
+def wiki_article(
+    event_code : str, 
+    event_type : Literal["episode", "intermezzo", "sidestory", "storycollection", "ig", "tn", "vb"] = "", 
+    event_name : str = "", 
+    year : str|int = ""
+    ) -> list:
+    
     '''
         event_type = episode/ intermezzo/ sidestory/ storycollection
                     vb/ ig
@@ -224,6 +230,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         desc = re.sub(r'<@lv\.(?:muitem)>(.+?)<\/>', r"{{Color|\1|muitem}}", desc)
         # game color
         desc = re.sub(r'<@lv.sp>(.+?)<\/>', r"{{Color|\1|sp}}", desc)
+        desc = re.sub(r'<@lv.rem>(.+?)<\/>', r"{{Color|\1|rem}}", desc)
         # stage mechanic
         desc = re.sub(r'<@[A-Za-z\.1-9_]*?><(.*?)><\/>', r"'''<[[\1]]>'''", desc)
         # challenge condition
@@ -523,7 +530,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         for i in range(len(def_data["tiles"])):
             tile = def_data["tiles"][i]
             tile_index = (0, 0)
-            if (tile["tileKey"] in tile_skip and not tile["blackboard"] and not tile["effects"]) or tile["tileKey"] in tlle_full_skip:
+            if (tile["tileKey"] in tile_skip + tlle_full_skip and not tile["blackboard"] and not tile["effects"]): #or tile["tileKey"] in tlle_full_skip:
                 continue
             for m in range(len(def_data["map"])):
                 if i < def_data["map"][m][0]:
@@ -546,6 +553,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         for tile in def_data:
             #printr(tile)
             tile_id = tile["tileKey"]
+            temp = mini_blackboard(tile["blackboard"])
             match tile_id:
                 case "tile_healing":
                     heal = 0
@@ -567,7 +575,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                     tile_result.append(f'The [[Specialist Tactical Point]] increases the [[shift]] force of the friendly unit on it by {force:.0f} level.')
                 case "tile_toxic":
                     if tile == {"tileKey": "tile_toxic", 'blackboard': [{'key': 'dynamic', 'value': 1.0, 'valueStr': None}], 'effects': None}:
-                        continue
+                        pass
                     else:
                         printr(f'new {Y}"tile_toxic"{RE} stat just drop\n{tile}')
                         exit()
@@ -609,14 +617,12 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                                         [{'key': 'tile_not_summon', 'value': 1.0, 'valueStr': None}],
                                         [{'key': 'check_point_index', 'value': 2.0, 'valueStr': None}],
                                     ]
-                    temp = mini_blackboard(tile["blackboard"])
                     if (len(tile["blackboard"]) == 1 and tile["blackboard"][0]["key"] == "gems_type") or tile["blackboard"] in default_effect:
-                        continue
+                        pass
                     else :
                         match temp:
                             case {"avalanche_index" : avalanche_index, "avalanche_state" : avalanche_state}:
-                                if avalanche_state != 2.0: printr(f'new {Y}avalanche_state{RE} case just drop {avalanche_state}')
-                                avalanche_tile.setdefault(avalanche_index, []).append(tile["tile_index"])
+                                pass
                             case _:
                                 printc(f'New tile_floor / tile_road case just drop : {tile}')
                                 #exit()
@@ -657,12 +663,12 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                                         [{'key': 'dynamic', 'value': 0.0, 'valueStr': None}, {'key': 'buff_yinyang[same].atk_scale', 'value': 0.6, 'valueStr': None}, {'key': 'buff_yinyang[diff].atk_scale', 'value': 1.4, 'valueStr': None}]
                                     ]
                     if tile["blackboard"] in default_effect and not tile["effects"]:
-                        continue
+                        pass
                     else :
                         printc(f'New {Y}tile_yinyang{RE} case just drop : {B}{tile}{RE}')
                 case "tile_defbreak":
                     if tile['blackboard'] == [{'key': 'def', 'value': 0.5, 'valueStr': None}] and  tile['effects'] == None:
-                        continue
+                        pass
                     else:
                         printc(f'New {Y}tile_defbreak{RE} case just drop : {B}{tile}{RE}')
                 case "tile_creep" | "tile_creepf":
@@ -671,7 +677,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                                         [{'key': 'mode', 'value': 0.0, 'valueStr': None}]
                                     ]
                     if tile["blackboard"] in default_effect and not tile["effects"]:
-                        continue
+                        pass
                     else :
                         printc(f'New {Y}tile_creep{RE} case just drop : {B}{tile}{RE}')
                 case "tile_gazebo":
@@ -686,27 +692,39 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             case _:
                                 printc(f'New {Y}tile_infection{RE} case just drop : {B}{tile}{RE}')
                     tile_result.append(f'[[Anti-Air Rune]] reduce the ASPD of friendly units on it by {abs(aspd):g} but increases the damage they dealt against aerial enemies by {(atk - 1)*100:g}%.')
+                # Full skip previously
+                case "tile_forbidden" | "tile_start" | "tile_end" | "tile_fence_bound" | "tile_hole":
+                    if not tile["blackboard"] and tile["effects"]:
+                        pass
+                    else:
+                        match temp:
+                            case {"avalanche_index" : avalanche_index, "avalanche_state" : avalanche_state}:
+                                pass
+                            case _:
+                                printr(f'new Terrain to add : {Y}{tile_id}\n\t{G}{tile["blackboard"]}\n\t{B}{tile["effects"]}{RE}')
                 case _ :
                     printr(f'new Terrain to add : {Y}{tile_id}\n\t{G}{tile["blackboard"]}\n\t{B}{tile["effects"]}{RE}')
                     #exit()
                     
-        #for rune in rune_list:
-            #if rune["key"] == "global_forbid_location":
-                #printr(rune)
-                #exit()
+            match temp:
+                case {"avalanche_index" : avalanche_index, "avalanche_state" : avalanche_state}:
+                    if avalanche_state != 2.0: printr(f'new {Y}avalanche_state{RE} case just drop {avalanche_state}')
+                    avalanche_tile.setdefault(avalanche_index, []).append(tile["tile_index"])
+                case _:
+                    continue
 
         if avalanche_tile:
             #printr(avalanche_tile)
-            index_direction = []
+            direction = {"DOWN" : "top to bottom", "RIGHT" : "left to right", "LEFT" : "right to left", "UP": "bottom to top"}
+            avalanche_list = []
             for token in static_data:
                 if token["inst"]["characterKey"] == "trap_265_xdice1":
-                    index_direction.append([token["direction"], (token["position"]["row"], token["position"]["col"])])
+                    avalanche_list.append(token["direction"])
             #printr(index_direction)
             for index, tiles in avalanche_tile.items():
+                avalanche_direction = avalanche_list[int(index - 1)]
                 all_tiles = [tile for tile in tiles]
-                all_tiles.append(index_direction[int(index - 1)][1])
-                #printr(all_tiles, tiles, index_direction[int(index - 1)][1])
-                tile_result.append(f'<!--(avalanche will occur on) {map_grid(all_tiles, "and")} in {index_direction[int(index - 1)][0]} (direction)-->')
+                tile_result.append(f'Avalanche can occur in the {map_grid(all_tiles, "-")} area from {direction[avalanche_direction]}')
         
         if tile_result:
             #printr(f'{B}tile_writer {G}{stage} {Y}{tile_result}{RE}')
@@ -722,14 +740,20 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         Y = coord.split(",")[1] if isinstance(coord, str) else coord[1]
         return f'{{{{Pos|{chr(ord("A") + int(X))}{int(Y) + 1}}}}}'
     
-    def map_grid(grid_value : str|list, join : Literal["and", "or"] = "and") :
+    def map_grid(grid_value : str|list, join : Literal["and", "or", "-"] = "and") :
         
         grid_list = grid_value.replace("(", "").replace(")", "").split("|") if isinstance(grid_value, str) else grid_value
+        sort_grid = sorted([get_grid(coord) for coord in grid_list], key=lambda x : re.sub(r'\{\{Pos\|([A-Z])(\d+)\}\}', lambda r : f'{r.group(1)}{r.group(2).zfill(2)}', x))
         
-        if join == "and":
-            return join_and(sorted([get_grid(coord) for coord in grid_list], key=lambda x : re.sub(r'\{\{Pos\|([A-Z])(\d+)\}\}', lambda r : f'{r.group(1)}{r.group(2).zfill(2)}', x)))
-        else:
-            return join_or(sorted([get_grid(coord) for coord in grid_list], key=lambda x : re.sub(r'\{\{Pos\|([A-Z])(\d+)\}\}', lambda r : f'{r.group(1)}{r.group(2).zfill(2)}', x)))
+        match join:
+            case "and":
+                return join_and(sort_grid)
+            case "or":
+                return join_or(sort_grid)
+            case "-":
+                return f'{sort_grid[0]} - {sort_grid[-1]}'
+            case _:
+                printr(f'{B}map_grid(){RE} - Invalid join : {Y}{join}')
     
     def operator_rune(rune_data : list):
         bin_classes = ["Token??", "Trap??", "Vanguard", "Specialist", "Caster", "Supporter", "Medic", "Defender", "Sniper", "Guard"]
@@ -1040,11 +1064,12 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                         predefines = [[], []]
                         for k,v in rune["blackboard"].items():
                             predefines[int(v)].append(k)
+                        #printr(stage, predefines)
                         if predefines[0]:
-                            char_name = [DB["json_characterEN"][char_id.split("#")[0]]["name"] if char_id.split("#")[0] in DB["json_characterEN"] else DB["json_character"][char_id.split("#")[0]]["appellation"] for char_id in predefines[0]]
+                            char_name = [DB["json_characterEN"][char_id.split("#")[0]]["name"] if char_id.split("#")[0] in DB["json_characterEN"] else (DB["json_character"][char_id.split("#")[0]]["appellation"] if DB["json_character"][char_id.split("#")[0]]["appellation"].strip() else DB["json_character"][char_id.split("#")[0]]["name"]) for char_id in predefines[0]]
                             rune_writer.append(f'\n{join_and(set(char_name))} no longer appear')
                         if predefines[1]:
-                            char_name = [DB["json_characterEN"][char_id.split("#")[0]]["name"] if char_id.split("#")[0] in DB["json_characterEN"] else DB["json_character"][char_id.split("#")[0]]["appellation"] for char_id in predefines[1]]
+                            char_name = [DB["json_characterEN"][char_id.split("#")[0]]["name"] if char_id.split("#")[0] in DB["json_characterEN"] else (DB["json_character"][char_id.split("#")[0]]["appellation"] if DB["json_character"][char_id.split("#")[0]]["appellation"].strip() else DB["json_character"][char_id.split("#")[0]]["name"]) for char_id in predefines[1]]
                             rune_writer.append(f'\n{join_and(set(char_name))} appear')
                     case _:
                         printc(f'{Y}{stage}{RE} New case just drop :', rune["key"], rune["blackboard"])
@@ -1190,7 +1215,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             case {"RunToNearestHole.map_position_list" : bb_grid}:
                                 return f'(will escape to nearest position) {map_grid(bb_grid, "or")}'
                             case {"Sleep.interval" : bb_duration}:
-                                return f'(standby) for {bb_duration:g} seconds'
+                                return f'(remain on standby) for {bb_duration:g} seconds'
                             case _:
                                 pass
                     elif len(value) == 3:
@@ -1870,7 +1895,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
                             |code = {data["code"]}
                             |name = {data["name"]}
                             {event_type_writer()}
-                            |part = {data["part"]}
+                            |part = {PART_NAMES_TL.get(data["part"], data["part"])}
                             {prev_next_stage(data["prev"], data["next"])}
                             |desc = {desc_cond_writer(data["desc"])}
                             |note = {data["note"]}
@@ -2366,7 +2391,7 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
         page_footer = "Seasonal game modes"
     else:
         mode_info = "sidestory"
-        page_footer = "Y event operations"
+        page_footer = f'Y{year} event operations'
         
     for stage in big_data["stage"].keys():
         if mode_info == "sidestory":
@@ -2443,13 +2468,16 @@ def wiki_article(event_code : str, event_type = "", event_name = "") -> list:
     script_result(big_data)
     #script_result(big_data["stage"])
     return article_data
-    
+
+# \([A-Za-z0-9#_]+\)
+
 # main
 #script_result(wiki_article("act3mainss", "episode"))
 
 # Event
-script_result(wiki_article("act46side", "event", "Retracing Our Steps 1101"), True)
-#script_result(wiki_article("act1vhalfidle", "event", "Rebuilding Mandate"), True)
+#script_result(wiki_article("act43side", "sidestory", "Act or Die", year = 6), True)
+script_result(wiki_article("act46side", "sidestory", "Retracing Our Steps 1101", year = 7), True)
+#script_result(wiki_article("act1vhalfidle", "sidestory", "Rebuilding Mandate"), True)
 
 # Trials for Navigator #04
 #script_result(wiki_article("act4bossrush", "tn", "Trials for Navigator #04"))
