@@ -655,7 +655,8 @@ def input_script(script : Literal["txt", "json"] = "txt"):
 
 def enemy_wave_csv():
     all_stage_dict = {}
-    all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\obt\main\*16-*')
+    #all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\obt\main\*16-*')
+    all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\activities\act46side\*')
     for stage in all_stage:
         stage_id = stage.split("\\")[-1].split(".json")[0]
         stage_json = json_load(stage, temp=True)
@@ -747,7 +748,7 @@ def enemy_wave_csv():
                     script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}')
     script_result(script_txt, True)
     
-#enemy_wave_csv()
+enemy_wave_csv()
 
 #printr(bin(639), bin(96), bool("1"), bool("0"))
 
@@ -832,4 +833,4 @@ def hot_diff():
             diff_hot[abInfos]   = old_hot[abInfos]
     
     script_result(diff_hot, True)
-hot_diff()
+#hot_diff()

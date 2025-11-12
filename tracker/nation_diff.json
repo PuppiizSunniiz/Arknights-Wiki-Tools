@@ -1,0 +1,110 @@
+{
+    "CN": "25-11-06-11-20-46_949905",
+    "EN": "25-10-28-07-04-59_bb83f3",
+    "tracker": {
+        "char_1045_svash2": {
+            "main": {
+                "nationId": "kjerag",
+                "groupId": null,
+                "teamId": null
+            },
+            "hidden": null
+        },
+        "char_1046_sbell2": {
+            "main": {
+                "nationId": "kjerag",
+                "groupId": null,
+                "teamId": null
+            },
+            "hidden": null
+        },
+        "char_1047_halo2": {
+            "main": {
+                "nationId": "columbia",
+                "groupId": "rhine",
+                "teamId": null
+            },
+            "hidden": null
+        },
+        "char_173_slchan": {
+            "main": {
+                "nationId": "kjerag",
+                "groupId": null,
+                "teamId": null
+            },
+            "hidden": [
+                {
+                    "nationId": "kjerag",
+                    "groupId": "karlan",
+                    "teamId": null
+                }
+            ]
+        },
+        "char_174_slbell": {
+            "main": {
+                "nationId": "kjerag",
+                "groupId": null,
+                "teamId": null
+            },
+            "hidden": [
+                {
+                    "nationId": "kjerag",
+                    "groupId": "karlan",
+                    "teamId": null
+                }
+            ]
+        },
+        "char_394_hadiya": {
+            "main": {
+                "nationId": "sargon",
+                "groupId": null,
+                "teamId": null
+            },
+            "hidden": null
+        },
+        "char_4013_kjera": {
+            "main": {
+                "nationId": "kjerag",
+                "groupId": null,
+                "teamId": null
+            },
+            "hidden": [
+                {
+                    "nationId": "kjerag",
+                    "groupId": "karlan",
+                    "teamId": null
+                }
+            ]
+        },
+        "char_4051_akkord": {
+            "main": {
+                "nationId": "leithanien",
+                "groupId": null,
+                "teamId": null
+            },
+            "hidden": null
+        },
+        "char_4211_snhunt": {
+            "main": {
+                "nationId": "kjerag",
+                "groupId": null,
+                "teamId": null
+            },
+            "hidden": null
+        },
+        "char_422_aurora": {
+            "main": {
+                "nationId": "kjerag",
+                "groupId": null,
+                "teamId": null
+            },
+            "hidden": [
+                {
+                    "nationId": "kjerag",
+                    "groupId": "karlan",
+                    "teamId": null
+                }
+            ]
+        }
+    }
+}

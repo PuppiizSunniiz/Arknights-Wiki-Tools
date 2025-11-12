@@ -27,10 +27,14 @@ def printt(*arg, mode = ""):
     else:
         print(*arg)
 
-def json_load(filepath : str, temp = False):
+def json_load(filepath : str, temp : bool = False, default_json : dict|list = {}):
     if temp:
-        with open(f'{filepath}', 'r', encoding = 'utf-8') as file:
-            return json.load(file)
+        try :
+            with open(f'{filepath}', 'r', encoding = 'utf-8') as file:
+                return json.load(file)
+        except FileNotFoundError:
+            printr(f'{G}FileNotFoundError {RE}: {Y}{filepath} {RE}(Default : {B}{default_json})')
+            return default_json
     else:
         with open(f'C:/Github/AN-EN-Tags/{filepath}', 'r', encoding = 'utf-8') as file:
             return json.load(file)
