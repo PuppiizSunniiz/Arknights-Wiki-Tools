@@ -190,6 +190,7 @@ def wiki_article(
                 {'ui_plugin_name': 'common_camera_move_ui_plugin', 'camera_plugin_name': 'common_camera_move_half_second_plugin'},
                 {'key': 'env_037_act46side', 'enemy_avalanche_damage': 5000.0, 'char_avalanche_damage_fail': 5000.0, 'stun': 10.0, 'char_avalanche_damage_success': 750.0, 'char_sp': 3.0},
                 {'key': 'env_037_act46side', 'enemy_avalanche_damage': 5000.0, 'char_avalanche_damage_fail': 5000.0, 'stun': 10.0, 'char_avalanche_damage_success': 750.0, 'char_sp': 3.0, 'ui_plugin_name': 'common_camera_move_ui_plugin', 'camera_plugin_name': 'common_camera_move_plugin'},
+                {'key': 'env_031_act43side', 'speed_scale': 0.1} ,
             ]
 
     env_name = [
@@ -779,7 +780,7 @@ def wiki_article(
         else:
             return f'<{join_and([CLASS_PARSE_EN[classes] for classes in rune_data["professionMask"].split("|")])}> operators'
     
-    def addendum_writer(runes = [], buffs = [], DP = 1, maxPlayTime : float|bool = False, configBlackBoard = [], diff = "", head = "", foot = "", ig_ctrl = {}, extrarune = False):
+    def addendum_writer(runes = [], buffs = [], DP = 1, maxPlayTime : float|bool = False, configBlackBoard = [], enemyDbRefs = {}, diff = "", head = "", foot = "", ig_ctrl = {}, extrarune = False):
         def ig_wave_addendum_writer(Blackboards):
             ig_writer = []
             ig_writer.append(f'\n<!-- {"|".join([f'{bb["key"]} : {bb["valueStr"]}' if bb["valueStr"] else f'{bb["key"]} : {bb["value"]}' for bb in Blackboards])} -->')
@@ -934,15 +935,38 @@ def wiki_article(
                     case "env_gbuff_new_with_verify":
                         if temp["blackboard"].get("key", "") == "cooperate_enemy_side_shared": # enemy
                             continue
-                        elif temp["blackboard"].pop("key") == "sandbox_rain":
+                        elif temp["blackboard"]["key"] == "sandbox_rain":
+                            rain_key        = temp["blackboard"].pop("key")
                             rain_interval   = temp["blackboard"].pop("interval", 1)
                             rain_damage     = temp["blackboard"].pop("value", 20)
                             if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
                                 printr(f'{Y}New {rune["key"]} BB just drop : {B}{rune["blackboard"]}')
                             else :
                                 rune_writer.append(f'\nDeals {rain_damage:g} Corrosion damage to all Operators every {"second" if rain_interval == 1 else f'{rain_interval:g} seconds'}.')
+                        elif temp["blackboard"]["key"] == "attr_common_global_buff[all][trap]":
+                            attr_key        = temp["blackboard"].pop("key")
+                            attr_char       = temp["blackboard"].pop("char", "")
+                            attr_enemy      = temp["blackboard"].pop("enemy", "")
+                            #printr(attr_enemy, bool(attr_enemy))
+                            char_name       = [DB["json_characterEN"][char]["name"] if char in DB["json_characterEN"] else (DB["json_character"][char]["appellation"] if DB["json_character"][char]["appellation"].strip() else f'{DB["json_character"][char]["name"]}({char})') for char in attr_char.split("|")  if char != 'null'] if attr_char else []
+                            enemy_name      = [big_data["enemies"][enemy]["data"]["name"] if enemy in big_data["enemies"].keys() else enemyDbRefs[enemy]["overwrittenData"]["name"]["m_value"] for enemy in attr_enemy.split("|") if enemy != 'null'] if attr_enemy else []
+                            all_name        = join_and(char_name + enemy_name)
+                            all_attribute   = []
+                            for char_attribute in temp["blackboard"].keys():
+                                match char_attribute:
+                                    case "hp_recovery_per_sec":
+                                        all_attribute.append(f'recover {decimal_format(rune["blackboard"][char_attribute])} HP every second')
+                                    case "max_hp":
+                                        all_attribute.append(f'Max HP increased by {decimal_format(rune["blackboard"][char_attribute])}')
+                                    case "attack_speed":
+                                        all_attribute.append(f'ASPD {"increased" if rune["blackboard"][char_attribute] > 0 else "reduced"} by {decimal_format(abs(rune["blackboard"][char_attribute]))}')
+                                    case _:
+                                        if char_attribute == "rune_alias": continue
+                                        printr(f'New char_attribute {Y}{char_attribute}{RE} for {rune["key"]} : {rune["blackboard"]}')
+                                        #exit()
+                            rune_writer.append(f'\nAll {all_name} have {join_and(all_attribute)}.')
                         else :
-                            printr(f'{Y}New {rune["key"]} just drop : {B}{rune["blackboard"]}')
+                            printr(f'{stage} {Y}New {rune["key"]} just drop : {B}{rune["blackboard"]}')
                     case "env_gbuff_new":
                         if rune["blackboard"].get("key", "") == "cooperate_get_branch" or rune["blackboard"].get("key", "") in env_name:
                             continue
@@ -1388,7 +1412,9 @@ def wiki_article(
                             if enemy_base and enemy_replace:
                                 eaddendum_result.append(f'\nAll {wiki_story(enemy_base)} are replaced with {wiki_story(enemy_replace)}.')
                         case "env_gbuff_new_with_verify":
-                            if rune["blackboard"].get("key", "") == "cooperate_enemy_side_shared":
+                            if rune["blackboard"]["key"] in ['attr_common_global_buff[all][trap]']:
+                                continue
+                            elif rune["blackboard"].get("key", "") == "cooperate_enemy_side_shared":
                                 share_enemy_id = rune["blackboard"]["enemy"].split("|")
                                 share_enemy = join_and([DB["json_enemy_handbookEN"]["enemyData"][enemy]["name"] if enemy in DB["json_enemy_handbookEN"]["enemyData"] else ENEMY_NAMES_TL.get(enemy, f'{big_data["enemies"][enemy]["data"]["name"]}({enemy})') for enemy in share_enemy_id if not re.match(r'enemy_.+?enemy_.+?', enemy)])
                                 eaddendum_result.append(f'\n{wiki_story(share_enemy)} will deduct both players [[Life Point|Life Points]] upon entering a [[Protection Objective]].')
@@ -1918,7 +1944,7 @@ def wiki_article(
                             |deployable = {data["deployable"]}
                             |static = {data["static"] if data["static"] else ""}
                             |terrain = {tile_writer(data["terrain"], big_data["stage"][data["stage_id"].split("#")[0]]["predefines"].get("tokenInsts", []))}
-                            |addendum = {addendum_writer(data["rune"], data["globalBuffs"], maxPlayTime = data["maxPlayTime"], DP = data["dp_regen"], configBlackBoard = data["configBlackBoard"], diff = data["diff_type"])}
+                            |addendum = {addendum_writer(data["rune"], data["globalBuffs"], maxPlayTime = data["maxPlayTime"], DP = data["dp_regen"], configBlackBoard = data["configBlackBoard"], diff = data["diff_type"], enemyDbRefs = data["enemyDbRefs"])}
                             |firstdrop = {data["firstdrop"]}
                             |regdrops = {data["regdrops"]}
                             |specdrops = {data["specdrops"]}
@@ -2475,8 +2501,8 @@ def wiki_article(
 #script_result(wiki_article("act3mainss", "episode"))
 
 # Event
-#script_result(wiki_article("act43side", "sidestory", "Act or Die", year = 6), True)
-script_result(wiki_article("act46side", "sidestory", "Retracing Our Steps 1101", year = 7), True)
+script_result(wiki_article("act43side", "sidestory", "Act or Die", year = 6), True)
+#script_result(wiki_article("act46side", "sidestory", "Retracing Our Steps 1101", year = 7), True)
 #script_result(wiki_article("act1vhalfidle", "sidestory", "Rebuilding Mandate"), True)
 
 # Trials for Navigator #04

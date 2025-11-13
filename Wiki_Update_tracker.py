@@ -26,7 +26,7 @@ CN = json.loads(requests.get("https://ak-conf.hypergryph.com/config/prod/officia
 EN = json.loads(requests.get("https://ark-us-static-online.yo-star.com/assetbundle/official/Android/version").text)["resVersion"]
 
 def charWords_track():
-    if test: DB["json_charwordEN"] = json_load(r"py\charword_table.json", True, {"charWords" : {}, "voiceLangDict" : {}})
+    if charWords_test: DB["json_charwordEN"] = json_load(r"py\charword_table.json", True, {"charWords" : {}, "voiceLangDict" : {}})
     
     dialouge_track : dict = DB["json_charword"]["charWords"]
     dialouge_track.update(DB["json_charwordEN"]["charWords"])
@@ -56,7 +56,7 @@ def charWords_track():
 def nationId_track():
     nation_track = {}
 
-    if test:
+    if nationId_test:
         DB["json_character"] = json_load(r"py\character_table.json", True)
         DB["json_character"].update(DB["json_char_patch"]["patchChars"])
 
@@ -83,7 +83,8 @@ def nationId_track():
         with open("tracker/ref/nation_track.json", "w", encoding = "utf-8") as filepath :
             json.dump(nation_track_json, filepath, indent = 4, ensure_ascii = False)
 
-test = False # True False
+charWords_test = True # True False
+nationId_test = False # True False
 
 if __name__ == "__main__":
     charWords_track()
