@@ -16,7 +16,7 @@ CLASS_PARSE_CN : dict[str, str] = {
                                     'SUPPORT':"辅助", 'SPECIAL':"特种", 'WARRIOR':"近卫",  'CASTER'  :"术师"
                                 }
 
-def load_json(json_load_list : str | list = []) -> dict :
+def load_json(json_load_list : str | list = [], all_json : bool = False) -> dict :
     '''
         json_activity, json_audio, json_battle_equip, json_building, json_campaign, json_chapter, json_character, json_charm, json_charword, json_char_meta, json_char_patch, json_checkin, json_climb_tower, json_clue, json_crisis, json_crisis_v2, json_display_meta, json_enemy_handbook, json_favor, json_gacha, json_gamedata, json_handbook_info, json_handbook, json_handbook_team, json_item, json_medal, json_mission, json_open_server, json_player_avatar, json_range, json_replicate, json_retro, json_roguelike, json_roguelike_topic, json_sandbox_perm, json_sandbox, json_shop_client, json_skill, json_skin, json_stage, json_story_review_meta, json_story_review, json_story, json_tech_buff, json_tip, json_token, json_uniequip, json_zone, json_enemy_database,
         
@@ -131,6 +131,10 @@ def load_json(json_load_list : str | list = []) -> dict :
                     "json_named_effect" : "json/named_effects.json",
                     "json_dict" : "py/dict.json"
                 }
+    
+    if all_json:
+        json_load_list = list(json_list.keys())
+    
     return {new_json:json_load(json_list[new_json]) for new_json in json_load_list}
 
 def wiki_trim(text : str, replace_all : bool = True) -> str:
@@ -189,7 +193,7 @@ def wiki_text(candidate : tuple[str, list] | str) -> str:
     desc = ba_matching(desc)
     desc = cc_matching(desc)
 
-    return desc.strip()
+    return wiki_cleanup(desc.replace("\n", "<br/>").strip())
 
 def replace_apos_between(part : str) -> str:
     ############################################################################################################################################
@@ -224,7 +228,7 @@ def replace_apos_between(part : str) -> str:
     else:
         return part
 
-def wiki_cleanup(txt :str, all_clean : bool) -> str:
+def wiki_cleanup(txt :str, all_clean : bool = False) -> str:
     clean_sheet = {
                     r'( ?\\n ?| ?\n ?)' : "<br/>",
                     r'(’)'              : "'",

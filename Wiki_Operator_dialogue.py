@@ -244,10 +244,10 @@ dialect         = ""    # TBU
 outfit          = ""
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = "char_388_mint"
+OP_DIALOGUE_LIST    = "char_115_headbr"
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
-force_server        = True
+force_server        = True  # True False
 audio               = True  # True False
 manual              = False  # True False
 audio_category      = True
@@ -259,21 +259,11 @@ wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST, server = server, force_
 #   (^\{\{Operator dialogue cell\|.+?(?<!=true))\}\}$
 #   $1|jp=true|cn=true|en=true|kr=true}}
 #
-#   {{Operator dialogue head|note='''CHY''' denotes the <u>Ch</u>eng-<u>Y</u>u Chinese dialect voiceline.}}
+#   {{Operator dialogue head|note='''XXX''' denotes the XXX Chinese dialect voiceline.}}
+#
+#   {{Operator dialogue head|note=As with other [[Ave Mujica]] [[Operator]]s, XXX XXX only has Japanese voicelines.}}
 '''
-    "char_204_platnm": {            Platinum    5
-        "JP": "Ai Kayano"
-    },
-    "char_230_savage": {            Savage      5
-        "JP": "Fujimura Ayumi"
-    },
     "char_136_hsguma": {            Hoshi       6
-        "CN_MANDARIN": "X. Chai"
-    },
-    "char_473_mberry": {            Mul         5
-        "CN_MANDARIN": "X. Chai"
-    },
-    "char_144_red": {               Red         5
         "CN_MANDARIN": "X. Chai"
     },
     "char_103_angel": {             Exu         6

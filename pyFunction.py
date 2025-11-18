@@ -3,7 +3,7 @@ import json
 import inspect
 import os
 import subprocess
-from typing import Any, Callable
+from typing import Any, Callable, Literal
 
 R = '\033[31m'
 G = '\033[32m'
@@ -98,7 +98,7 @@ def char_ready(char_json : dict , mode : int = 0) -> dict:
             return Chars["Exclude"] # type: ignore
         case _ :
             return Chars
-        
+
 def get_char_name(char_json : dict[str, dict[str, Any]], char_key : str) -> str :
     return name_check(char_json[char_key]["appellation"])
 
@@ -171,7 +171,7 @@ def script_result(text : str | list | set | dict ,
         subprocess.run(f'code --reuse-window -g "{os.path.abspath(file)}"', shell = True)
     if script_exit:
         exit()
-        
+
 def join_and(text_list : list | set) -> str :
     return_text = " and ".join(text_list)
     if len(text_list) >= 3:
@@ -197,3 +197,25 @@ def decimal_format(dec : float|str) -> str:
         return f'{dec:.1f}'
     else:
         return f'{dec:.0f}'
+    
+def sorted_dict_key(curr_dict : dict, sorted_key : Callable = None, mode : Literal["dict", "keys"] = "dict"):
+    key_sorted = sorted(list(curr_dict.keys()), key = sorted_key)
+    match mode:
+        case "dict":
+            return {k:curr_dict[k] for k in key_sorted}
+        case "keys":
+            return key_sorted
+        case _:
+            print(f'Wrong {Y}sorted_dict_key{RE} mode : {R}{mode}')
+            exit()
+            
+def blackboard_format(desc, format):
+    match format:
+        case "0":
+            return f'{desc:g}'
+        case "0%":
+            return f'{desc*100:g}%'
+        case _:
+            print(f'New format for {Y}blackboard_format{RE} : {R}{format}')
+            exit()
+    return

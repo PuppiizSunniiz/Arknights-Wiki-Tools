@@ -237,7 +237,7 @@ def wiki_article(
         # challenge condition
         if re.search(r'<@lv.fs>附加条件：<\/>\\n', desc):
             desc = desc.split("<@lv.fs>附加条件：</>\\n")[-1]
-            desc = re.sub(r'<[^[](.*?)[^]\/]>', r"'''<[[\1]]>'''", desc)
+            desc = re.sub(r'<([^[].*?[^]\/])>', r"'''<[[\1]]>'''", desc)
         else:
             desc = re.sub(r'<([^[c/].*?[^]\/])>', r"'''<[[\1]]>'''", desc)
         return desc_tl(desc).replace("\\n", "<br/>").replace("\n", "<br/>").replace("<br/><br/>", "<br/>")
@@ -1582,7 +1582,7 @@ def wiki_article(
         }
         simulation_writer = []
         stage_id = stage_id.split("#", 1)[0]
-        for simulation in optionalRunes_data.keys():
+        for simulation in sorted(list(optionalRunes_data.keys())):
             simulation_suffix = simulation_parser[simulation]
             simulation_id = f'{stage_id}_{simulation_suffix}'
             simulation_writer.append(f'|ss{simulation_suffix} = {DB["json_stageEN"]["sixStarRuneData"][simulation_id]["runeDesc"] if simulation_id in DB["json_stageEN"]["sixStarRuneData"] else DB["json_stage"]["sixStarRuneData"][simulation_id]["runeDesc"]}')
@@ -2501,8 +2501,8 @@ def wiki_article(
 #script_result(wiki_article("act3mainss", "episode"))
 
 # Event
-script_result(wiki_article("act43side", "sidestory", "Act or Die", year = 6), True)
-#script_result(wiki_article("act46side", "sidestory", "Retracing Our Steps 1101", year = 7), True)
+#script_result(wiki_article("act43side", "sidestory", "Act or Die", year = 6), True)
+script_result(wiki_article("act46side", "sidestory", "Retracing Our Steps 1101", year = 7), True)
 #script_result(wiki_article("act1vhalfidle", "sidestory", "Rebuilding Mandate"), True)
 
 # Trials for Navigator #04
