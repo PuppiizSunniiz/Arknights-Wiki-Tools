@@ -219,3 +219,15 @@ def blackboard_format(desc, format):
             print(f'New format for {Y}blackboard_format{RE} : {R}{format}')
             exit()
     return
+
+def DictToCSV(data : dict, header : list[str], keys : list[str|int|float] = "", separator : str = "|", use_key : bool = False):
+    csv_header = header
+    csv_result = [separator.join(csv_header)]
+    for data_key in data:
+        key_data : dict = data[data_key]
+        if use_key:
+            key_result  = [str(data_key), str(key_data)]
+        else :
+            key_result  = [str(data_key)] + [str(key_data.get(key, "")) or "" for key in keys]
+        csv_result.append(separator.join(key_result))
+    script_result(csv_result, True)

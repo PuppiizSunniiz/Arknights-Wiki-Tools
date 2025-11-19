@@ -18,6 +18,9 @@ class Item_Database:
     def getdesc(self, key: str):
         return self.data[key]["desc"]
     
+    def geticonId(self, key: str):
+        return self.data[key]["iconId"]
+    
     def get(self, key: str):
         return self.data.get(key)
     

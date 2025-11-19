@@ -370,3 +370,24 @@ def range_template(range_id : str|NoneType) -> str:
         return f'{{{{ranges|{"|".join(range_array[0])}}}}}'
     else:
         return f'{{{{Range container|{"".join([f'{{{{ranges|{"|".join(range_array[row])}}}}}' for row in range(len(range_array))])}}}}}'
+
+def wiki_reward_lister(reward_name : str, reward_count : int, reward_type : str) -> str:
+    match reward_type:
+        case "GOLD" | "MATERIAL" | "CARD_EXP":
+            return f'item={reward_name}, {reward_count}'
+        case "CHAR_SKIN":
+            return f'outfit={reward_name}'
+        case "PLAYER_AVATAR":
+            return f'profile={reward_name}'
+        case _:
+            printr(f'wiki_reward_lister got new {Y}Reward Type{RE} : {R}{reward_type}')
+            exit()
+
+def wiki_elite_lv_parse(Elite : str|int, Level : str|int) -> str:
+    if Elite.startswith("PHASE"):
+        Elite = int(Elite[-1])
+    
+    if Elite:
+        return f'{Elite}, {Level}'
+    else:
+        return Level

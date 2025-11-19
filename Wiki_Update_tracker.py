@@ -83,7 +83,7 @@ def nationId_track():
         with open("tracker/ref/nation_track.json", "w", encoding = "utf-8") as filepath :
             json.dump(nation_track_json, filepath, indent = 4, ensure_ascii = False)
 
-charWords_test = True # True False
+charWords_test = False # True False
 nationId_test = False # True False
 
 if __name__ == "__main__":
