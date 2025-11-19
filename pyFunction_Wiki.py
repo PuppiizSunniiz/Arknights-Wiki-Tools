@@ -128,6 +128,12 @@ def load_json(json_load_list : str | list = [], all_json : bool = False) -> dict
                     "json_zoneEN" : "json/gamedata/ArknightsGameData_YoStar/en_US/gamedata/excel/zone_table.json",
                     "json_enemy_databaseEN" : "json/gamedata/ArknightsGameData_YoStar/en_US/gamedata/levels/enemydata/enemy_database.json",
                     
+                    "json_characterKR" : "json/gamedata/ArknightsGameData_YoStar/ko_KR/gamedata/excel/character_table.json",
+                    "json_char_patchKR" : "json/gamedata/ArknightsGameData_YoStar/ko_KR/gamedata/excel/char_patch_table.json",
+
+                    "json_characterJP" : "json/gamedata/ArknightsGameData_YoStar/ja_JP/gamedata/excel/character_table.json",
+                    "json_char_patchJP" : "json/gamedata/ArknightsGameData_YoStar/ja_JP/gamedata/excel/char_patch_table.json",
+                    
                     "json_named_effect" : "json/named_effects.json",
                     "json_dict" : "py/dict.json"
                 }
