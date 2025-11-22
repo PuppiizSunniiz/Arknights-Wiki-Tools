@@ -192,45 +192,25 @@ lang_dict = {
                 "FRE"   : "FR",
                 "SPA"   : "ES",
 }
-'''
-    char_2014_nian      Nian				        Sichuanese
-    char_2015_dusk      Dusk				        Suzhounese
-    char_2023_ling      Ling				        Guanzhonghua
-    char_010_chen       Ch'en				        Cantonese
-    char_1013_chen2     Ch'en the Holungday			Cantonese
-    char_136_hsguma     Hoshiguma				    Cantonese
-    char_455_nothin     Mr. Nothing				    Nankinese
-    char_241_panda      FEater				        Cheng-Yu
-    char_308_swire      Swire				        Cantonese
-    char_2024_chyue     Chongyue				    Wuhanese
-    char_4080_lin       Lin					        Cantonese
-    char_473_mberry     Mulberry				    Jinanhua
-    char_383_snsant     Snowsant				    Hangzhouhua
-    char_322_lmlee      Lee					        Cantonese
-    char_226_hmau       Hung				        Cantonese
-    char_225_haak       Aak					        Cantonese
-    char_243_waaifu     Waai Fu				        Cantonese
-    char_1033_swire2    Swire the Elegant Wit		Cantonese
-    char_4121_zuole     Zuo Le				        Henanese
-    char_2025_shu       Shu					        Hokkien
-    char_2026_yu        Yu					        Jinanhua
-    char_1044_hsgma2    Hoshiguma the Breacher		Cantonese
-'''
+
 '''
     "skinWords": [
-        "char_003_kalts_boc#6",             #kal
-        "char_1012_skadi2_iteration#2",     #skya
-        "char_1016_agoat2_epoque#34",       #eyja
-        "char_1032_excu2_sale#12",          #excu
-        "char_1035_wisdel_sale#14",         #wis
-        "char_113_cqbw_epoque#7",           #w
-        "char_2024_chyue_cfa#1",            #K
-        "char_245_cello_sale#12",           #tutu
-        "char_249_mlyss_boc#8",             #mumu
-        "char_4064_mlynar_epoque#28",       #uncle
-        "char_472_pasngr_epoque#17"         #pass
-        char_1038_whitw2_sale#15            #dumbdumb
-        "char_4134_cetsyr_epoque#50"        #Theresa
+        "char_2024_chyue_cfa#1",            #K              Chongyue
+        "char_4134_cetsyr_epoque#50"        #Theresa        Civilight Eterna
+        
+        ################################################################################
+        
+        "char_1032_excu2_sale#12",          #excu           Executor the Ex Foedere
+        "char_1016_agoat2_epoque#34",       #eyja           Eyjafjalla the Hvít Aska
+        "char_003_kalts_boc#6",             #kal            Kal'tsit
+        char_1038_whitw2_sale#15            #dumbdumb       Lappland the Decadenza
+        "char_4064_mlynar_epoque#28",       #uncle          Młynar
+        "char_249_mlyss_boc#8",             #mumu           Muelsyse
+        "char_472_pasngr_epoque#17"         #pass           Passenger
+        "char_1012_skadi2_iteration#2",     #skya           Skadi the Corrupting Heart
+        "char_245_cello_sale#12",           #tutu           Virtuosa
+        "char_113_cqbw_epoque#7",           #w              W
+        "char_1035_wisdel_sale#14",         #wis            Wiš'adel
     ],
 '''
 
@@ -241,10 +221,10 @@ en              = True  # True False
 kr              = True  # True False
 otherlang       = ""    # DE FR IT RU etc.
 dialect         = ""    # TBU
-outfit          = ""
+outfit          = "Allmind As One"
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = "char_426_billro"
+OP_DIALOGUE_LIST    = "char_1032_excu2_sale#12"
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
 force_server        = True  # True False

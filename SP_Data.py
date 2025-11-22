@@ -11,7 +11,7 @@ from pyFunction_Wiki import load_json, mini_blackboard, wiki_elite_lv_parse, wik
 
 DB = load_json(all_json = True)
 
-class AC_DATA:
+class SP_DATA:
     def __init__(self, season = ""):
         self.data : dict            = DB["json_activity"]["activity"]["AUTOCHESS_SEASON"]
         self.autoChessData : dict   = DB["json_activity"]["autoChessData"]
@@ -24,36 +24,40 @@ class AC_DATA:
             exit()
         else:
             self.seasonData             = self.data[season]
-            self.baseRewardDataList     = AC_DATA_BASEREWARD(self.seasonData)
-            self.bandData               = AC_DATA_BAND(self.seasonData, self.autoChessData)
-            self.bondInfoDict           = AC_DATA_BOND(self.seasonData, self.autoChessData)
-            self.garrisonDataDict       = AC_DATA_GARRISON(self.seasonData)
-            self.milestoneList          = AC_DATA_MILESTONE(self.seasonData, season)
-            self.FactorInfo             = AC_DATA_FACTOR(self.seasonData)
-            self.shopCharChessInfo      = AC_DATA_CHESSINFO(self.seasonData)
-            self.cultivateEffectList    = AC_DATA_CULTIVATE(self.seasonData, self.autoChessData)
+            self.baseRewardDataList     = SP_DATA_BASEREWARD(self.seasonData)
+            self.bandData               = SP_DATA_BAND(self.seasonData, self.autoChessData)
+            self.bondInfoDict           = SP_DATA_BOND(self.seasonData, self.autoChessData)
+            self.garrisonDataDict       = SP_DATA_GARRISON(self.seasonData)
+            self.milestoneList          = SP_DATA_MILESTONE(self.seasonData, season)
+            self.FactorInfo             = SP_DATA_FACTOR(self.seasonData)
+            self.shopCharChessInfo      = SP_DATA_CHESSINFO(self.seasonData)
+            self.cultivateEffectList    = SP_DATA_CULTIVATE(self.seasonData, self.autoChessData)
             
-            self.charChessDataDict      = AC_DATA_CHARCHESS(self.seasonData)
-            self.trapChessDataDict      = AC_DATA_TRAP(self.seasonData)
+            self.charChessDataDict      = SP_DATA_CHARCHESS(self.seasonData)
+            self.trapChessDataDict      = SP_DATA_TRAP(self.seasonData)
             
+            self.bossInfoDict           = SP_DATA_BOSS(self.seasonData, self.autoChessData)
             
-            
-            
-            #self.modeDataDict           = AC_DATA_MODE()
-            #self.shopLevelDataDict      = AC_DATA_SHOP()
-            #self.stageDatasDict         = AC_DATA_STAGE()
-            #self.battleDataDict         = AC_DATA_BATTLE()
-            #self.bossInfoDict           = AC_DATA_BOSS()
-            #self.specialEnemyInfoDict   = AC_DATA_SPECENEMY()
-            #self.enemyInfoDict          = AC_DATA_ENEMIES()
-class AC_DATA_BAND:
-    def __init__(self, data_season, data_ac):
-        self.data : dict = bandData(data_season, data_ac)
+            #self.modeDataDict           = SP_DATA_MODE()
+            #self.shopLevelDataDict      = SP_DATA_SHOP()
+            #self.stageDatasDict         = SP_DATA_STAGE()
+            #self.battleDataDict         = SP_DATA_BATTLE()
+            #self.specialEnemyInfoDict   = SP_DATA_SPECENEMY()
+            #self.enemyInfoDict          = SP_DATA_ENEMIES()
     
-    def toCSV(self, separator : str = "|"):
-        csv_header  = ["ID", "Name", "HP", "Effect", "Condition"]
-        csv_key     = ["band_name", "band_hp", "band_effect", "band_cond"]
-        DictToCSV(self.data, csv_header, csv_key, separator)
+    def toCSV(self, file_type : Literal["csv", "txt", "xlsx"] = "xlsx"):
+        for key in self.__dict__.keys():
+            if hasattr(getattr(self, key), "toCSV"):
+                printr(key, hasattr(getattr(self, key), "toCSV"))
+                getattr(self, key).toCSV(main = "SP_DATA", file_type = file_type)
+
+class SP_DATA_BAND:
+    def __init__(self, data_season, data_ac):
+        self.classname = "bandData"
+        self.data, self.keys = bandData(data_season, data_ac)
+
+    def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
     
     def toWIKI(self):
         wiki_result = []
@@ -71,47 +75,43 @@ class AC_DATA_BAND:
                                 |cond = {band_cond}}}}}'''.replace("                                ", ""))
         script_result(wiki_result, True)
 
-class AC_DATA_BASEREWARD():
+class SP_DATA_BASEREWARD():
     def __init__(self, data_season):
-        self.data   = baseRewardData(data_season)
-    
-    def toCSV(self, separator : str = "|"):
-        csv_header  = ["Round", "Item ID", "Item Name", "Count", "Daily Point"]
-        csv_key     = ["item_id", "item_name", "item_count", "daily_point"]
-        DictToCSV(self.data, csv_header, csv_key, separator)
+        self.classname = "baseRewardData"
+        self.data, self.keys = baseRewardData(data_season)
 
-class AC_DATA_BOND():
+    def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
+
+class SP_DATA_BOND():
     def __init__(self, data_season, data_ac):
-        self.data   = bondInfo(data_season, data_ac)
-    
-    def toCSV(self, separator : str = "|"):
-        csv_header  = ["ID", "Name", "Active Type", "Active Count", "Power List", "Full Desc", "Stack Desc"]
-        csv_key     = ["bond_name", "bond_activeType", "bond_activeCount", "bond_powerIdList", "bond_desc", "bond_stackdesc"]
-        DictToCSV(self.data, csv_header, csv_key, separator)
+        self.classname = "bondInfo"
+        self.data, self.keys = bondInfo(data_season, data_ac)
 
-class AC_DATA_GARRISON():
+    def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
+
+class SP_DATA_GARRISON():
     def __init__(self, data_season):
-        self.data   = sorted_dict_key(garrisonData(data_season))
-    
-    def toCSV(self, separator : str = "|"):
-        csv_header  = ["ID", "Type", "Icon", "S.Icon", "TypeDesc", "effectType", "Desc"]
-        csv_key     = ["garrison_type", "garrison_typeicon", "garrison_typesicon", "garrison_typedesc", "garrison_effecttype", "garrison_desc"]
-        DictToCSV(self.data, csv_header, csv_key, separator)
+        self.classname = "garrisonData"
+        self.data, self.keys = garrisonData(data_season)
 
-class AC_DATA_MILESTONE():
+    def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
+
+class SP_DATA_MILESTONE():
     def __init__(self, data_season, season):
         if len(DB["json_activity"]["activityItems"][season]) != 1 :
             printr(f'Multiple milestone token detected : {Y}{DB["json_activity"]["activityItems"][season]}')
             exit()
         else :
-            self.token      = DB["json_activity"]["activityItems"][season][0]
-            self.tokenname  = ITEM_DATA.getname(self.token)
-            self.data       = milestoneList(data_season, self.token, self.tokenname)
-        
-    def toCSV(self, separator : str = "|"):
-        csv_header  = ["Level", "Milestone", "M.Icon", "M.Num", "Reward", "Name", "Icon ID", "Count", "Type"]
-        csv_key     = ["milestone_tokenID", "milestone_tokenName", "milestone_tokenNum", "milestone_rewardID", "milestone_rewardName", "milestone_rewardiconId", "milestone_rewardCount", "milestone_rewardType"]
-        DictToCSV(self.data, csv_header, csv_key, separator)
+            self.classname          = "milestoneList"
+            self.token              = DB["json_activity"]["activityItems"][season][0]
+            self.tokenname          = ITEM_DATA.getname(self.token)
+            self.data, self.keys    = milestoneList(data_season, self.token, self.tokenname)
+
+    def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
 
     def toWIKI(self):
         wiki_result = ['''{{Season tab|mode=sp}}
@@ -134,24 +134,27 @@ class AC_DATA_MILESTONE():
                                 [[Category:Stronghold Protocol milestones]]'''.replace("                                ", ""))
         script_result(wiki_result, True)
 
-class AC_DATA_FACTOR():
+class SP_DATA_FACTOR():
     def __init__(self, data_season):
-        self.data       = FactorInfo(data_season)
-    
-    def toCSV(self, separator : str = "|"):
-        csv_header  = ["Mode", "Factor"]
-        DictToCSV(self.data, csv_header, separator = separator, use_key = True)
+        self.classname = "FactorInfo"
+        self.data, self.keys = FactorInfo(data_season)
 
-class AC_DATA_CHESSINFO():
+    def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
+
+class SP_DATA_CHESSINFO():
     def __init__(self, data_season):
-        self.data       = ChessInfo(data_season)
+        self.classname = "ChessInfo"
+        self.data, self.keys = ChessInfo(data_season)
         self.basedata   = self.data["base"]
         self.golddata   = self.data["gold"]
-    
-    def toCSV(self, mode : Literal["base", "gold"] = "base", separator : str = "|"):
-        csv_header  = ["Level", "evolvePhase", "charLevel", "skillLevel", "favorPoint", "equipLevel", "purchasePrice", "chessSoldPrice", "eliteIconId"]
-        csv_keys    = ["evolvePhase", "charLevel", "skillLevel", "favorPoint", "equipLevel", "purchasePrice", "chessSoldPrice", "eliteIconId"]
-        DictToCSV(self.data[mode], csv_header, csv_keys, separator)
+
+    def toCSV(self, main : str = "", mode : Literal["base", "gold"] = "base", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        if main:
+            DictToCSV(self.data["base"], self, main = main, separator = separator, sheet_name = "ChessInfo_b", file_type = file_type)
+            DictToCSV(self.data["gold"], self, main = main, separator = separator, sheet_name = "ChessInfo_g", file_type = file_type)
+        else:
+            DictToCSV(self.data[mode], self, main = main, separator = separator, file_type = file_type)
     
     def toWIKI(self):
         def level_lister(data):
@@ -173,50 +176,14 @@ class AC_DATA_CHESSINFO():
         wiki_result.append("}}</tabber>")
         script_result(wiki_result, True)
 
-    '''
-    <tabber>Regular={{SP Operator tiers
-|t1 lv = 40
-|t1 sklv = 4
-|t2 lv = 1,10
-|t2 sklv = 4
-|t3 lv = 1,40
-|t3 sklv = 4
-|t4 lv = 1,70
-|t4 sklv = 4
-|t5 lv = 2,1
-|t5 sklv = 4
-|t6 lv = 2,30
-|t6 sklv = 4
-}}|-|Elite={{SP Operator tiers
-|t1 lv = 1,70
-|t1 sklv = 7
-|t2 lv = 2,40
-|t2 sklv = 7
-|t2 modst = 1
-|t3 lv = 2,50
-|t3 sklv = 7
-|t3 modst = 2
-|t4 lv = 2,60
-|t4 sklv = 7
-|t4 modst = 2
-|t5 lv = 2,70
-|t5 sklv = 7
-|t5 modst = 2
-|t6 lv = 2,90
-|t6 sklv = 10
-|t6 modst = 3
-}}</tabber>
-    '''
-
-class AC_DATA_CHARCHESS():
+class SP_DATA_CHARCHESS():
     def __init__(self, data_season):
-        self.data   = charChessData(data_season)
+        self.classname = "charChessData"
+        self.data, self.keys = charChessData(data_season)
         self.data_a = {k:v for k,v in self.data.items() if k.endswith("a")}
-    
-    def toCSV(self, separator : str = "|"):
-        csv_header  = ["ID", "chessType", "chessLevel", "charId", "charname", "backupCharId", "backupcharname", "bondIds", "garrisonIds", "garrisonIds_gold", "backupgarrisonIds", "backupgarrisonIds_gold"]
-        csv_keys    = ["chessType", "chessLevel", "charId", "charname", "backupCharId", "backupcharname", "bondIds", "garrisonIds", "garrisonIds_gold", "backupgarrisonIds", "backupgarrisonIds_gold"]
-        DictToCSV(self.data_a, csv_header, csv_keys, separator)
+
+    def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        DictToCSV(self.data_a, self, main = main, separator = separator, file_type = file_type)
 
     def toWIKI(self):
         def chess_lister(data : dict, mode : Literal["main", "reserved"]):
@@ -237,26 +204,33 @@ class AC_DATA_CHARCHESS():
         wiki_result.append("}}</tabber>")
         script_result(wiki_result, True)
 
-class AC_DATA_CULTIVATE():
+class SP_DATA_CULTIVATE():
     def __init__(self, data_season, data_ac):
-        self.data       = cultivateEffect(data_season, data_ac)
-    
-    def toCSV(self, separator : str = "|"):
-        csv_header  = ["ID", "evolvePhase", "charLevel", "atkPer", "defPer", "hpPer", "effectName", "effectDesc"]
-        csv_keys    = ["evolvePhase", "charLevel", "atkPer", "defPer", "hpPer", "effectName", "effectDesc"]
-        DictToCSV(self.data, csv_header, csv_keys, separator)
+        self.classname = "cultivateEffect"
+        self.data, self.keys = cultivateEffect(data_season, data_ac)
 
-class AC_DATA_TRAP():
+    def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
+
+class SP_DATA_TRAP():
     def __init__(self, data_season):
-        self.data   = trapChessData(data_season)
-    
-    def toCSV(self, separator : str = "|"):
-        csv_header  = ["ID", "charId", "purchasePrice", "hideInShop", "effectId", "giveBondId", "givePowerId", "canGiveBond", "itemType", "effectName", "effectDesc"]
-        csv_keys    = ["charId", "purchasePrice", "hideInShop", "effectId", "giveBondId", "givePowerId", "canGiveBond", "itemType", "effectName", "effectDesc"]
-        DictToCSV(self.data, csv_header, csv_keys, separator)
+        self.classname = "trapChessData"
+        self.data, self.keys = trapChessData(data_season)
+
+    def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
+
+class SP_DATA_BOSS():
+    def __init__(self, data_season, data_ac):
+        self.classname = "bossInfoDict"
+        self.data, self.keys = bossInfoDict(data_season, data_ac)
+
+    def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
 
 def bandData(data_season : dict, data_ac : dict) -> dict:
     bands_data = {}
+    data_key = []
     for band in data_season["bandDataListDict"]:
         band_season_data : dict = data_season["bandDataListDict"][band]
         band_data_dict : dict   = data_ac["bandDataDict"][band]
@@ -269,18 +243,25 @@ def bandData(data_season : dict, data_ac : dict) -> dict:
                                 "band_effect"     : band_season_data.get("bandDesc"), 
                                 "band_cond"       : band_data_dict.get("unlockDesc", "") or "",  
                             }
-    return bands_data
+        if not data_key:
+            data_key = list(bands_data[band])
+    return bands_data, data_key
 
 def baseRewardData(data_season : dict) -> dict:
     reward_data = {}
+    data_key = []
     for reward in data_season["baseRewardDataList"]:
-        reward_data[reward["round"]] = {
+        round = reward["round"]
+        reward_data[round] = {
+                                            "round"         : round,
                                             "item_id"       : ITEM_DATA.getname(reward["item"]["id"]),
                                             "item_name"     : reward["item"]["id"],
                                             "item_count"    : reward["item"]["count"],
                                             "daily_point"   : reward["dailyMissionPoint"],
                                         }
-    return reward_data
+        if not data_key:
+            data_key = list(reward_data[round])
+    return reward_data, data_key
 
 def bondInfo(data_season : dict, data_ac : dict) -> dict:
     def mini_params(params : list):
@@ -322,10 +303,12 @@ def bondInfo(data_season : dict, data_ac : dict) -> dict:
         return wiki_text(desc)
     
     bond_dict = {}
+    data_key = []
     for bond in data_season["bondInfoDict"]:
         bond_data = data_season["bondInfoDict"][bond]
         bond_stackdesc = bondStackdesc(bond_data["effectId"], bond_data["descParamBaseList"], bond_data["descParamPerStackList"])
         bond_dict[bond] = {
+                                "bond_id"                       : bond,
                                 "bond_name"                     : bond_data["name"],
                                 "bond_desc"                     : wiki_text(bond_data["desc"]),
                                 "bond_stackdesc"                : bond_stackdesc,
@@ -339,13 +322,17 @@ def bondInfo(data_season : dict, data_ac : dict) -> dict:
                                 "bond_descParamPerStackList"    : bond_data["descParamPerStackList"],
                                 "bond_noStack"                  : bond_data["noStack"],
                             }
-    return bond_dict
+        if not data_key:
+            data_key = list(bond_dict[bond].keys())
+    return bond_dict, data_key
 
 def garrisonData(data_season : dict) -> dict:
     garrison_dict = {}
+    data_key = []
     for garrison in data_season["garrisonDataDict"]:
         garrison_data = data_season["garrisonDataDict"][garrison]
         garrison_dict[garrison] = {
+                                        "garrison_id"           : garrison,
                                         "garrison_desc"         : garrison_data["garrisonDesc"],
                                         "garrison_type"         : garrison_data["eventType"],
                                         "garrison_typedesc"     : garrison_data["eventTypeDesc"],
@@ -353,10 +340,13 @@ def garrisonData(data_season : dict) -> dict:
                                         "garrison_typesicon"    : garrison_data["eventTypeSmallIcon"],
                                         "garrison_effecttype"   : garrison_data["effectType"],
                                     }
-    return garrison_dict
+        if not data_key:
+            data_key = list(garrison_dict[garrison].keys())
+    return sorted_dict_key(garrison_dict), data_key
 
 def milestoneList(data_season : dict, token_id : str, token_name) -> dict:
     milestone_dict = {}
+    data_key = []
     for milestone in data_season["milestoneList"]:
         milestone_Lvl    = milestone["milestoneLvl"]
         token_Num        = milestone["tokenNum"]
@@ -375,6 +365,7 @@ def milestoneList(data_season : dict, token_id : str, token_name) -> dict:
                 reward_iconId   = ITEM_DATA.geticonId(reward_ID)
         
         milestone_dict[milestone_Lvl] = {
+                                            "milestone_Lvl"             : milestone_Lvl,
                                             "milestone_tokenID"         : token_id,
                                             "milestone_tokenName"       : token_name,
                                             "milestone_tokenNum"        : token_Num,
@@ -384,52 +375,62 @@ def milestoneList(data_season : dict, token_id : str, token_name) -> dict:
                                             "milestone_rewardCount"     : reward_Count,
                                             "milestone_rewardType"      : reward_Type,
                                         }
-    return milestone_dict
+        if not data_key:
+            data_key = list(milestone_dict[milestone_Lvl].keys())
+    return milestone_dict, data_key
 
 def FactorInfo(data_season : dict) -> dict:
     factor_dict = {}
+    data_key = []
     for factor in data_season["modeFactorInfo"]:
-        factor_dict[factor] = data_season["modeFactorInfo"][factor]
+        factor_dict[factor] = {
+                                        "Mode" : factor,
+                                        "Factor" : data_season["modeFactorInfo"][factor],
+                                    }
+        if not data_key:
+            data_key = list(factor_dict[factor].keys())
     
     for factor in data_season["difficultyFactorInfo"]:
         if factor in factor_dict:
             printr(f'There dupe Factor in between {G}Mode{RE} and {B}Difficulty{RE} somehow : {factor}')
             exit()
         else:
-            factor_dict[factor] = data_season["difficultyFactorInfo"][factor]
-    return factor_dict
+            factor_dict[factor] = {
+                                        "Mode" : factor,
+                                        "Factor" : data_season["difficultyFactorInfo"][factor],
+                                    }
+    return factor_dict, data_key
 
 def ChessInfo(data_seaon : dict) -> dict:
     chess_info = {"base" : {}, "gold" : {}}
+    elite_info = {"base" : 0, "gold" : 1}
+    data_key = []
     for level in data_seaon["shopCharChessInfoData"]:
         level_data = data_seaon["shopCharChessInfoData"][level]
-        chess_info["base"][level] = {
-                                        "evolvePhase"       : level_data[0]["evolvePhase"],
-                                        "charLevel"         : level_data[0]["charLevel"],
-                                        "skillLevel"        : level_data[0]["skillLevel"],
-                                        "favorPoint"        : level_data[0]["favorPoint"],
-                                        "equipLevel"        : level_data[0]["equipLevel"],
-                                        "purchasePrice"     : level_data[0]["purchasePrice"],
-                                        "chessSoldPrice"    : level_data[0]["chessSoldPrice"],
-                                        "eliteIconId"       : level_data[0]["eliteIconId"],
-        }
-        chess_info["gold"][level] = {
-                                        "evolvePhase"       : level_data[1]["evolvePhase"],
-                                        "charLevel"         : level_data[1]["charLevel"],
-                                        "skillLevel"        : level_data[1]["skillLevel"],
-                                        "favorPoint"        : level_data[1]["favorPoint"],
-                                        "equipLevel"        : level_data[1]["equipLevel"],
-                                        "purchasePrice"     : level_data[1]["purchasePrice"],
-                                        "chessSoldPrice"    : level_data[1]["chessSoldPrice"],
-                                        "eliteIconId"       : level_data[1]["eliteIconId"],
-        }
-    return chess_info
+        for elite in ["base", "gold"]:
+            chess_info[elite][level] = {
+                                            "chess_elite"       : elite,
+                                            "chess_level"       : level,
+                                            "evolvePhase"       : level_data[elite_info[elite]]["evolvePhase"],
+                                            "charLevel"         : level_data[elite_info[elite]]["charLevel"],
+                                            "skillLevel"        : level_data[elite_info[elite]]["skillLevel"],
+                                            "favorPoint"        : level_data[elite_info[elite]]["favorPoint"],
+                                            "equipLevel"        : level_data[elite_info[elite]]["equipLevel"],
+                                            "purchasePrice"     : level_data[elite_info[elite]]["purchasePrice"],
+                                            "chessSoldPrice"    : level_data[elite_info[elite]]["chessSoldPrice"],
+                                            "eliteIconId"       : level_data[elite_info[elite]]["eliteIconId"],
+            }
+        if not data_key:
+            data_key = list(chess_info[elite][level].keys())
+    return chess_info, data_key
 
 def cultivateEffect(data_season : dict, data_ac : dict) -> dict:
     effect_data = {}
+    data_key = []
     for effect in data_ac["cultivateEffectList"]:
         effectId = effect["effectId"]
         effect_data[effectId] = {
+                                    "effectId"      : effectId,
                                     "evolvePhase"   : effect["evolvePhase"],
                                     "charLevel"     : effect["charLevel"],
                                     "atkPer"        : effect["atkPer"],
@@ -438,11 +439,13 @@ def cultivateEffect(data_season : dict, data_ac : dict) -> dict:
                                     "effectName"    : data_season["effectInfoDataDict"][effectId]["effectName"],
                                     "effectDesc"    : data_season["effectInfoDataDict"][effectId]["effectDesc"],
         }
-    
-    return sorted_dict_key(effect_data)
+        if not data_key:
+            data_key = list(effect_data[effectId].keys())
+    return sorted_dict_key(effect_data), data_key
 
 def charChessData(data_season : dict) -> dict:
     charChess_dict = {}
+    data_key = []
     for char in data_season["charShopChessDatas"]:
         char_data       = data_season["charShopChessDatas"][char]
         char_data_dict  = data_season["charChessDataDict"]
@@ -450,6 +453,7 @@ def charChessData(data_season : dict) -> dict:
         notDIY          = char_data["chessType"] != "DIY"
         for key in [char, char_b] :
             charChess_dict[key] = {
+                                        "chessId"                   : char,
                                         "chessType"                 : char_data["chessType"],
                                         "chessLevel"                : char_data["chessLevel"],
                                         "charId"                    : char_data["charId"],
@@ -462,10 +466,13 @@ def charChessData(data_season : dict) -> dict:
                                         "backupgarrisonIds"         : char_data_dict[char]["garrisonIds"][-1] if notDIY else "",
                                         "backupgarrisonIds_gold"    : char_data_dict[char_b]["garrisonIds"][-1] if notDIY else "",
                                     }
-    return sorted_dict_key(charChess_dict)
+            if not data_key:
+                data_key = list(charChess_dict[key].keys())
+    return sorted_dict_key(charChess_dict), data_key
 
 def trapChessData(data_season : dict) -> dict:
     trap_dict = {}
+    data_key = []
     for trap in data_season["trapChessDataDict"]:
         trap_data   = data_season["trapChessDataDict"][trap]
         base_trap   = data_season["chessNormalIdLookupDict"][trap]
@@ -473,9 +480,10 @@ def trapChessData(data_season : dict) -> dict:
         effect_data = data_season["effectInfoDataDict"]
         effect_id   = trap_data["effectId"]
         trap_dict[trap] = {
+                                "trapId"        : trap,
                                 "charId"        : trap_data["charId"],
                                 "purchasePrice" : trap_data["purchasePrice"],
-                                "hideInShop"    : trap_shop  or "-",
+                                "hideInShop"    : trap_shop or "-",
                                 "effectId"      : effect_id,
                                 "giveBondId"    : trap_data["giveBondId"] or "-",
                                 "givePowerId"   : trap_data["givePowerId"] or "-",
@@ -484,7 +492,26 @@ def trapChessData(data_season : dict) -> dict:
                                 "effectName"    : effect_data[effect_id]["effectName"],
                                 "effectDesc"    : effect_data[effect_id]["effectDesc"],
                             }
-    return sorted_dict_key(trap_dict, lambda x : x.split("_")[2] + x.split("_")[4] + x.split("_")[3])
+        if not data_key:
+            data_key = list(trap_dict[trap].keys())
+    return sorted_dict_key(trap_dict, lambda x : x.split("_")[2] + x.split("_")[4] + x.split("_")[3]), data_key
+
+def bossInfoDict(data_season : dict, data_ac : dict) -> dict:
+    boss_info = {}
+    data_key = []
+    for boss in data_season["bossInfoDict"]:
+        boss_info[boss] = {
+                                "bossId"            : boss,
+                                "bossdatabaseID"    : data_ac["bossInfoDict"][boss]["enemyId"],
+                                "bossHandbookID"    : data_ac["bossInfoDict"][boss]["handbookEnemyId"],
+                                "bloodPoint"        : data_season["bossInfoDict"][boss]["bloodPoint"],
+                                "bloodPointNormal"  : data_season["bossInfoDict"][boss]["bloodPointNormal"],
+                                "bloodPointHard"    : data_season["bossInfoDict"][boss]["bloodPointHard"],
+                                "isHidingBoss"      : data_season["bossInfoDict"][boss]["isHidingBoss"] or "-",
+        }
+        if not data_key:
+            data_key = list(boss_info[boss].keys())
+    return boss_info, data_key
 
 ENEMY_DATA      = Enemy_Database().DB
 ITEM_DATA       = Item_Database()
@@ -492,20 +519,24 @@ CHARACTER_DATA  = Character_Database()
 SKIN_DATA       = Skin_Database()
 DISPLAY_DATA    = Display_Database()
 
-ac_data         = AC_DATA("act1autochess")
+SP_DATA         = SP_DATA("act1autochess")
 
-#ac_data.bandData.toCSV()
-#ac_data.bandData.toWIKI()
-#ac_data.baseRewardDataList.toCSV()
-#ac_data.bondInfoDict.toCSV("!")
-#ac_data.garrisonDataDict.toCSV()
-#ac_data.milestoneList.toCSV()
-#ac_data.milestoneList.toWIKI()
-#ac_data.FactorInfo.toCSV()
-#ac_data.shopCharChessInfo.toCSV("base")
-#ac_data.shopCharChessInfo.toCSV("gold")
-#ac_data.shopCharChessInfo.toWIKI()
-#ac_data.cultivateEffectList.toCSV()
-#ac_data.charChessDataDict.toCSV()
-#ac_data.charChessDataDict.toWIKI()
-#ac_data.trapChessDataDict.toCSV()
+SP_DATA.toCSV("xlsx")
+
+###### Graveyard ######
+'''#SP_DATA.bandData.toCSV()
+#SP_DATA.bandData.toWIKI()
+#SP_DATA.baseRewardDataList.toCSV()
+#SP_DATA.bondInfoDict.toCSV(separator = "!")
+#SP_DATA.garrisonDataDict.toCSV()
+#SP_DATA.milestoneList.toCSV()
+#SP_DATA.milestoneList.toWIKI()
+#SP_DATA.FactorInfo.toCSV()
+#SP_DATA.shopCharChessInfo.toCSV("base")
+#SP_DATA.shopCharChessInfo.toCSV("gold")
+#SP_DATA.shopCharChessInfo.toWIKI()
+#SP_DATA.cultivateEffectList.toCSV()
+#SP_DATA.charChessDataDict.toCSV()
+#SP_DATA.charChessDataDict.toWIKI()
+#SP_DATA.trapChessDataDict.toCSV()
+#SP_DATA.bossInfoDict.toCSV()'''

@@ -3,7 +3,9 @@ import json
 import inspect
 import os
 import subprocess
-from typing import Any, Callable, Literal
+from typing import Any, Callable, Literal, Self
+import csv
+import pandas as pd
 
 R = '\033[31m'
 G = '\033[32m'
@@ -220,14 +222,50 @@ def blackboard_format(desc, format):
             exit()
     return
 
-def DictToCSV(data : dict, header : list[str], keys : list[str|int|float] = "", separator : str = "|", use_key : bool = False):
-    csv_header = header
-    csv_result = [separator.join(csv_header)]
-    for data_key in data:
-        key_data : dict = data[data_key]
-        if use_key:
-            key_result  = [str(data_key), str(key_data)]
-        else :
-            key_result  = [str(data_key)] + [str(key_data.get(key, "")) or "" for key in keys]
-        csv_result.append(separator.join(key_result))
-    script_result(csv_result, True)
+def DictToCSV(
+        data : dict, 
+        dataset : Self, 
+        main : str = "",
+        separator : str = "|", 
+        file_type : Literal["csv", "txt", "xlsx"] = "txt",
+        sheet_name : str = "",
+        use_keys : bool = False,
+        keys : list[str] = [],
+    ):
+    
+    keys : list[str|int|float]  = keys if keys else dataset.keys
+    sheet_name : str            = sheet_name if sheet_name else dataset.classname
+    file_type : str             = file_type
+    
+    match file_type:
+        case "txt":
+            csv_header = keys
+            csv_result = [separator.join(csv_header)]
+            for data_key in data:
+                key_data : dict = data[data_key]
+                if use_keys:
+                    key_result  = [str(data_key), str(key_data)]
+                else :
+                    key_result  = [str(key_data.get(key, "")) or "" for key in keys]
+                csv_result.append(separator.join(key_result))
+            script_result(csv_result, True)
+        case "csv":
+            if use_keys:
+                csv_data = [{keys[0]:k, keys[1]:v} for k,v in data.items()]
+            else:
+                csv_data = [value for value in data.values()]
+            
+            with open("py/script.csv", mode = "w", newline = "", encoding = "utf-8") as file:
+                writer = csv.DictWriter(file, fieldnames = keys, delimiter = separator)
+                writer.writeheader()
+                writer.writerows(csv_data)
+        case "xlsx":
+            df = pd.DataFrame.from_dict(data, orient="index")
+            try:
+                with pd.ExcelWriter(f'output/{main}.xlsx', mode = "a", if_sheet_exists = "replace") as writer:
+                    df.to_excel(writer, sheet_name = sheet_name, index = False)
+            except FileNotFoundError:
+                with pd.ExcelWriter(f'output/{main}.xlsx', mode = "w") as writer:
+                    df.to_excel(writer, sheet_name = sheet_name, index = False)
+        case _ :
+            print(f'DictToCSV do not support this file type : {file_type}')
