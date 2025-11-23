@@ -3,19 +3,6 @@ from types import NoneType
 
 from pyFunction import R, RE, Y, decimal_format, json_load, printr
 
-CLASS_PARSE_EN : dict[str, str] = {
-                                    "MEDIC"   : "Medic",          "WARRIOR"   : "Guard",
-                                    "SPECIAL" : "Specialist",     "SNIPER"    : "Sniper",
-                                    "PIONEER" : "Vanguard",       "CASTER"    : "Caster",
-                                    "SUPPORT" : "Supporter",      "TANK"      : "Defender"
-                                }
-
-
-CLASS_PARSE_CN : dict[str, str] = {
-                                    'SNIPER' :"狙击", 'PIONEER':"先锋", 'TANK'   :"重装",  'MEDIC'   :"医疗",
-                                    'SUPPORT':"辅助", 'SPECIAL':"特种", 'WARRIOR':"近卫",  'CASTER'  :"术师"
-                                }
-
 def load_json(json_load_list : str | list = [], all_json : bool = False) -> dict :
     '''
         json_activity, json_audio, json_battle_equip, json_building, json_campaign, json_chapter, json_character, json_charm, json_charword, json_char_meta, json_char_patch, json_checkin, json_climb_tower, json_clue, json_crisis, json_crisis_v2, json_display_meta, json_enemy_handbook, json_favor, json_gacha, json_gamedata, json_handbook_info, json_handbook, json_handbook_team, json_item, json_medal, json_mission, json_open_server, json_player_avatar, json_range, json_replicate, json_retro, json_roguelike, json_roguelike_topic, json_sandbox_perm, json_sandbox, json_shop_client, json_skill, json_skin, json_stage, json_story_review_meta, json_story_review, json_story, json_tech_buff, json_tip, json_token, json_uniequip, json_zone, json_enemy_database,
@@ -238,7 +225,7 @@ def wiki_cleanup(txt :str, all_clean : bool = False) -> str:
     clean_sheet = {
                     r'( ?\\n ?| ?\n ?)' : "<br/>",
                     r'(’)'              : "'",
-                    r'(。)'             : ".",
+                    r'(。)'             : ". ",
                     r'(…)'              : "...",
                     r'(，|、| +, )'     : ", ",
                     r'(“|”)'            : "\"",
@@ -246,8 +233,9 @@ def wiki_cleanup(txt :str, all_clean : bool = False) -> str:
                     r'】'               : "] ",
                     r'（'               : " (",
                     r'）'               : ") ",
+                    r'；'	            : "; ",
                     r'？'               : "? ",
-                    r'！'               : "!",
+                    r'！'               : "! ",
                     r'(\t|\\t)'         : " ",
                     r'[  ]+'            : " ",
                     r'％'              	: "%",

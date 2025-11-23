@@ -34,27 +34,31 @@ class Character_Database:
         self.KR = DB["json_characterKR"]
         self.JP = DB["json_characterJP"]
 
-    def getname(self, key : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN"):
+    def getname(self, char_id : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN"):
+        if not char_id:
+            return ""
         match lang:
             case "CN" | "JP" | "KR":
-                if key in DB_json[lang].value:
-                    return DB_json[lang].value[key]["name"]
+                if char_id in DB_json[lang].value:
+                    return DB_json[lang].value[char_id]["name"]
                 else:
-                    print(f'{key} not available in {lang}')
+                    print(f'{char_id} not available in {lang}')
                     exit()
             case _: # default EN
-                if key in DB_json["EN"].value:
-                    return DB_json["EN"].value[key]["name"]
-                elif key in DB_json["CN"].value and DB_json["CN"].value[key]["appellation"] not in ["", " ", None]:
-                    return DB_json["CN"].value[key]["appellation"]
-                elif key in DB_json["CN"].value:
-                    return DB_json["CN"].value[key]["name"]
+                if char_id in DB_json["EN"].value:
+                    return DB_json["EN"].value[char_id]["name"]
+                elif char_id in DB_json["CN"].value and DB_json["CN"].value[char_id]["appellation"] not in ["", " ", None]:
+                    return DB_json["CN"].value[char_id]["appellation"]
+                elif char_id in DB_json["CN"].value:
+                    return DB_json["CN"].value[char_id]["name"]
                 else:
-                    print(f'{key} not available')
+                    print(f'{char_id} not available')
                     exit()
-    def getskillId(self, key : str, index : int):
-        if key in self.CN:
-            return self.CN[key]["skills"][index]["skillId"]
+    def getskillId(self, char_id : str, index : int):
+        if index not in [0, 1, 2]:
+            return ""
+        elif char_id in self.CN:
+            return self.CN[char_id]["skills"][index]["skillId"]
         else:
-            print(f'{key} not available')
+            print(f'{char_id} not available')
             exit()

@@ -1,7 +1,7 @@
 import re
 from typing import Any, Literal
-from Wiki_Dict import ENEMY_NAMES_TL, ITEM_NAMES_TL, PART_NAMES_TL, SKILL_NAMES_TL, TOKEN_NAMES_TL
-from pyFunction_Wiki import CLASS_PARSE_EN, load_json, mini_blackboard, replace_apos_between, wiki_story, wiki_trim
+from Wiki_Dict import CLASS_PARSE_EN, ENEMY_NAMES_TL, ITEM_NAMES_TL, PART_NAMES_TL, SKILL_NAMES_TL, TOKEN_NAMES_TL
+from pyFunction_Wiki import load_json, mini_blackboard, replace_apos_between, wiki_story, wiki_trim
 from pyFunction import B, G, R, RE, Y, decimal_format, falsy_compare, join_and, join_or, json_load, printc, printr, script_result
 
 used_json = [
@@ -757,7 +757,7 @@ def wiki_article(
                 printr(f'{B}map_grid(){RE} - Invalid join : {Y}{join}')
     
     def operator_rune(rune_data : list):
-        bin_classes = ["Token??", "Trap??", "Vanguard", "Specialist", "Caster", "Supporter", "Medic", "Defender", "Sniper", "Guard"]
+        bin_classes = ["Token", "Trap", "Vanguard", "Specialist", "Caster", "Supporter", "Medic", "Defender", "Sniper", "Guard"]
         rune_classes = []
         if isinstance(rune_data["professionMask"], int):
             match rune_data["buildableMask"]:
@@ -767,7 +767,7 @@ def wiki_article(
                     buildableMask = ["MELEE", "RANGED"]
                     return f'{buildableMask[rune_data["buildableMask"] - 1]} operators'
                 case _ :
-                    if rune_data["professionMask"] == 1023:
+                    if rune_data["professionMask"] in [1023, 639]: #All / All except Trap
                         return "allied units"
                     rune_bin = f'{bin(rune_data["professionMask"]).split("0b", 1)[-1].zfill(10)}'
                     for string_i in range(len(rune_bin)):

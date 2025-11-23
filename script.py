@@ -5,8 +5,9 @@ from types import NoneType
 from typing import Literal
 import pandas as pd
 
+from Wiki_Dict import CLASS_PARSE_EN
 from pyFunction import R, G, B, Y, RE, json_load, printr, script_result
-from pyFunction_Wiki import CLASS_PARSE_EN, range_template, replace_apos_between, wiki_stage, wiki_story, wiki_trim
+from pyFunction_Wiki import range_template, replace_apos_between, wiki_stage, wiki_story, wiki_trim
 
 ################################################################################################################################################################################################################################################
 # JSON

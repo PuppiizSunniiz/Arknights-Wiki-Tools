@@ -16,11 +16,17 @@ class Enemy_Database:
         self.DB = enemy_loader(DB)
         self.TYPE = enemy_type(DB)
 
-    def get(self, key: str):
-        return self.DB.get(key)
+    def getname(self, enemy_id : str):
+        if enemy_id in ["-", "", None]:
+            return "-"
+        else:
+            return self.DB[enemy_id]["data"]["name"]
 
-    def __getitem__(self, key: str):
-        return self.DB[key]
+'''def get(self, key: str):
+    return self.DB.get(key)
+
+def __getitem__(self, key: str):
+    return self.DB[key]'''
 
 def enemy_type(DB : dict[str, Any]):
     enemy_type_dict = {}
