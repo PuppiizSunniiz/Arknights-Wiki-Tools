@@ -613,7 +613,7 @@ def stage_desc(stage_name : str|list) -> NoneType :
     stage_result = {}
     if isinstance(stage_name, str):
         stage_name = [stage_name]
-    stage_temp = json_load(r"py\temp_stage.json", temp=True)["stages"]
+    stage_temp = json_load(r"py\temp_stage.json", internal=True)["stages"]
     for stage in stage_temp.keys():
         if set([stage.find(name) for name in stage_name]) != {-1}:
             stage_result[stage] = {
@@ -643,7 +643,7 @@ def input_script(script : Literal["txt", "json"] = "txt"):
             text = "".join(file_text.readlines())
         return text
     else:
-        return json_load("py/input_script.json", temp=True)
+        return json_load("py/input_script.json", internal=True)
 
 #print(wiki_story(input_script(), join_str="\n"))
 #temp_script = input_script("json")
@@ -660,7 +660,7 @@ def enemy_wave_csv():
     all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\activities\act46side\*')
     for stage in all_stage:
         stage_id = stage.split("\\")[-1].split(".json")[0]
-        stage_json = json_load(stage, temp=True)
+        stage_json = json_load(stage, internal=True)
         all_stage_dict[stage_id] = {
                                         "options"       : stage_json["options"],
                                         "runes"         : stage_json["runes"],
@@ -804,7 +804,7 @@ def crimson_plays():
 
 def nation_track():
     tracker = {}
-    #character_table = json_load(r"py\character_table.json", temp=True)
+    #character_table = json_load(r"py\character_table.json", internal=True)
     character_table = DB["json_characterEN"]
     for char in character_table:
         if not [x for x in character_table[char]["mainPower"].values() if x]:

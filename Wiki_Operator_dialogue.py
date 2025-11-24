@@ -22,9 +22,9 @@ DB["json_character"].update(DB["json_char_patch"]["patchChars"])
 DB["json_characterEN"].update(DB["json_char_patchEN"]["patchChars"])
 
 # Manual
-birthday_check      = json_load(r"C:\GitHub\AN-EN-Tags\temp\birthday_voicelines.json", temp=True)
+birthday_check      = json_load(r"C:\GitHub\AN-EN-Tags\temp\birthday_voicelines.json", internal=True)
 #birthday_check      = json.loads(requests.get("https://raw.githubusercontent.com/PuppiizSunniiz/AN-EN-Tags/refs/heads/main/temp/birthday_voicelines.json").text)
-combine_charword    = json_load(r"C:\GitHub\AN-EN-Tags\json/puppiiz/charword_table.json", temp=True)
+combine_charword    = json_load(r"C:\GitHub\AN-EN-Tags\json/puppiiz/charword_table.json", internal=True)
 #combine_charword    = json.loads(requests.get("https://raw.githubusercontent.com/PuppiizSunniiz/AN-EN-Tags/refs/heads/main/json/puppiiz/charword_table.json").text)
 
 #DB["json_charwordEN"] = json_load(r"py\input_script.json", True)
@@ -197,11 +197,11 @@ lang_dict = {
     "skinWords": [
         "char_2024_chyue_cfa#1",            #K              Chongyue
         "char_4134_cetsyr_epoque#50"        #Theresa        Civilight Eterna
+        "char_1032_excu2_sale#12",          #excu           Executor the Ex Foedere
+        "char_1016_agoat2_epoque#34",       #eyja           Eyjafjalla the Hvít Aska
         
         ################################################################################
         
-        "char_1032_excu2_sale#12",          #excu           Executor the Ex Foedere
-        "char_1016_agoat2_epoque#34",       #eyja           Eyjafjalla the Hvít Aska
         "char_003_kalts_boc#6",             #kal            Kal'tsit
         char_1038_whitw2_sale#15            #dumbdumb       Lappland the Decadenza
         "char_4064_mlynar_epoque#28",       #uncle          Młynar
@@ -221,10 +221,10 @@ en              = True  # True False
 kr              = True  # True False
 otherlang       = ""    # DE FR IT RU etc.
 dialect         = ""    # TBU
-outfit          = "Allmind As One"
+outfit          = ""
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = "char_1032_excu2_sale#12"
+OP_DIALOGUE_LIST    = "char_430_fartth"
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
 force_server        = True  # True False

@@ -8,7 +8,7 @@ from Wiki_OOP.enemy_data import Enemy_Database
 from Wiki_OOP.item_data import Item_Database
 from Wiki_OOP.skill_data import Skill_Database
 from Wiki_OOP.skin_data import Skin_Database
-from pyFunction import B, G, RE, Y, DictToCSV, blackboard_format, printc, printr, script_result, sorted_dict_key
+from pyFunction import B, CN_PATH, G, RE, Y, DictToCSV, blackboard_format, json_load, printc, printr, script_result, sorted_dict_key
 from pyFunction_Wiki import load_json, mini_blackboard, wiki_elite_lv_parse, wiki_reward_lister, wiki_story, wiki_text
 
 DB = load_json(all_json = True)
@@ -28,12 +28,15 @@ class SP_DATA:
             self.seasonData             = self.data[season]
             self.baseRewardDataList     = SP_DATA_BASEREWARD(self.seasonData)
             self.medalDataList          = SP_DATA_MEDAL(self.autoChessData)
+            self.playerTitleDataDict    = SP_DATA_TITLE(self.seasonData)
             self.skillTriggerDataList   = SP_DATA_SKILLTRIGGER(self.autoChessData)
             self.bandData               = SP_DATA_BAND(self.seasonData, self.autoChessData)
             self.bondInfoDict           = SP_DATA_BOND(self.seasonData, self.autoChessData)
             self.garrisonDataDict       = SP_DATA_GARRISON(self.seasonData)
             self.milestoneList          = SP_DATA_MILESTONE(self.seasonData)
             self.FactorInfo             = SP_DATA_FACTOR(self.seasonData)
+            self.roundScoreDataList     = SP_DATA_SCORE(self.autoChessData)
+            
             self.shopCharChessInfo      = SP_DATA_CHESSINFO(self.seasonData)
             self.cultivateEffectList    = SP_DATA_CULTIVATE(self.seasonData, self.autoChessData)
             
@@ -42,15 +45,15 @@ class SP_DATA:
             
             self.bossInfoDict           = SP_DATA_BOSS(self.seasonData, self.autoChessData)
             self.enemyTypeDatas         = SP_DATA_ENIMIES_TYPE(self.seasonData, self.autoChessData)
+            self.enemyInfoDict          = SP_DATA_ENIMIES(self.seasonData, self.autoChessData)
             self.specialEnemyInfoDict   = SP_DATA_SPECENEMY(self.seasonData, self.autoChessData)
             
-            #self.enemyInfoDict          = SP_DATA_ENIMIES(self.seasonData, self.autoChessData)
-            #self.modeDataDict           = SP_DATA_MODE()
-            #self.shopLevelDataDict      = SP_DATA_SHOP()
-            #self.stageDatasDict         = SP_DATA_STAGE()
-            #self.battleDataDict         = SP_DATA_BATTLE()
+            self.turnInfoDataDict       = SP_DATA_TURN(self.seasonData, self.autoChessData)
+            self.stageDatasDict         = SP_DATA_STAGE(self.seasonData)
             
-    
+            #self.shopLevelDataDict      = SP_DATA_SHOP(self.seasonData)
+            #self.effectInfoDataDict     = SP_DATA_EFFECT(self.seasonData)
+            
     def toCSV(self, file_type : Literal["csv", "txt", "xlsx"] = "xlsx"):
         for key in self.__dict__.keys():
             if hasattr(getattr(self, key), "toCSV"):
@@ -141,6 +144,14 @@ class SP_DATA_FACTOR():
     def __init__(self, data_season):
         self.classname = "FactorInfo"
         self.data, self.keys = FactorInfo(data_season)
+
+    def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
+
+class SP_DATA_SCORE():
+    def __init__(self, data_season):
+        self.classname = "roundScoreDataList"
+        self.data, self.keys = roundScoreDataList(data_season)
 
     def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
         DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
@@ -242,6 +253,14 @@ class SP_DATA_ENIMIES_TYPE():
     def toWIKI(self):
         pass
 
+class SP_DATA_ENIMIES():
+    def __init__(self, data_season, data_ac):
+        self.classname = "enemyInfoDict"
+        self.data, self.keys = enemyInfoDict(data_season, data_ac)
+
+    def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
+
 class SP_DATA_MEDAL():
     def __init__(self, data_ac):
         self.classname = "medalDataList"
@@ -250,6 +269,13 @@ class SP_DATA_MEDAL():
     def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
         DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
 
+class SP_DATA_TITLE():
+    def __init__(self, data_ac):
+        self.classname = "playerTitleDataDict"
+        self.data, self.keys = playerTitleDataDict(data_ac)
+
+    def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
 class SP_DATA_SKILLTRIGGER():
     def __init__(self, data_ac):
         self.classname = "skillTriggerDataList"
@@ -266,6 +292,31 @@ class SP_DATA_SPECENEMY():
     def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
         DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
 
+class SP_DATA_TURN():
+    def __init__(self, data_season, data_ac):
+        self.classname = "turnInfoDataDict"
+        self.data, self.keys = turnInfoDataDict(data_season, data_ac)
+
+    def toCSV(self, mode : Literal["battle", "special", "standby"] = "standby", main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        if main:
+            DictToCSV(self.data["standby"], self, main = main, separator = separator, file_type = file_type, sheet_name = "turn_standby")
+            DictToCSV(self.data["battle"], self, main = main, separator = separator, file_type = file_type, sheet_name = "turn_battle")
+            DictToCSV(self.data["special"], self, main = main, separator = separator, file_type = file_type, sheet_name = "turn_special")
+        else:
+            DictToCSV(self.data[mode], self, main = main, separator = separator, file_type = file_type)
+
+class SP_DATA_STAGE():
+    def __init__(self, data_season):
+        self.classname = "stageDatasDict"
+        self.data, self.keys = stageDatasDict(data_season)
+
+    def toCSV(self, mode : Literal["percent", "weight"] = "percent", main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        if main:
+            DictToCSV(self.data["weight"], self, main = main, separator = separator, file_type = file_type, sheet_name = "stage_weight")
+            DictToCSV(self.data["percent"], self, main = main, separator = separator, file_type = file_type, sheet_name = "stage_percent")
+        else:
+            DictToCSV(self.data[mode], self, main = main, separator = separator, file_type = file_type)
+
 def bandData(data_season : dict, data_ac : dict) -> dict:
     bands_data = {}
     data_key = []
@@ -273,13 +324,17 @@ def bandData(data_season : dict, data_ac : dict) -> dict:
         band_season_data : dict = data_season["bandDataListDict"][band]
         band_data_dict : dict   = data_ac["bandDataDict"][band]
         bands_data[band] = {
-                                "band_id"         : band, 
-                                "band_name"       : band_data_dict.get("bandName", band), 
-                                "band_icon"       : band_data_dict.get("bandIconId", band), 
-                                "band_initiator"  : "", 
-                                "band_hp"         : band_season_data.get("totalHp"), 
-                                "band_effect"     : band_season_data.get("bandDesc"), 
-                                "band_cond"       : band_data_dict.get("unlockDesc", "") or "",  
+                                "band_id"           : band,
+                                "band_sortId"       : band_season_data.get("sortId", ""),
+                                "band_name"         : band_data_dict.get("bandName", band), 
+                                "band_icon"         : band_data_dict.get("bandIconId", band), 
+                                "band_initiator"    : "", 
+                                "band_hp"           : band_season_data.get("totalHp"),
+                                "LOCAL"             : "LOCAL" in band_season_data.get("modeTypeList", []),
+                                "SINGLE"            : "SINGLE" in band_season_data.get("modeTypeList", []),
+                                "MULTI"             : "MULTI" in band_season_data.get("modeTypeList", []),
+                                "band_effect"       : band_season_data.get("bandDesc", ""), 
+                                "band_cond"         : band_data_dict.get("unlockDesc", "") or "-",  
                             }
         if not data_key:
             data_key = list(bands_data[band])
@@ -313,6 +368,15 @@ def medalDataList(data_ac : dict) -> dict:
         if not data_key:
             data_key = list(medal_data[index].keys())
     return medal_data, data_key
+
+def playerTitleDataDict(data_ac : dict) -> dict:
+    title_data = {}
+    data_key = []
+    for title in data_ac["playerTitleDataDict"]:
+        title_data[title] = data_ac["playerTitleDataDict"][title]
+        if not data_key:
+            data_key = list(title_data[title].keys())
+    return title_data, data_key
 
 def skillTriggerDataList(data_ac : dict) -> dict:
     skillTriggerType = {
@@ -401,11 +465,17 @@ def bondInfo(data_season : dict, data_ac : dict) -> dict:
     for bond in data_season["bondInfoDict"]:
         bond_data = data_season["bondInfoDict"][bond]
         bond_stackdesc = bondStackdesc(bond_data["effectId"], bond_data["descParamBaseList"], bond_data["descParamPerStackList"])
+        
+        active_mode = {}
+        for mode in data_season["modeDataDict"]:
+            if mode == "mode_training_1":
+                active_mode[mode] = "Active" if bond in data_season["constData"]["trBondIds"] else "Inactive"
+            else:
+                active_mode[mode] = "Active" if bond in data_season["modeDataDict"][mode]["activeBondIdList"] else "Inactive"
+        
         bond_dict[bond] = {
                                 "bond_id"                       : bond,
                                 "bond_name"                     : bond_data["name"],
-                                "bond_desc"                     : wiki_text(bond_data["desc"]),
-                                "bond_stackdesc"                : bond_stackdesc,
                                 "bond_iconId"                   : bond_data["iconId"],
                                 "bond_activeCount"              : bond_data["activeCount"],
                                 "bond_effectId"                 : bond_data["effectId"],
@@ -416,6 +486,11 @@ def bondInfo(data_season : dict, data_ac : dict) -> dict:
                                 "bond_descParamPerStackList"    : bond_data["descParamPerStackList"],
                                 "bond_noStack"                  : bond_data["noStack"],
                             }
+        bond_dict[bond].update(active_mode)
+        bond_dict[bond].update({
+                                    "bond_desc"                     : wiki_text(bond_data["desc"]),
+                                    "bond_stackdesc"                : bond_stackdesc,
+                                })
         if not data_key:
             data_key = list(bond_dict[bond].keys())
     return bond_dict, data_key
@@ -427,12 +502,12 @@ def garrisonData(data_season : dict) -> dict:
         garrison_data = data_season["garrisonDataDict"][garrison]
         garrison_dict[garrison] = {
                                         "garrison_id"           : garrison,
-                                        "garrison_desc"         : garrison_data["garrisonDesc"],
                                         "garrison_type"         : garrison_data["eventType"],
                                         "garrison_typedesc"     : garrison_data["eventTypeDesc"],
                                         "garrison_typeicon"     : garrison_data["eventTypeIcon"],
                                         "garrison_typesicon"    : garrison_data["eventTypeSmallIcon"],
                                         "garrison_effecttype"   : garrison_data["effectType"],
+                                        "garrison_desc"         : garrison_data["garrisonDesc"],
                                     }
         if not data_key:
             data_key = list(garrison_dict[garrison].keys())
@@ -495,6 +570,15 @@ def FactorInfo(data_season : dict) -> dict:
                                         "Factor" : data_season["difficultyFactorInfo"][factor],
                                     }
     return factor_dict, data_key
+
+def roundScoreDataList(data_ac : dict) -> dict:
+    score_dict = {}
+    data_key = []
+    for round in data_ac["roundScoreDataList"]:
+        score_dict[round["round"]] = round
+        if not data_key:
+            data_key = list(score_dict[round["round"]].keys())
+    return score_dict, data_key
 
 def ChessInfo(data_seaon : dict) -> dict:
     chess_info = {"base" : {}, "gold" : {}}
@@ -645,6 +729,31 @@ def enemyTypeDatas(data_season : dict, data_ac : dict) -> dict:
             data_key = list(enemy_types[enemy_type].keys())
     return sorted_dict_key(enemy_types, lambda x : enemy_types[x]["sortId"]), data_key
 
+def enemyInfoDict(data_season : dict, data_ac : dict) -> dict:
+    enemy_dict = {}
+    data_key = []
+    for enemy_type in data_season["enemyInfoDict"]:
+        for enemy_id in data_season["enemyInfoDict"][enemy_type]:
+            extraEnemyKeyList = data_ac["randomEnemyAttributeDict"][enemy_id]["extraEnemyKeyList"]
+            if extraEnemyKeyList and len(extraEnemyKeyList) > 1:
+                printr(f'Enemy has many extra enemies {enemy_id} : {extraEnemyKeyList}')
+                exit()
+            enemy_extra         = extraEnemyKeyList[0] if extraEnemyKeyList else "-"
+            enemy_extra_name    = ENEMY_DATA.getname(enemy_extra) if enemy_extra != "-" else  "-"
+            enemy_dict[enemy_id] = {
+                                        "enemy_id"      : enemy_id,
+                                        "enemy_name"    : ENEMY_DATA.getname(enemy_id),
+                                        "enemy_level"   : data_ac["randomEnemyAttributeDict"][enemy_id]["level"],
+                                        "type_id"       : enemy_type,
+                                        "type_name"     : data_ac["enemyTypeDatas"][enemy_type]["name"],
+                                        "extra_id"      : enemy_extra,
+                                        "extra_name"    : enemy_extra_name,
+                                        "enemy_factor"  : data_ac["randomEnemyAttributeDict"][enemy_id]["enemyBattleEffectivenessFactor"],
+            }
+            if not data_key:
+                data_key = list(enemy_dict[enemy_id].keys())
+    return sorted_dict_key(enemy_dict, lambda x : data_ac["enemyTypeDatas"][enemy_dict[x]["type_id"]]["sortId"]*1000000 + DB["json_enemy_handbook"]["enemyData"][x]["sortId"]), data_key
+    
 def specialEnemyInfoDict(data_season : dict, data_ac : dict) -> dict:
     special_dict = {}
     data_key = []
@@ -681,7 +790,46 @@ def specialEnemyInfoDict(data_season : dict, data_ac : dict) -> dict:
                             }
         if not data_key:
             data_key = list(special_dict[enemy].keys())
-    return sorted_dict_key(special_dict, lambda x : data_ac["enemyTypeDatas"][special_dict[x]["enemy_type"]]["sortId"]), data_key
+    return sorted_dict_key(special_dict, lambda x : data_ac["enemyTypeDatas"][special_dict[x]["enemy_type"]]["sortId"]*1000000 + DB["json_enemy_handbook"]["enemyData"][x]["sortId"]), data_key
+
+def turnInfoDataDict(data_season : dict, data_ac : dict) -> dict:
+    turn_dict = {"standby" : {}, "battle" : {}, "special" : {}}
+    data_key = [str(i + 1) for i in range(data_ac["constData"]["maxLevelCnt"])]
+    for mode in data_ac["turnInfoDataDict"]:
+        turn_dict["standby"][mode]  = {"Standby" : mode}
+        turn_dict["battle"][mode]   = {"Battle" : mode}
+        turn_dict["special"][mode]   = {"Special" : mode, "time" : data_season["modeDataDict"][mode]["specialPhaseTime"]}
+        for key in data_key:
+            if key not in data_ac["turnInfoDataDict"][mode]:
+                turn_dict["standby"][mode][key] = "-"
+                turn_dict["battle"][mode][key]  = "-"
+                turn_dict["special"][mode][key]  = "-"
+            else:
+                turn_dict["standby"][mode][key] = data_ac["turnInfoDataDict"][mode][key]["normalPhaseTime"]
+                turn_dict["battle"][mode][key]  = json_load(rf'{CN_PATH}/levels/{data_season["battleDataDict"][mode][key][0]["levelId"].lower()}.json')["options"]["maxPlayTime"]
+                turn_dict["special"][mode][key]  = data_season["battleDataDict"][mode][key][0]["isSpPrepare"]
+    return turn_dict, data_key
+
+def stageDatasDict(data_season : dict) -> dict:
+    stage_dict = {"weight" : {}, "percent" : {}}
+    data_key = list(data_season["stageDatasDict"].keys())
+    for mode in data_season["modeDataDict"]:
+        stage_dict["weight"][mode] = {"Weight" : mode}
+        stage_dict["percent"][mode] = {"Percent" : mode}
+        for stage in data_season["stageDatasDict"]:
+            if mode in data_season["stageDatasDict"][stage]["mode"]:
+                stage_dict["weight"][mode][stage] = data_season["stageDatasDict"][stage]["weight"]
+            else:
+                stage_dict["weight"][mode][stage] = 0
+    for mode in stage_dict["weight"]:
+        for stage in stage_dict["weight"][mode]:
+            if stage == "Weight":
+                continue
+            elif stage_dict["weight"][mode][stage]:
+                stage_dict["percent"][mode][stage] = f'{stage_dict["weight"][mode][stage]/sum(list(stage_dict["weight"][mode].values())[1:]):.2%}'
+            else:
+                stage_dict["percent"][mode][stage] = "-"
+    return stage_dict, data_key
 
 ENEMY_DATA      = Enemy_Database()
 ITEM_DATA       = Item_Database()

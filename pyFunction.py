@@ -13,6 +13,11 @@ Y = '\033[33m'
 B = '\033[34m'
 RE = '\033[0m'
 
+CN_PATH = r'json/gamedata/ArknightsGameData/zh_CN/gamedata/'
+EN_PATH = r'json/gamedata/ArknightsGameData_YoStar/en_US/gamedata/'
+JP_PATH = r'json/gamedata/ArknightsGameData_YoStar/ja_JP/gamedata/'
+KR_PATH = r'json/gamedata/ArknightsGameData_YoStar/ko_KR/gamedata/'
+
 def printr(*arg):
     print(f'{R}[:{inspect.currentframe().f_back.f_lineno:<4}]{RE}', *arg, RE)
 
@@ -29,8 +34,8 @@ def printt(*arg, mode = ""):
     else:
         print(*arg)
 
-def json_load(filepath : str, temp : bool = False, default_json : dict|list = {}):
-    if temp:
+def json_load(filepath : str, internal : bool = False, default_json : dict|list = {}):
+    if internal:
         try :
             with open(f'{filepath}', 'r', encoding = 'utf-8') as file:
                 return json.load(file)
@@ -142,7 +147,7 @@ def script_result(text : str | list | set | dict ,
                 to_txt.append(f'{"" if tab else "\n"}{"\t" * tab}{key}')
                 to_txt += dict_to_txt(text[key], 0 if no_tab else tab + 1)
             else:
-                value_text = (f'\n{text[key]}').replace("\n", f'\n{"\t" * (tab + (len(key) + 3) // 4 + 1)}') if text[key] and "\n" in text[key] else text[key]
+                value_text = (f'\n{text[key]}').replace("\n", f'\n{"\t" * (tab + (len(key) + 3) // 4 + 1)}') if text[key] and "\n" in str(text[key]) else text[key]
                 to_txt += [f'{"\t" * tab}{value_text}'] if txt_nokey else [f'{"\t" * tab}{key} : {value_text}']
         return to_txt
     
