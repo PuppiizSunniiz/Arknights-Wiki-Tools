@@ -75,8 +75,7 @@ def nationId_track():
     nation_track_json   = {"CN" : CN, "EN" : EN, "tracker" : nation_track}
     nation_diff_json    = {"CN" : CN, "EN" : EN, "tracker" : nation_diff}
     if DB["nation_track"] != nation_track_json:
-        if nation_diff_json["tracker"] != {}:
-            with open("tracker/nation_diff.json", "w", encoding = "utf-8") as filepath :
+        with open("tracker/nation_diff.json", "w", encoding = "utf-8") as filepath :
                 json.dump(nation_diff_json, filepath, indent = 4, ensure_ascii = False)
         with open("tracker/ref/nation_track_old.json", "w", encoding = "utf-8") as filepath :
             json.dump(DB["nation_track"], filepath, indent = 4, ensure_ascii = False)
