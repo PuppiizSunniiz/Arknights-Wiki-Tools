@@ -8,7 +8,7 @@ from Wiki_OOP.enemy_data import Enemy_Database
 from Wiki_OOP.item_data import Item_Database
 from Wiki_OOP.skill_data import Skill_Database
 from Wiki_OOP.skin_data import Skin_Database
-from pyFunction import B, CN_PATH, G, RE, Y, DictToCSV, blackboard_format, json_load, printc, printr, script_result, sorted_dict_key
+from pyFunction import B, CN_PATH, G, R, RE, Y, DictToCSV, blackboard_format, json_load, printc, printr, script_result, sorted_dict_key
 from pyFunction_Wiki import load_json, mini_blackboard, wiki_elite_lv_parse, wiki_reward_lister, wiki_story, wiki_text
 
 DB = load_json(all_json = True)
@@ -29,18 +29,23 @@ class SP_DATA:
             self.baseRewardDataList     = SP_DATA_BASEREWARD(self.seasonData)
             self.medalDataList          = SP_DATA_MEDAL(self.autoChessData)
             self.playerTitleDataDict    = SP_DATA_TITLE(self.seasonData)
-            self.skillTriggerDataList   = SP_DATA_SKILLTRIGGER(self.autoChessData)
-            self.bandData               = SP_DATA_BAND(self.seasonData, self.autoChessData)
-            self.bondInfoDict           = SP_DATA_BOND(self.seasonData, self.autoChessData)
-            self.garrisonDataDict       = SP_DATA_GARRISON(self.seasonData)
-            self.milestoneList          = SP_DATA_MILESTONE(self.seasonData)
             self.FactorInfo             = SP_DATA_FACTOR(self.seasonData)
             self.roundScoreDataList     = SP_DATA_SCORE(self.autoChessData)
+            
+            self.milestoneList          = SP_DATA_MILESTONE(self.seasonData)
+            
+            self.bandData               = SP_DATA_BAND(self.seasonData, self.autoChessData)
+            self.bondInfoDict           = SP_DATA_BOND(self.seasonData, self.autoChessData)
             
             self.shopCharChessInfo      = SP_DATA_CHESSINFO(self.seasonData)
             self.cultivateEffectList    = SP_DATA_CULTIVATE(self.seasonData, self.autoChessData)
             
+            self.shopLevelDataDict      = SP_DATA_SHOP(self.seasonData)
+            
+            self.skillTriggerDataList   = SP_DATA_SKILLTRIGGER(self.autoChessData)
             self.charChessDataDict      = SP_DATA_CHARCHESS(self.seasonData)
+            self.garrisonDataDict       = SP_DATA_GARRISON(self.seasonData)
+            
             self.trapChessDataDict      = SP_DATA_TRAP(self.seasonData)
             
             self.bossInfoDict           = SP_DATA_BOSS(self.seasonData, self.autoChessData)
@@ -51,8 +56,7 @@ class SP_DATA:
             self.turnInfoDataDict       = SP_DATA_TURN(self.seasonData, self.autoChessData)
             self.stageDatasDict         = SP_DATA_STAGE(self.seasonData)
             
-            #self.shopLevelDataDict      = SP_DATA_SHOP(self.seasonData)
-            #self.effectInfoDataDict     = SP_DATA_EFFECT(self.seasonData)
+            self.effectInfoDataDict     = SP_DATA_EFFECT(self.seasonData)
             
     def toCSV(self, file_type : Literal["csv", "txt", "xlsx"] = "xlsx"):
         for key in self.__dict__.keys():
@@ -317,6 +321,30 @@ class SP_DATA_STAGE():
         else:
             DictToCSV(self.data[mode], self, main = main, separator = separator, file_type = file_type)
 
+class SP_DATA_SHOP():
+    def __init__(self, data_season):
+        self.classname = "shopLevelDataDict"
+        self.data, self.keys ,self.mode = shopLevelDataDict(data_season)
+
+    def toCSV(self, mode : str = "", main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        if main:
+            for mode in self.mode:
+                DictToCSV(self.data[mode], self, main = main, separator = separator, file_type = file_type, sheet_name = "shopLevel_" + mode)
+        else:
+            DictToCSV(self.data, mode if mode else self.mode[0], main = main, separator = separator, file_type = file_type)
+
+class SP_DATA_EFFECT():
+    def __init__(self, data_season):
+        self.classname = "effectInfoDataDict"
+        self.data, self.keys ,self.mode = effectInfoDataDict(data_season)
+
+    def toCSV(self, mode : str = "", main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        if main:
+            for mode in self.mode:
+                DictToCSV(self.data[mode], self, main = main, separator = separator, file_type = file_type, sheet_name = "effect_" + mode)
+        else:
+            DictToCSV(self.data, mode if mode else self.mode[0], main = main, separator = separator, file_type = file_type)
+
 def bandData(data_season : dict, data_ac : dict) -> dict:
     bands_data = {}
     data_key = []
@@ -347,8 +375,8 @@ def baseRewardData(data_season : dict) -> dict:
         round = reward["round"]
         reward_data[round] = {
                                             "round"         : round,
-                                            "item_id"       : ITEM_DATA.getname(reward["item"]["id"]),
-                                            "item_name"     : reward["item"]["id"],
+                                            "item_id"       : reward["item"]["id"],
+                                            "item_name"     : ITEM_DATA.getname(reward["item"]["id"]),
                                             "item_count"    : reward["item"]["count"],
                                             "daily_point"   : reward["dailyMissionPoint"],
                                         }
@@ -831,6 +859,71 @@ def stageDatasDict(data_season : dict) -> dict:
                 stage_dict["percent"][mode][stage] = "-"
     return stage_dict, data_key
 
+def shopLevelDataDict(data_season : dict) -> dict:
+    shopLevel_dict  = {}
+    data_key        = ["mode"]
+    data_mode       = []
+    shopLevel       = 0
+    shopLevel_key   = ["shopLevel", "initialUpgradePrice", "charChessCount", "itemCount", "levelTagBgColor"]
+    for mode in data_season["shopLevelDataDict"]:
+        shopLevel_dict[mode] = {}
+        data_mode.append(mode)
+        if not shopLevel:
+            shopLevel = len(data_season["shopLevelDataDict"][mode].keys())
+        for data_type in shopLevel_key:
+            shopLevel_dict[mode][data_type] = {"mode" : data_type}
+            for level in data_season["shopLevelDataDict"][mode]:
+                if list(data_season["shopLevelDataDict"][mode][level].keys()) != shopLevel_key:
+                    printr(f'There new key in {Y}"shopLevelDataDict"{RE} : {", ".join([key for key in data_season["shopLevelDataDict"][mode][level].keys() if key not in shopLevel_key])}')
+                    exit()
+                shopLevel_dict[mode][data_type].update({level : data_season["shopLevelDataDict"][mode][level][data_type]})
+
+    return shopLevel_dict, data_key ,data_mode
+
+def effectInfoDataDict(data_season : dict) -> dict:
+    effectInfo_dict = {}
+    data_key        = []
+    all_effect_type = ["BAND_INITIAL", "CHAR_MAP", "BOND", "EQUIP", "ENEMY_GAIN", "BUFF_GAIN", "ENEMY"]
+    data_mode       = []
+    for effect in sorted(data_season["effectInfoDataDict"]):
+        effect_type     = data_season["effectInfoDataDict"][effect]["effectType"]
+        effect_extra    = ""
+        '''if effect_type not in data_mode:
+            data_mode.append(effect_type)'''
+        if effect_type not in all_effect_type:
+            printr(f'New effect type have arrived : {effect_type}')
+            exit()
+        match effect_type:
+            case "BAND_INITIAL" | "CHAR_MAP" | "BOND" | "EQUIP":
+                continue
+            case "BUFF_GAIN" | "ENEMY":
+                pass
+            case "ENEMY_GAIN":
+                for effect_key in data_season["effectBuffInfoDataDict"][effect]:
+                    if "enemy_id" in mini_blackboard(effect_key["blackboard"]):
+                        if effect_extra and effect_extra != mini_blackboard(effect_key["blackboard"])["enemy_id"]:
+                            printr(f'{R}DIFF Extra desu')
+                            exit()
+                        else:
+                            effect_extra = mini_blackboard(effect_key["blackboard"])["enemy_id"]
+                if not effect_extra:
+                    printr(f'{R}Extra doko desu ka ???')
+                    exit()
+            case _:
+                printr(data_season["effectInfoDataDict"][effect])
+                exit()
+        mode = effect.split("_")[0]
+        if mode not in data_mode:
+            data_mode.append(mode)
+            effectInfo_dict[mode] = {}
+        effectInfo_dict[mode][effect] = data_season["effectInfoDataDict"][effect]
+        effect_desc = effectInfo_dict[mode][effect].pop("effectDesc")
+        effectInfo_dict[mode][effect]["effectDesc"] = effect_desc
+        if effect_extra: effectInfo_dict[mode][effect].update({"effectDecoIconId" : effect_extra})
+        if not data_key:
+            data_key = list(effectInfo_dict[mode][effect].keys())
+    return effectInfo_dict, data_key ,data_mode
+    
 ENEMY_DATA      = Enemy_Database()
 ITEM_DATA       = Item_Database()
 CHARACTER_DATA  = Character_Database()
@@ -839,6 +932,9 @@ SKIN_DATA       = Skin_Database()
 DISPLAY_DATA    = Display_Database()
 
 SP_DATA         = SP_DATA("act1autochess")
+
+'''script_result(SP_DATA.__getattribute__("seasonData"), True)
+exit()'''
 
 SP_DATA.toCSV("xlsx")
 

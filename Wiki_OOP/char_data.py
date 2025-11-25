@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import Any, Literal
 
+from pyFunction import B, R, RE, Y, printf
 from pyFunction_Wiki import load_json
 
 used_json = [
@@ -8,6 +9,7 @@ used_json = [
                 "json_characterEN",
                 "json_characterKR",
                 "json_characterJP",
+                "json_char_meta",
                 "json_char_patch",
                 "json_char_patchEN",
                 "json_char_patchKR",
@@ -33,8 +35,9 @@ class Character_Database:
         self.EN = DB["json_characterEN"]
         self.KR = DB["json_characterKR"]
         self.JP = DB["json_characterJP"]
+        self.char_meta = DB["json_char_meta"]["spCharGroups"]
 
-    def getname(self, char_id : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN"):
+    def _get_name(self, char_id : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN"):
         if not char_id:
             return ""
         match lang:
@@ -54,11 +57,51 @@ class Character_Database:
                 else:
                     print(f'{char_id} not available')
                     exit()
+
+    def getname(self, char_id : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN"):
+        return self._get_name(char_id, lang)
+                    
+    def getname_base(self, char_id : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN"):
+        if not char_id:
+            return ""
+        for char in self.char_meta:
+            if char_id not in self.char_meta[char]:
+                continue
+            elif len(self.char_meta[char]) == 1:
+                return self._get_name(self.char_meta[char][0], lang)
+            elif len(self.char_meta[char]) != 2:
+                printf(f'Wait that\'s weird : {B}{self.char_meta[char]}{RE} {Y}(len = {len(self.char_meta[char])})', file=__file__)
+            else :
+                return self._get_name(self.char_meta[char][0], lang)
+        
+        printf(f'{char_id} not available', file=__file__)
+        exit()
+    
+    def getname_alter(self, char_id : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN"):
+        if not char_id:
+            return ""
+        
+        for char in self.char_meta:
+            if char_id not in self.char_meta[char]:
+                continue
+            elif len(self.char_meta[char]) == 1:
+                printf(f'{Y}{char_id} {R}doesn\'t{RE} has an {R}alter')
+                return ""
+            elif len(self.char_meta[char]) != 2:
+                printf(f'Wait that\'s weird : {B}{self.char_meta[char]}{RE} {Y}(len = {len(self.char_meta[char])})', file=__file__)
+            elif self.char_meta[char].index(char_id) == 0:
+                return self._get_name(self.char_meta[char][1], lang)
+            else:
+                printf(f'{Y}{char_id} {R}ALREADY{RE} is an {R}alter', file=__file__)
+        
+        printf(f'{Y}{char_id} {R}doesn\'t{RE} has an {R}alter', file=__file__)
+        return ""
+    
     def getskillId(self, char_id : str, index : int):
         if index not in [0, 1, 2]:
             return ""
         elif char_id in self.CN:
             return self.CN[char_id]["skills"][index]["skillId"]
         else:
-            print(f'{char_id} not available')
+            printf(f'{char_id} not available', file=__file__)
             exit()

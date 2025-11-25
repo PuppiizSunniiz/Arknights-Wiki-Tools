@@ -6,6 +6,7 @@ from typing import Literal
 
 import concurrent.futures
 import requests
+from Wiki_OOP.char_data import Character_Database
 from pyFunction import B, R, RE, Y, json_load, printc, printr, script_result
 from pyFunction_Wiki import load_json, wiki_story
 
@@ -50,12 +51,11 @@ def wiki_operator_dialogue(operator_list : list[str] | str,
     if isinstance(operator_list, str):
         operator_real_id= operator_list.rsplit("_", 1)[0].split("#")[0] if operator_list.count("_") >= 3 else operator_list.split("#")[0]
         if force_server: server = "CN" if operator_real_id not in DB["json_characterEN"] else "EN"
-        operator_name   = DB["json_characterEN"][operator_real_id]["name"] if operator_real_id in DB["json_characterEN"] else DB["json_character"][operator_real_id]["appellation"]
-        operator_list   = [operator_list.replace("@", "_")]
+        operator_base_name  = CHARACTER_DATA.getname_base(operator_real_id)
+        operator_list       = [operator_list.replace("@", "_")]
     else:
-        operator_name   = ""
-        operator_list   = [operator.replace("@", "_") for operator in operator_list]
-        
+        operator_base_name  = ""
+        operator_list       = [operator.replace("@", "_") for operator in operator_list]
     article_writer = []
     charword_table_json = DB["json_charwordEN"] if server == "EN" else DB["json_charword"]
     if dialogue_cell in [1, "1"]:
@@ -131,7 +131,7 @@ def wiki_operator_dialogue(operator_list : list[str] | str,
                                         schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_custom", name_out = f'-{otherlang.upper()}', op_id = operator_id)
 
     if article_writer:
-        article_writer.append(f'{{{{Table end}}}}{f'\n\n[[Category:Operator audio]]\n[[Category:{operator_name}]]' if audio_category and operator_name else ""}')
+        article_writer.append(f'{{{{Table end}}}}{f'\n\n[[Category:Operator audio]]\n[[Category:{operator_base_name}]]' if audio_category and operator_base_name else ""}')
         script_result(article_writer, True)
 
 def schedule_wiki_audio(executor, tasks, **kwargs):
@@ -214,6 +214,8 @@ lang_dict = {
     ],
 '''
 
+CHARACTER_DATA  = Character_Database()
+
 crossover       = False  # True False
 jp              = True  # True False
 cn              = True  # True False
@@ -224,7 +226,7 @@ dialect         = ""    # TBU
 outfit          = ""
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = "char_430_fartth"
+OP_DIALOGUE_LIST    = "char_4202_haruka"
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
 force_server        = True  # True False

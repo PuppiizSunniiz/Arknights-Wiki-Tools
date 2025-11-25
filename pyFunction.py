@@ -25,14 +25,15 @@ def printc(*arg):
     all_arg = [*arg]
     print(f'{R}[:{inspect.currentframe().f_back.f_lineno:<4}]{RE}', " ".join([f'{G}{all_arg[i]}' if i % 2 == 1 else f'{B}{all_arg[i]}' for i in range(len(all_arg))]), RE) # type: ignore
 
-def printt(*arg, mode = ""):
-    file = __file__
-    print(f'[{R}{file}:{inspect.currentframe().f_back.f_lineno}{RE}]')
+def printf(*arg, file = "",  mode = ""):
+    print(f'{Y}>> Printf From{RE} : [{R}{file}:{inspect.currentframe().f_back.f_lineno}{RE}]\n')
     if mode == "c":
         all_arg = [*arg]
         print(" ".join([f'{G}{all_arg[i]}' if i % 2 == 1 else f'{B}{all_arg[i]}' for i in range(len(all_arg))]), RE)
+        print(f'{Y}>> Printf END{RE}')
     else:
         print(*arg)
+        print(f'\n{Y}>> Printf END{RE}')
 
 def json_load(filepath : str, internal : bool = False, default_json : dict|list = {}):
     if internal:
