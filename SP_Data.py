@@ -1,7 +1,9 @@
 
+import json
 import re
 from typing import Literal
 from Wiki_Dict import CLASS_PARSE_EN, SUBCLASS_PARSE
+from Wiki_OOP.activity_data import Activity_Database
 from Wiki_OOP.char_data import Character_Database
 from Wiki_OOP.display_data import Display_Database
 from Wiki_OOP.enemy_data import Enemy_Database
@@ -26,13 +28,15 @@ class SP_DATA:
             exit()
         else:
             self.seasonData             = self.data[season]
+            self.seasonName             = ACTIVITY_DATA.getname(season)
             self.baseRewardDataList     = SP_DATA_BASEREWARD(self.seasonData)
             self.medalDataList          = SP_DATA_MEDAL(self.autoChessData)
             self.playerTitleDataDict    = SP_DATA_TITLE(self.seasonData)
             self.FactorInfo             = SP_DATA_FACTOR(self.seasonData)
             self.roundScoreDataList     = SP_DATA_SCORE(self.autoChessData)
             
-            self.milestoneList          = SP_DATA_MILESTONE(self.seasonData)
+            self.milestoneList          = SP_DATA_MILESTONE(self.seasonData, self.seasonName)
+            self.missionData            = SP_DATA_MISSION(ACTIVITY_DATA.getMission_dict(season), self.seasonName)
             
             self.bandData               = SP_DATA_BAND(self.seasonData, self.autoChessData)
             self.bondInfoDict           = SP_DATA_BOND(self.seasonData, self.autoChessData)
@@ -63,6 +67,15 @@ class SP_DATA:
             if hasattr(getattr(self, key), "toCSV"):
                 printr(key, hasattr(getattr(self, key), "toCSV"))
                 getattr(self, key).toCSV(main = "SP_DATA", file_type = file_type)
+    
+    def toJSON(self):
+        SP_json = {}
+        for key in self.__dict__.keys():
+            if hasattr(getattr(self, key), "toCSV"):
+                SP_json[key] = getattr(self, key).data
+                
+        with open("output/SP_DATA.json", "w", encoding = "utf-8") as filepath:
+            json.dump(SP_json, filepath, indent = 4, ensure_ascii = False)
 
 class SP_DATA_BAND:
     def __init__(self, data_season, data_ac):
@@ -73,7 +86,7 @@ class SP_DATA_BAND:
         DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
     
     def toWIKI(self):
-        wiki_result = []
+        wiki_result = ["{{SP Strategies head}}"]
         for band in self.data:
             band_data : dict = self.data[band]
             band_name       = band_data.get("band_name")
@@ -84,8 +97,7 @@ class SP_DATA_BAND:
                                 |name = {band_name}
                                 |initiator = 
                                 |hp = {band_hp}
-                                |effect = {band_effect}
-                                |cond = {band_cond}}}}}'''.replace("                                ", ""))
+                                |effect = {wiki_story(band_effect)}{f'\n|cond = {band_cond}' if band_cond not in ["-", "", None] else ""}}}}}'''.replace("                                ", ""))
         script_result(wiki_result, True)
 
 class SP_DATA_BASEREWARD():
@@ -113,9 +125,10 @@ class SP_DATA_GARRISON():
         DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
 
 class SP_DATA_MILESTONE():
-    def __init__(self, data_season):
+    def __init__(self, data_season, season_name):
         self.classname          = "milestoneList"
         self.tokenId            = data_season["constData"]["milestoneId"]
+        self.seasonname         = season_name
         self.tokeniconId        = ITEM_DATA.geticonId(self.tokenId)
         self.tokenname          = ITEM_DATA.getname(self.tokenId)
         self.data, self.keys    = milestoneList(data_season, self.tokenId, self.tokeniconId, self.tokenname)
@@ -125,7 +138,7 @@ class SP_DATA_MILESTONE():
 
     def toWIKI(self):
         wiki_result = [f'''{{{{Season tab|mode=sp}}}}
-                            A list of milestone rewards the {{{{color|Stronghold Protocol XXX event|red}}}}, raised through {{{{I|{self.tokenname}|g=0}}}} accumulation.
+                            A list of milestone rewards the {self.seasonname}, raised through {{{{I|{self.tokenname}|g=0}}}} accumulation.
 
                             The Stronghold Credit rewards can be claimed until {{{{color|''To be Added''|red}}}}.
 
@@ -142,6 +155,33 @@ class SP_DATA_MILESTONE():
         wiki_result.append('''{{Table end}}
 
                                 [[Category:Stronghold Protocol milestones]]'''.replace("                                ", ""))
+        script_result(wiki_result, True)
+
+class SP_DATA_MISSION():
+    def __init__(self, data_mission, season_name):
+        self.classname          = "missionData"
+        self.seasonname         = season_name
+        self.data, self.keys    = missionData(data_mission)
+    
+    def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
+        DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
+
+    def toWIKI(self):
+        wiki_result = [f'''{{Season tab|mode=sp}}
+                            A list of \'\'\'Key Objectives\'\'\' missions and their rewards in the {self.seasonname} event.
+
+                            The rewards can be claimed until {{{{color|''To be Added''|red}}}}.
+
+                            {{Event mission head}}'''.replace("                            ", "")
+                        ]
+        for mission in self.data:
+            mission_desc            = self.data[mission]["description"]
+            mission_reward_name     = self.data[mission]["rewards_name"]
+            mission_reward_count    = self.data[mission]["rewards_count"]
+            wiki_result.append(f'{{{{Event mission cell|mission={mission_desc}|currency={mission_reward_name}, {mission_reward_count}}}}}')
+        wiki_result.append('''{{Table end}}
+
+                                [[Category:Stronghold Protocol missions]]'''.replace("                                ", ""))
         script_result(wiki_result, True)
 
 class SP_DATA_FACTOR():
@@ -237,6 +277,49 @@ class SP_DATA_TRAP():
 
     def toCSV(self, main : str = "", separator : str = "|", file_type : Literal["csv", "txt", "xlsx"] = "txt"):
         DictToCSV(self.data, self, main = main, separator = separator, file_type = file_type)
+
+    def toWIKI(self):
+        def items_lister(trap : str) -> str:
+            trap_id         = self.data[trap]["charId"]
+            trap_name       = self.data[trap]["trapname"]
+            trap_image      = self.data[trap]["trapname"].replace(":", "")
+            trap_tier       = self.data[trap]["itemLevel"]
+            trap_effect     = self.data[trap]["effectDesc"]
+            trap_upffect    = self.data[re.sub(f'_a$', "_b", trap)]["effectDesc"] if trap.endswith("a") else ""
+            trap_desc       = CHARACTER_DATA.getdesc(trap_id)
+            trap_price      = self.data[trap]["purchasePrice"] if self.data[trap]["hideInShop"] in ["-", "", None] else ""
+            return f'''{{{{SP items cell
+                        |name = {trap_name}{f'\n|image = {trap_image}' if trap_name != trap_image else ""}
+                        |tier = {trap_tier}
+                        |effect = {wiki_story(trap_effect)}{f'\n|upeffect = {wiki_story(trap_upffect)}' if trap_effect != trap_upffect else ""}
+                        |desc = {wiki_story(trap_desc)}
+                        |price = {trap_price}}}}}'''.replace("                        ", "")
+        
+        trap_magic  = []
+        trap_result = ['''{{Season tab|mode=sp}}
+                            A list of items in the {{Color|Stronghold Protocol event (event name go here)|red}}, which includes Equipment and Arts.
+
+                            ==Equipment==
+                            Getting two of the same Equipment will upgrade it and enhance its effect, which are denoted in {{Color|code=FFD700|gold}}.
+
+                            {{SP items head}}'''.replace("                            ", "")]
+        
+        for trap in self.data:
+            if trap.endswith("b"):
+                continue
+            elif trap.endswith("m"):
+                trap_magic.append(trap)
+            else:
+                trap_result.append(items_lister(trap))
+        
+        trap_result += ['''{{Table end}}
+
+                            ==Arts==
+                            {{SP items head}}'''.replace("                            ", "")]
+        for trap in trap_magic:
+            trap_result.append(items_lister(trap))
+        trap_result.append("{{Table end}}")
+        script_result(trap_result, True)
 
 class SP_DATA_BOSS():
     def __init__(self, data_season, data_ac):
@@ -577,6 +660,26 @@ def milestoneList(data_season : dict, token_id : str, token_iconid : str, token_
             data_key = list(milestone_dict[milestone_Lvl].keys())
     return milestone_dict, data_key
 
+def missionData(data_mission) -> dict:
+    mission_data = {}
+    data_key = []
+    for mission in data_mission:
+        if len(data_mission[mission]["rewards"]) != 1:
+            printr(f'There\'re multiple rewards in this mission ({len(mission["rewards"])}): {mission["rewards"]}')
+            exit()
+        mission_data[mission] = {
+                                    "id"            : data_mission[mission]["id"],
+                                    "sortId"        : data_mission[mission]["sortId"],
+                                    "rewards_type"  : data_mission[mission]["rewards"][0]["type"],
+                                    "rewards_id"    : data_mission[mission]["rewards"][0]["id"],
+                                    "rewards_name"  : ITEM_DATA.getname(data_mission[mission]["rewards"][0]["id"]),
+                                    "rewards_count" : data_mission[mission]["rewards"][0]["count"],\
+                                    "description"   : data_mission[mission]["description"],
+                                }
+        if not data_key:
+            data_key = list(mission_data[mission].keys())
+    return sorted_dict_key(mission_data, sorted_key=lambda x : mission_data[x]["sortId"]), data_key
+
 def FactorInfo(data_season : dict) -> dict:
     factor_dict = {}
     data_key = []
@@ -683,14 +786,16 @@ def trapChessData(data_season : dict) -> dict:
     for trap in data_season["trapChessDataDict"]:
         trap_data   = data_season["trapChessDataDict"][trap]
         base_trap   = data_season["chessNormalIdLookupDict"][trap]
-        trap_shop   = data_season["trapShopChessDatas"][base_trap]["hideInShop"]
+        trap_shop   = data_season["trapShopChessDatas"][base_trap]
         effect_data = data_season["effectInfoDataDict"]
         effect_id   = trap_data["effectId"]
         trap_dict[trap] = {
                                 "trapId"        : trap,
                                 "charId"        : trap_data["charId"],
+                                "trapname"      : CHARACTER_DATA.getname(trap_data["charId"]),
+                                "itemLevel"     : trap_shop["itemLevel"],
                                 "purchasePrice" : trap_data["purchasePrice"],
-                                "hideInShop"    : trap_shop or "-",
+                                "hideInShop"    : trap_shop["hideInShop"] or "-",
                                 "effectId"      : effect_id,
                                 "giveBondId"    : trap_data["giveBondId"] or "-",
                                 "givePowerId"   : trap_data["givePowerId"] or "-",
@@ -930,14 +1035,20 @@ CHARACTER_DATA  = Character_Database()
 SKILL_DATA      = Skill_Database()
 SKIN_DATA       = Skin_Database()
 DISPLAY_DATA    = Display_Database()
+ACTIVITY_DATA   = Activity_Database()
 
 SP_DATA         = SP_DATA("act1autochess")
 
 '''script_result(SP_DATA.__getattribute__("seasonData"), True)
 exit()'''
 
-SP_DATA.toCSV("xlsx")
+#SP_DATA.toCSV("xlsx")
+SP_DATA.toJSON()
 
+######   WIKI    ######
+#SP_DATA.bandData.toWIKI()
+#SP_DATA.trapChessDataDict.toWIKI()
+#SP_DATA.missionData.toWIKI()
 ###### Graveyard ######
 '''#SP_DATA.bandData.toCSV()
 #SP_DATA.bandData.toWIKI()

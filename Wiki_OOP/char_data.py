@@ -40,23 +40,38 @@ class Character_Database:
     def _get_name(self, char_id : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN"):
         if not char_id:
             return ""
-        match lang:
-            case "CN" | "JP" | "KR":
-                if char_id in DB_json[lang].value:
-                    return DB_json[lang].value[char_id]["name"]
-                else:
-                    print(f'{char_id} not available in {lang}')
-                    exit()
-            case _: # default EN
-                if char_id in DB_json["EN"].value:
-                    return DB_json["EN"].value[char_id]["name"]
-                elif char_id in DB_json["CN"].value and DB_json["CN"].value[char_id]["appellation"] not in ["", " ", None]:
-                    return DB_json["CN"].value[char_id]["appellation"]
-                elif char_id in DB_json["CN"].value:
-                    return DB_json["CN"].value[char_id]["name"]
-                else:
-                    print(f'{char_id} not available')
-                    exit()
+        elif char_id in DB_json[lang].value:
+            return DB_json[lang].value[char_id]["name"]
+        elif char_id in DB_json["CN"].value and DB_json["CN"].value[char_id]["appellation"] not in ["", " ", None]:
+            print(f'{char_id} not available in {lang}')
+            return DB_json["CN"].value[char_id]["appellation"]
+        elif char_id in DB_json["CN"].value:
+            return DB_json["CN"].value[char_id]["name"]
+        else:
+            print(f'{char_id} not available')
+            exit()
+
+    def getdesc(self, char_id : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN"):
+        if not char_id:
+            return ""
+        if char_id.startswith("trap_"):
+            if char_id in DB_json[lang].value:
+                return DB_json[lang].value[char_id]["itemDesc"] or DB_json[lang].value[char_id]["description"] or ""
+            elif char_id in DB_json["CN"].value:
+                print(f'{char_id} not available in {lang}')
+                return DB_json["CN"].value[char_id]["itemDesc"] or DB_json["CN"].value[char_id]["description"] or ""
+            else:
+                printf(f'{char_id} not available', file=__file__)
+                exit()
+        else:
+            if char_id in DB_json[lang].value:
+                return DB_json[lang].value[char_id]["description"] or ""
+            elif char_id in DB_json["CN"].value:
+                print(f'{char_id} not available in {lang}')
+                return DB_json["CN"].value[char_id]["description"] or ""
+            else:
+                printf(f'{char_id} not available', file=__file__)
+                exit()
 
     def getname(self, char_id : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN"):
         return self._get_name(char_id, lang)
@@ -71,7 +86,7 @@ class Character_Database:
                 return self._get_name(self.char_meta[char][0], lang)
             elif len(self.char_meta[char]) != 2:
                 printf(f'Wait that\'s weird : {B}{self.char_meta[char]}{RE} {Y}(len = {len(self.char_meta[char])})', file=__file__)
-            else :
+            else:
                 return self._get_name(self.char_meta[char][0], lang)
         
         printf(f'{char_id} not available', file=__file__)

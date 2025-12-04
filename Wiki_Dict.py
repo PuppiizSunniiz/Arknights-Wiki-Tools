@@ -30,6 +30,19 @@ subclass_temp = {
 
 SUBCLASS_PARSE : dict[str, str] = {subclass:DB_EN[subclass]["subProfessionName"] if subclass in DB_EN else subclass_temp.get(subclass, f'{subclass.capitalize()}[PH]') for subclass in DB_CN}
 
+IG_MODE : dict[str, str] = {
+                                "NORMAL"    : "Regular Events", 
+                                "FOOTBALL"  : "Positional Football",
+                                "DEFENCE"   : "Bastion Defense",
+                            }
+
+IG_DIFF : dict[str, str] = {
+                                "TRAINING"      : "Training Grounds", 
+                                "ORDINARY"      : "Beginner",
+                                "DIFFICULTY"    : "Advanced",
+                                "EXTREMELY"     : "Expert",
+                            }
+
 ######## TL ########
 
 ENEMY_NAMES_TL = {

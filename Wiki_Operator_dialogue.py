@@ -199,11 +199,11 @@ lang_dict = {
         "char_4134_cetsyr_epoque#50"        #Theresa        Civilight Eterna
         "char_1032_excu2_sale#12",          #excu           Executor the Ex Foedere
         "char_1016_agoat2_epoque#34",       #eyja           Eyjafjalla the Hvít Aska
+        "char_003_kalts_boc#6",             #kal            Kal'tsit
+        char_1038_whitw2_sale#15            #dumbdumb       Lappland the Decadenza
         
         ################################################################################
         
-        "char_003_kalts_boc#6",             #kal            Kal'tsit
-        char_1038_whitw2_sale#15            #dumbdumb       Lappland the Decadenza
         "char_4064_mlynar_epoque#28",       #uncle          Młynar
         "char_249_mlyss_boc#8",             #mumu           Muelsyse
         "char_472_pasngr_epoque#17"         #pass           Passenger
@@ -226,7 +226,7 @@ dialect         = ""    # TBU
 outfit          = ""
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = "char_4202_haruka"
+OP_DIALOGUE_LIST    = "char_4179_monstr"
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
 force_server        = True  # True False
@@ -244,11 +244,3 @@ wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST, server = server, force_
 #   {{Operator dialogue head|note='''XXX''' denotes the XXX Chinese dialect voiceline.}}
 #
 #   {{Operator dialogue head|note=As with other [[Ave Mujica]] [[Operator]]s, XXX XXX only has Japanese voicelines.}}
-'''
-    "char_136_hsguma": {            Hoshi       6
-        "CN_MANDARIN": "X. Chai"
-    },
-    "char_103_angel": {             Exu         6
-        "EN": "Leonora Haig"
-    }
-'''

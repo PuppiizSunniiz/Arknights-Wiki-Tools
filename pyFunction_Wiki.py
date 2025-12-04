@@ -1,7 +1,7 @@
 import re
 from types import NoneType
 
-from pyFunction import R, RE, Y, decimal_format, json_load, printr
+from pyFunction import R, RE, Y, decimal_format, json_load, printc, printr
 
 def load_json(json_load_list : str | list = [], all_json : bool = False) -> dict :
     '''
@@ -117,9 +117,13 @@ def load_json(json_load_list : str | list = [], all_json : bool = False) -> dict
                     
                     "json_characterKR" : "json/gamedata/ArknightsGameData_YoStar/ko_KR/gamedata/excel/character_table.json",
                     "json_char_patchKR" : "json/gamedata/ArknightsGameData_YoStar/ko_KR/gamedata/excel/char_patch_table.json",
+                    "json_enemy_handbookKR" : "json/gamedata/ArknightsGameData_YoStar/ko_KR/gamedata/excel/enemy_handbook_table.json",
+                    "json_enemy_databaseKR" : "json/gamedata/ArknightsGameData_YoStar/ko_KR/gamedata/levels/enemydata/enemy_database.json",
 
                     "json_characterJP" : "json/gamedata/ArknightsGameData_YoStar/ja_JP/gamedata/excel/character_table.json",
                     "json_char_patchJP" : "json/gamedata/ArknightsGameData_YoStar/ja_JP/gamedata/excel/char_patch_table.json",
+                    "json_enemy_handbookJP" : "json/gamedata/ArknightsGameData_YoStar/ja_JP/gamedata/excel/enemy_handbook_table.json",
+                    "json_enemy_databaseJP" : "json/gamedata/ArknightsGameData_YoStar/ja_JP/gamedata/levels/enemydata/enemy_database.json",
                     
                     "json_named_effect" : "json/named_effects.json",
                     "json_dict" : "py/dict.json"
@@ -129,64 +133,6 @@ def load_json(json_load_list : str | list = [], all_json : bool = False) -> dict
         json_load_list = list(json_list.keys())
     
     return {new_json:json_load(json_list[new_json]) for new_json in json_load_list}
-
-def wiki_trim(text : str, replace_all : bool = True) -> str:
-    if replace_all:
-        return replace_apos_between(text).replace("'", "").replace('"', "").replace("?", "")
-    else:
-        return replace_apos_between(text).replace('"', "").replace("?", "")
-
-def wiki_text(candidate : tuple[str, list] | str) -> str:
-    '''
-    candidate type:
-        - for blackboard text -> tuple[str, list]
-            ex. <@ba.kw>{atk:0%}</>
-        - for non blackboard text -> str
-            ex. talent <@ba.vup>+5%</>
-    '''
-    
-    def kw_matching(desc : str, isBB : bool = False, blackboard : list = []) -> str:
-        kw_match = re.search(r'<@(?:ba|cc)\.([\.\w\d]+)>((?:<(?!(?:@|\$)(?:cc|ba)\.\1).*?<\/>)*.*?)<\/>', desc)
-        if kw_match:
-            match_desc = blackboarding(blackboard, kw_match.group(2)) if isBB else kw_match.group(2)
-            sub_desc = re.sub(r'<@(?:ba|cc)\.([\.\w\d]+)>((?:<(?!(?:@|\$)(?:cc|ba)\.\1).*?<\/>)*.*?)<\/>', rf'{{{{Color|{match_desc}|{kw_match.group(1).replace("v","")}}}}}', desc, 1)
-            return kw_matching(sub_desc, isBB, blackboard)
-        else:
-            return desc
-    
-    def ba_matching(desc : str) -> str:
-        ba_match = re.search(r'<\$(ba\.[^>]*)>([^<]*)<\/>', desc)
-        if ba_match:
-            term_name = DB["json_gamedataEN"]["termDescriptionDict"].get(ba_match.group(1), DB["json_gamedata"]["termDescriptionDict"][ba_match.group(1)])["termName"]
-            wording = ba_match.group(2).replace("[", "").replace("]", "")
-            if term_name == wording:
-                sub_desc = re.sub(r'<\$(ba\.[^>]*)>([^<]*)<\/>', rf'{{{{G|{wording}}}}}', desc, 1)
-                return ba_matching(sub_desc)
-            else:
-                sub_desc = re.sub(r'<\$(ba\.[^>]*)>([^<]*)<\/>', rf'{{{{G|{term_name}|{wording}}}}}', desc, 1)
-                return ba_matching(sub_desc)
-        return desc
-    
-    def cc_matching(desc : str) -> str:
-        cc_match = re.search(r'<\$(cc\.[^>]*)>([^<]*)<\/>', desc)
-        if cc_match:
-            term_name = DB["json_gamedataEN"]["termDescriptionDict"].get(cc_match.group(1), DB["json_gamedata"]["termDescriptionDict"][cc_match.group(1)])["termName"]
-            sub_desc = re.sub(r'<\$(cc\.[^>]*)>([^<]*)<\/>', rf'{{{{G|{term_name}|{cc_match.group(2)}}}}}', desc, 1)
-            return cc_matching(sub_desc)
-        else:
-            return desc
-    
-    isBB = isinstance(candidate, tuple)
-    
-    DB = load_json(["json_gamedata", "json_gamedataEN"])
-    desc = candidate[0] if isBB else candidate
-    blackboard = candidate[1] if isBB else []
-
-    desc = kw_matching(desc, isBB, blackboard)
-    desc = ba_matching(desc)
-    desc = cc_matching(desc)
-
-    return wiki_cleanup(desc.replace("\n", "<br/>").strip())
 
 def replace_apos_between(part : str) -> str:
     ############################################################################################################################################
@@ -220,6 +166,12 @@ def replace_apos_between(part : str) -> str:
         return replace_apos_between(new_part)
     else:
         return part
+
+def wiki_trim(text : str, replace_all : bool = True) -> str:
+    if replace_all:
+        return replace_apos_between(text).replace("'", "").replace('"', "").replace("?", "")
+    else:
+        return replace_apos_between(text).replace('"', "").replace("?", "")
 
 def wiki_cleanup(txt :str, all_clean : bool = False) -> str:
     clean_sheet = {
@@ -258,6 +210,83 @@ def wiki_cleanup(txt :str, all_clean : bool = False) -> str:
     
     return txt #.replace(" <br/>", "<br/>")
 
+def wiki_text(candidate : tuple[str, list] | str) -> str:
+    '''
+    candidate type:
+        - for blackboard text -> tuple[str, list]
+            ex. <@ba.kw>{atk:0%}</>
+        - for non blackboard text -> str
+            ex. talent <@ba.vup>+5%</>
+    '''
+    kw_dict = {
+                    "vup" : "up", 
+                    "vdown" : "down",
+                    "acrem" : "code=727272"
+                }
+    
+    #test 0 : <@(?:ba|cc)\.([\.\w\d]+)>((?:<(?!(?:@|\$)(?:cc|ba)\.\1).*?<\/>)*.*?)<\/>
+    #test 1 : <@(?:ba|cc)\.([\.\w\d]+)>((?:(?:|.+?)(?!<(?:@|\$)(?:cc|ba)\.\1>)*.*?<\/>)*(?:|.+?))<\/>
+    #test 2 : <@(?:ba|cc)\.([\.\w\d]+)>((?:(?:(?:[^<]*)(?:<(?:@|\$)(?:cc|ba)\.(?:[\.\w\d]+)>).*?<\/>(?:|.+?))*)[^<]*)<\/>
+    #test 3 : <@(?:ba|cc)\.([\.\w\d]+)>((?:(?:(?:[^<]*)(<(?:@|\$)(?:cc|ba)\.(?:[\.\w\d]+)>.*?<\/>)(?:|.+?))+)[^<]*)<\/>
+    
+    def kw_matching(desc : str, isBB : bool = False, blackboard : list = []) -> str:
+        def nested_color(kw_group : re.Match):
+            match_desc      = blackboarding(blackboard, kw_group.group(2)) if isBB else kw_group.group(2)
+            if re.search(kw_pattern, match_desc):
+                match_desc = re.sub(kw_pattern, nested_color, match_desc, 1)
+            color_pattern   = r'(\{\{Color\|.+?\}\})'
+            color_param     = kw_dict.get(kw_group.group(1), kw_group.group(1))
+            if re.search(color_pattern, match_desc):
+                color_group = re.split(color_pattern ,match_desc)
+                return "".join([f'{{{{Color|{string}|{color_param}}}}}' if not re.match(color_pattern, string) else string for string in color_group])
+            else:
+                return rf'{{{{Color|{match_desc}|{color_param}}}}}'
+        
+        nested_pattern  = r'<@(?:ba|cc)\.([\.\w\d]+)>((?:(?:(?:[^<]*)(<(?:@|\$)(?:cc|ba)\.(?:[\.\w\d]+)>.*?<\/>)(?:|.+?))+)[^<]*)<\/>'
+        kw_pattern      = r'<@(?:ba|cc)\.([\.\w\d]+)>([^<]*)<\/>'
+        if re.search(nested_pattern, desc):
+            sub_desc = re.sub(nested_pattern, nested_color, desc, 1)
+            return kw_matching(sub_desc, isBB, blackboard)
+        elif re.search(kw_pattern, desc):
+            sub_desc = re.sub(kw_pattern, nested_color, desc, 1)
+            return kw_matching(sub_desc, isBB, blackboard)
+        else:
+            return desc
+    
+    def ba_matching(desc : str) -> str:
+        ba_match = re.search(r'<\$(ba\.[^>]*)>([^<]*)<\/>', desc)
+        if ba_match:
+            term_name = DB["json_gamedataEN"]["termDescriptionDict"].get(ba_match.group(1), DB["json_gamedata"]["termDescriptionDict"][ba_match.group(1)])["termName"]
+            wording = ba_match.group(2).replace("[", "").replace("]", "")
+            if term_name == wording:
+                sub_desc = re.sub(r'<\$(ba\.[^>]*)>([^<]*)<\/>', rf'{{{{G|{wording}|nolink=true}}}}', desc, 1)
+                return ba_matching(sub_desc)
+            else:
+                sub_desc = re.sub(r'<\$(ba\.[^>]*)>([^<]*)<\/>', rf'{{{{G|{term_name}|{wording}|nolink=true}}}}', desc, 1)
+                return ba_matching(sub_desc)
+        return desc
+    
+    def cc_matching(desc : str) -> str:
+        cc_match = re.search(r'<\$(cc\.[^>]*)>([^<]*)<\/>', desc)
+        if cc_match:
+            term_name = DB["json_gamedataEN"]["termDescriptionDict"].get(cc_match.group(1), DB["json_gamedata"]["termDescriptionDict"][cc_match.group(1)])["termName"]
+            sub_desc = re.sub(r'<\$(cc\.[^>]*)>([^<]*)<\/>', rf'{{{{G|{term_name}|{cc_match.group(2)}}}}}', desc, 1)
+            return cc_matching(sub_desc)
+        else:
+            return desc
+    
+    isBB = isinstance(candidate, tuple)
+    
+    DB = load_json(["json_gamedata", "json_gamedataEN"])
+    desc = candidate[0] if isBB else candidate
+    blackboard = candidate[1] if isBB else []
+
+    desc = ba_matching(desc)
+    desc = kw_matching(desc, isBB, blackboard)
+    desc = cc_matching(desc)
+
+    return wiki_cleanup(desc.replace("\n", "<br/>").strip())
+
 def wiki_story_color(desc : str) -> str:
     color_match = r'<color=#(.+?)>(.+?)<\/color>'
     if re.match(color_match, desc):
@@ -282,6 +311,8 @@ def wiki_story(story : str|list[str], newline : str = "\n", join_str : str = "<b
         desc = re.sub(r"^'(.+?)([^'])$", r'"\1\2', desc)
         # - End
         desc = re.sub(r"^([^'])(.+?)'$", r'\1\2"', desc)
+        # Glossary
+        desc = wiki_text(desc)
         # Color
         desc = wiki_story_color(desc)
         # Font I B
@@ -297,7 +328,6 @@ def wiki_stage(stage_desc : str, newline : str = "\n", join_str : str = "<br/>")
     # Rem
     stage_desc = re.sub(r"<@lv.rem>(.+?)</>", r"{{Color|\1|rem}}", stage_desc)
     return join_str.join(stage_desc)
-    
 
 def blackboarding(blackboard : list, desc : str):
     blackboard_match = re.match(r'(\+|-|)\{([^\{\}:]*)(?::([^\{\}:]*)|)\}', desc)

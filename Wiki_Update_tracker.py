@@ -2,7 +2,8 @@ import json
 import re
 
 import requests
-from pyFunction import B, G, json_load, printr
+from Wiki_OOP.enemy_data import Enemy_Database
+from pyFunction import B, G, json_load, printr, script_result, sorted_dict_key
 from pyFunction_Wiki import load_json
 
 used_json = [
@@ -18,7 +19,7 @@ DB = load_json(used_json)
 DB["json_character"].update(DB["json_char_patch"]["patchChars"])
 DB["json_characterEN"].update(DB["json_char_patchEN"]["patchChars"])
 
-for ref in ["nation_track", "charWords_track"]:
+for ref in ["nation_track", "charWords_track", "enemy_track"]:
     DB[f'{ref}_old']    = json_load(f'tracker/ref/{ref}_old.json', True)
     DB[ref]             = json_load(f'tracker/ref/{ref}.json', True)
 
@@ -82,10 +83,26 @@ def nationId_track():
         with open("tracker/ref/nation_track.json", "w", encoding = "utf-8") as filepath :
             json.dump(nation_track_json, filepath, indent = 4, ensure_ascii = False)
 
+def enemyname_track():
+    enemy_track         = sorted_dict_key(Enemy_Database().NAMES)
+    enemy_diff          = {k:v for k, v in enemy_track.items() if "tracker" not in DB["enemy_track"] or k not in DB["enemy_track"]["tracker"] or DB["enemy_track"]["tracker"][k] != v}
+    
+    enemy_track_json    = {"CN" : CN, "EN" : EN, "tracker" : enemy_track}
+    enemy_diff_json     = {"CN" : CN, "EN" : EN, "tracker" : enemy_diff}
+    if DB["enemy_track"] != enemy_track_json:
+        with open("tracker/enemy_diff.json", "w", encoding = "utf-8") as filepath :
+                json.dump(enemy_diff_json, filepath, indent = 4, ensure_ascii = False)
+        with open("tracker/ref/enemy_track_old.json", "w", encoding = "utf-8") as filepath :
+            json.dump(DB["enemy_track"], filepath, indent = 4, ensure_ascii = False)
+        with open("tracker/ref/enemy_track.json", "w", encoding = "utf-8") as filepath :
+            json.dump(enemy_track_json, filepath, indent = 4, ensure_ascii = False)
+    
+
 charWords_test = False # True False
 nationId_test = False # True False
 
 if __name__ == "__main__":
     charWords_track()
     nationId_track()
+    enemyname_track()
     printr(f'{B}Wiki_Text_tracker.py - {G}Completed !!!')
