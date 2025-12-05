@@ -415,3 +415,8 @@ def wiki_elite_lv_parse(Elite : str|int, Level : str|int) -> str:
         return f'{Elite}, {Level}'
     else:
         return Level
+    
+def grid_name(coord : str|tuple|list):
+        X = coord.split(",")[0] if isinstance(coord, str) else coord[0]
+        Y = coord.split(",")[1] if isinstance(coord, str) else coord[1]
+        return f'{chr(ord("A") + int(X))}{int(Y) + 1}'

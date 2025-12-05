@@ -196,7 +196,7 @@ def wiki_article(
 
     env_name = [
                     "defense_buff_add_if_cancelable_buff[enemy]",
-                    "env_017_act35side", "env_010_act31side_pollute", "env_005_mainline12_sightSystem", "env_v066_mainline16_ctrl", "env_act42side_level_ctrl", 
+                    "env_010_act31side_pollute", "env_005_mainline12_sightSystem", "env_v066_mainline16_ctrl", "env_act42side_level_ctrl", 
                     "mainline16_enemy_target_free", 
                 ]
     
@@ -784,7 +784,7 @@ def wiki_article(
         else:
             return ""
     
-    def get_grid(coord : str|tuple):
+    def get_grid(coord : str|tuple|list):
         X = coord.split(",")[0] if isinstance(coord, str) else coord[0]
         Y = coord.split(",")[1] if isinstance(coord, str) else coord[1]
         return f'{{{{Pos|{chr(ord("A") + int(X))}{int(Y) + 1}}}}}'
@@ -955,6 +955,16 @@ def wiki_article(
                             boat_extra_time     = temp["blackboard"]["boat_extra_time"]
                             score_through_block = temp["blackboard"]["score_through_block"]
                             rune_writer.append(f'\n<!--Start with {boat_total_time:g} seconds time limit, gain {boat_extra_time:g} additional seconds and {score_through_block:g} points after reaching each checkpoint.-->')
+                        elif rune_key == "env_017_act35side":
+                            crystal_aspd    = temp["blackboard"].pop("attack_speed")
+                            crystal_atk     = temp["blackboard"].pop("atk")
+                            crystal_max_hp  = temp["blackboard"].pop("max_hp")
+                            if temp["blackboard"] and [key for key in temp["blackboard"] if key not in skip_rune]:
+                                printc(f'There new blackboard key in {Y}{rune["prefabKey"]}{RE} : {B}{temp["blackboard"]}{RE}')
+                            elif crystal_atk == crystal_max_hp:
+                                rune_writer.append(f'\n[[Crystal]] reduces the ASPD of friendly units by {abs(crystal_aspd):g} and increases the HP and ATK of enemies by {crystal_atk*100:g}%.')
+                            else:
+                                rune_writer.append(f'\n[[Crystal]] reduces the ASPD of friendly units by {abs(crystal_aspd):g} and increases the HP and ATK of enemies by {crystal_max_hp*100:g}% and {crystal_atk*100:g}% respectively.')
                         else :
                             printc(f'New Environment just drop : {rune["blackboard"]}')
                     case "global_cost_recovery":

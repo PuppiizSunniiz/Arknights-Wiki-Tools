@@ -1,5 +1,30 @@
 {
-    "CN": "25-11-21-15-21-44_ee1197",
+    "CN": "25-12-04-02-54-57_e9dab3",
     "EN": "25-11-11-08-15-40_78dbfa",
-    "tracker": {}
+    "tracker": {
+        "char_4212_nasti": {
+            "main": {
+                "nationId": "columbia",
+                "groupId": "rhine",
+                "teamId": null
+            },
+            "hidden": null
+        },
+        "char_4213_skybx": {
+            "main": {
+                "nationId": "columbia",
+                "groupId": null,
+                "teamId": null
+            },
+            "hidden": null
+        },
+        "char_4214_cairn": {
+            "main": {
+                "nationId": "columbia",
+                "groupId": null,
+                "teamId": null
+            },
+            "hidden": null
+        }
+    }
 }
