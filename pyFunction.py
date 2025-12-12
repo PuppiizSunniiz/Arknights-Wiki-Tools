@@ -25,7 +25,7 @@ def printc(*arg):
     all_arg = [*arg]
     print(f'{R}[:{inspect.currentframe().f_back.f_lineno:<4}]{RE}', " ".join([f'{G}{all_arg[i]}' if i % 2 == 1 else f'{B}{all_arg[i]}' for i in range(len(all_arg))]), RE) # type: ignore
 
-def printf(*arg, file = "",  mode = ""):
+def printf(*arg, file = "",  mode : Literal["c"] = ""):
     print(f'{Y}>> Printf From{RE} : [{R}{file}:{inspect.currentframe().f_back.f_lineno}{RE}]\n')
     if mode == "c":
         all_arg = [*arg]
@@ -46,6 +46,9 @@ def json_load(filepath : str, internal : bool = False, default_json : dict|list 
     else:
         with open(f'C:/Github/AN-EN-Tags/{filepath}', 'r', encoding = 'utf-8') as file:
             return json.load(file)
+
+def stage_load(filepath : str):
+    return json_load(rf'json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\{filepath}')
 
 def txt_load(filepath : str, temp = False):
     if temp:

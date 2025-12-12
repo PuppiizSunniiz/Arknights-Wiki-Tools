@@ -169,6 +169,7 @@ def wiki_article(
                         "level_enemy_replace", "level_hidden_group_enable", "level_hidden_group_disable", 
                     ]
     non_enemy_rune  = [
+                        "assign_global_blackboard",
                         "cbuff_max_cost", 
                         "char_attribute_add", "char_skill_blackb_mul", "char_cost_add", "char_blockcnt_add", "char_skill_cd_mul", "char_cost_mul", "char_respawntime_mul", "char_exclude", 
                         "env_gbuff_new", "env_gbuff_new_with_verify", 
@@ -526,7 +527,7 @@ def wiki_article(
             
     def tile_lister(def_data : list) -> list:
         tile_output = []
-        tile_skip = ["tile_wall", "tile_road", "tile_floor", "tile_toxichill", "tile_toxicroad", "tile_toxicwall", "tile_toxic", "tile_reed", "tile_reedw", "tile_mire", "tile_yinyang_wall", "tile_yinyang_road", "tile_stairs", "tile_passable_wall", "tile_passable_wall_forbidden", "tile_rcm_operator", "tile_wooden_wall", "tile_empty", "tile_deepsea", "tile_pollution_roadf", "tile_icestr", "tile_icetur_rb", "tile_icetur_lb", "tile_icetur_rt", "tile_icetur_lt", "tile_rcm_crate", "tile_codpsea"]
+        tile_skip = ["tile_wall", "tile_road", "tile_floor", "tile_toxichill", "tile_toxicroad", "tile_toxicwall", "tile_toxic", "tile_reed", "tile_reedw", "tile_mire", "tile_yinyang_wall", "tile_yinyang_road", "tile_stairs", "tile_passable_wall", "tile_passable_wall_forbidden", "tile_rcm_operator", "tile_wooden_wall", "tile_empty", "tile_deepsea", "tile_pollution_roadf", "tile_icestr", "tile_icetur_rb", "tile_icetur_lb", "tile_icetur_rt", "tile_icetur_lt", "tile_rcm_crate", "tile_codpsea", "tile_balloon", "tile_balloon_fbd"]
         tlle_full_skip = ["tile_start", "tile_end", "tile_forbidden", "tile_telin", "tile_telout", "tile_hole", "tile_fence_bound", "tile_flystart", "tile_smog", "tile_start_cooperate", "tile_end_cooperate", "tile_allygoal", "tile_football", "tile_enemygoal", "tile_green", "tile_ristar_road", "tile_ristar_road_forbidden", "tile_grvtybtn", "tile_sleep_wall", "tile_sleep_road"]
         
         for i in range(len(def_data["tiles"])):
@@ -1177,6 +1178,12 @@ def wiki_article(
                         if predefines[1]:
                             char_name = [DB["json_characterEN"][char_id.split("#")[0]]["name"] if char_id.split("#")[0] in DB["json_characterEN"] else (DB["json_character"][char_id.split("#")[0]]["appellation"] if DB["json_character"][char_id.split("#")[0]]["appellation"].strip() else DB["json_character"][char_id.split("#")[0]]["name"]) for char_id in predefines[1]]
                             rune_writer.append(f'\n{join_and(set(char_name))} appear')
+                    case "assign_global_blackboard":
+                        if rune["blackboard"]["key"] == "cooperate_whitelist":
+                            pass
+                        else:
+                            printr(f'New {Y}{rune["key"]}{RE} key just drop : {rune["blackboard"]["key"]}')
+                            exit()
                     case _:
                         printc(f'{Y}{stage}{RE} New case just drop :', rune["key"], rune["blackboard"])
                         #exit()
@@ -1344,7 +1351,7 @@ def wiki_article(
                                 return f'spawns a {enemy_name_search(bb_enemy_key, enemyDbRefs)} on the spot when defeated'
                             case {'civilianTalent.max_cost': bb_max_cost}:
                                 if enemy_id == "enemy_1313_wdfmr":
-                                    return f'[[Identity|Identified]] **Norport Civilian** increases the DP limit by {bb_max_cost} when entering a Protection Objective'
+                                    return f'[[Identity|Identified]] **Norport Civilian** increases the DP limit by {bb_max_cost:g} when entering a Protection Objective'
                             case {'M1ReviveEnd.location': bb_grid}:
                                 if enemy_id == "enemy_1561_crzjdg":
                                     return f'If **Anastasio** is defeated in the First Form before he reaches {map_grid(bb_grid)}, he will enter the Second Form there.'
@@ -1360,7 +1367,7 @@ def wiki_article(
                                     return f'(will wait) for {bb_min:g}-{bb_max - 1:g} before (landing) and (will land) for {bb_wait:g} seconds before (take off)'
                             case {'M0SpeedUp.duration': bb_M0SpeedUp_duration, 'M1SpeedUp.duration': bb_M1SpeedUp_duration, 'Mode.mode': bb_mode}:
                                 if bb_M0SpeedUp_duration == bb_M1SpeedUp_duration and enemy_id == "enemy_10045_parrot_2":
-                                    return f'increase MSPD to 300% for {bb_M0SpeedUp_duration} seconds when taking damage'
+                                    return f'increase MSPD to 300% for {bb_M0SpeedUp_duration:g} seconds when taking damage'
                             case _:
                                 pass
                     printc(f'{Y}{stage}{RE}', key, temp, enemy_id)
@@ -1507,11 +1514,11 @@ def wiki_article(
                                 eaddendum_result.append(f'\n{wiki_story(enemy_name) if enemy_name else "All enemies"} have their {join_and(temp_stat)} increased by {join_and(set(temp_value) if len(set(temp_value)) == 1 else temp_value)}{f' ({join_and(temp_exclude)})' if temp_exclude else ""}.')
                         case "level_enemy_replace":
                             enemy_base = ""
-                            enemy_replace = "" 
+                            enemy_replace = ""
                             for key in rune["blackboard"]:
                                 if key == "key":
                                     base_enemy = rune["blackboard"][key].split("|")
-                                    enemy_base = join_and([big_data["enemies"][enemy]["data"]["name"] for enemy in base_enemy])
+                                    enemy_base = join_and([enemy_name_search(enemy, enemyDbRefs) for enemy in base_enemy])
                                 elif key == "value":
                                     replace_enemy = rune["blackboard"][key].split("|")
                                     enemy_replace = join_and([enemy_name_search(enemy, enemyDbRefs) for enemy in replace_enemy])
@@ -1934,8 +1941,6 @@ def wiki_article(
                             "adverse" : ""
                     }
             case "data":
-                enemies_data = enemies_lister(data["enemies_stage"][stage])
-                drop_data = drop_lister(data["stage_data"][stage]["stageDropInfo"]["displayDetailRewards"])
                 match diff:
                     case "hard" :
                         stage_id = stage + "#f#"
@@ -1943,6 +1948,8 @@ def wiki_article(
                         stage_id = stage + "#s"
                     case _ :
                         stage_id = stage
+                enemies_data = enemies_lister(data["enemies_stage"][stage])
+                drop_data = drop_lister(data["stage_data"][stage_id]["stageDropInfo"]["displayDetailRewards"])
                 diff_type = data["stage_data"][stage_id]["difficulty"]
                 return {
                             "stage_id"      : stage_id,
@@ -2058,7 +2065,7 @@ def wiki_article(
                             |dp = {data["dp"]}
                             |deployable = {data["deployable"]}
                             |static = {data["static"] if data["static"] else ""}
-                            |terrain = {tile_writer(data["terrain"], big_data["stage"][data["stage_id"].split("#")[0]]["predefines"].get("tokenInsts", []))}
+                            |terrain = {tile_writer(data["terrain"], (big_data["stage"][data["stage_id"].split("#")[0]]["predefines"] or {}).get("tokenInsts", []))}
                             |addendum = {addendum_writer(data["rune"], data["globalBuffs"], maxPlayTime = data["maxPlayTime"], DP = data["dp_regen"], configBlackBoard = data["configBlackBoard"], diff = data["diff_type"], enemyDbRefs = data["enemyDbRefs"])}
                             |firstdrop = {data["firstdrop"]}
                             |regdrops = {data["regdrops"]}
@@ -2170,7 +2177,7 @@ def wiki_article(
                 |dp = {ig_data["dp"]}
                 |deployable = {ig_data["deployable"]} 
                 |static = {ig_data["static"]} 
-                |terrain = {tile_writer(ig_data["terrain"], big_data["stage"][ig_data["stage_key"].split("#")[0]]["predefines"].get("tokenInsts", []))}
+                |terrain = {tile_writer(ig_data["terrain"], (big_data["stage"][ig_data["stage_key"].split("#")[0]]["predefines"] or {}).get("tokenInsts", []))}
                 |addendum = {addendum_writer(ig_data["rune"], ig_data["globalBuffs"], DP = ig_data["dp_regen"], diff = ig_data["ig_diff"], ig_ctrl = ig_data["ig_ctrl"])}
                 |obj1 = {targetMissionDataDict[ig_data["obj1"]]["title"]}; {targetMissionDataDict[ig_data["obj1"]]["description"]}.
                 |obj2 = {targetMissionDataDict[ig_data["obj2"]]["title"]}; {targetMissionDataDict[ig_data["obj2"]]["description"]}.
@@ -2271,7 +2278,7 @@ def wiki_article(
                             |enemies = {tn_data["enemies"]}
                             |deployable = {tn_data["deployable"]}
                             |static = {tn_data["static"]}
-                            |terrain = {tile_writer(tn_data["terrain"], big_data["stage"][tn_data["stage_id"].split("#")[0]]["predefines"].get("tokenInsts", []))}
+                            |terrain = {tile_writer(tn_data["terrain"], (big_data["stage"][tn_data["stage_id"].split("#")[0]]["predefines"] or {}).get("tokenInsts", []))}
                             |addendum = {addendum_writer(tn_data["rune"], tn_data["globalBuffs"])}
                             {tn_enemies_lister(tn_data["tn enemies"])}
                             |eaddendum = {eaddendum_writer(tn_data["eaddendum"], tn_data["rune"], tn_data["globalBuffs"], tn_data["enemyDbRefs"])}
@@ -2388,7 +2395,7 @@ def wiki_article(
                     |dp = {vb_data["dp"]}
                     |deployable = {vb_data["deployable"]}
                     |static = {vb_data["static"]}
-                    |terrain = {tile_writer(vb_data["terrain"], big_data["stage"][vb_data["stage_id"].split("#")[0]]["predefines"].get("tokenInsts", []))}
+                    |terrain = {tile_writer(vb_data["terrain"], (big_data["stage"][vb_data["stage_id"].split("#")[0]]["predefines"] or {}).get("tokenInsts", []))}
                     |addendum = {addendum_writer(vb_data["rune"], vb_data["globalBuffs"], foot = vb_data["addendum"]) if mode == "sp" else addendum_writer(vb_data["rune"], vb_data["globalBuffs"])}
                     |firstreward = {vb_data["firstreward"]}
                     {f'|regreward = {vb_data["regreward"]}' if mode != "sp" else ""}
@@ -2631,13 +2638,14 @@ def wiki_article(
 # Event
 #script_result(wiki_article("act43side", "sidestory", "Act or Die", year = 6), True)
 #script_result(wiki_article("act46side", "sidestory", "Retracing Our Steps 1101", year = 7), True)
+script_result(wiki_article("act47side", "sidestory", "Unrealized Realities", year = 7), True)
 #script_result(wiki_article("act1vhalfidle", "sidestory", "Rebuilding Mandate"), True)
 
 # Trials for Navigator #04
 #script_result(wiki_article("act4bossrush", "tn", "Trials for Navigator #04"))
 
 # Rhodes Island Icebreaker Games #1
-script_result(wiki_article("act2multi", "ig", "Rhodes Island Icebreaker Games #2"))#, True)
+#script_result(wiki_article("act2multi", "ig", "Rhodes Island Icebreaker Games #2"))#, True)
 
 # Vector Breakthrough Mechanist
 #script_result(wiki_article("act1break", "vb", "Vector Breakthrough Mechanist"))

@@ -2,6 +2,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 from typing import Literal
 
 import concurrent.futures
@@ -22,14 +23,33 @@ DB = load_json(used_json)
 DB["json_character"].update(DB["json_char_patch"]["patchChars"])
 DB["json_characterEN"].update(DB["json_char_patchEN"]["patchChars"])
 
+def charword_combine(charword_cn : dict, charword_en : dict):
+    result_json = {"charWords" : dict(charword_cn["charWords"]), "voiceLangDict" : {}, "skin_word" : []}
+    result_json["charWords"].update(charword_en["charWords"])
+    
+    # Skinword
+    for key in result_json["charWords"]:
+        if re.match(r'char_[\d]*_[a-z\d]*_(?:[a-z\d]*\#[\d]*_)CN_[\d]{3}', key):
+            result_json["skin_word"].append(result_json["charWords"][key]["wordKey"])
+    
+    # voiceLangDict
+    for char in charword_en["voiceLangDict"]:
+        voiceLangDict = charword_cn["voiceLangDict"][char]["dict"]
+        voiceLangDict.update(charword_en["voiceLangDict"][char]["dict"])
+        result_json["voiceLangDict"].setdefault(char, {})
+        for lang, value in voiceLangDict.items():
+            result_json["voiceLangDict"][char][lang] = " & ".join(value["cvName"])
+    return result_json
+
 # Manual
+#DB["json_charwordEN"] = json_load(r"py\input_script.json", True)
+DB["json_charwordEN"] = json_load(r"py\charword_table.json", True)
+#DB["json_charwordEN"] = json.loads(requests.get("https://raw.githubusercontent.com/ArknightsAssets/ArknightsGamedata/refs/heads/master/en/gamedata/excel/charword_table.json").text)
 birthday_check      = json_load(r"C:\GitHub\AN-EN-Tags\temp\birthday_voicelines.json", internal=True)
 #birthday_check      = json.loads(requests.get("https://raw.githubusercontent.com/PuppiizSunniiz/AN-EN-Tags/refs/heads/main/temp/birthday_voicelines.json").text)
-combine_charword    = json_load(r"C:\GitHub\AN-EN-Tags\json/puppiiz/charword_table.json", internal=True)
+#combine_charword    = json_load(r"C:\GitHub\AN-EN-Tags\json/puppiiz/charword_table.json", internal=True)
 #combine_charword    = json.loads(requests.get("https://raw.githubusercontent.com/PuppiizSunniiz/AN-EN-Tags/refs/heads/main/json/puppiiz/charword_table.json").text)
-
-#DB["json_charwordEN"] = json_load(r"py\input_script.json", True)
-#DB["json_charwordEN"] = json.loads(requests.get("https://raw.githubusercontent.com/ArknightsAssets/ArknightsGamedata/refs/heads/master/en/gamedata/excel/charword_table.json").text)
+combine_charword    = charword_combine(DB["json_charword"], DB["json_charwordEN"])
 
 DEFAULT = {1: 'Appointed as Assistant', 2: 'Talk 1', 3: 'Talk 2', 4: 'Talk 3', 5: 'Talk after Promotion 1', 6: 'Talk after Promotion 2', 7: 'Talk after Trust Increase 1', 8: 'Talk after Trust Increase 2', 9: 'Talk after Trust Increase 3', 10: 'Idle', 11: 'Onboard', 12: 'Watching Battle Record', 13: 'Promotion 1', 14: 'Promotion 2', 17: 'Added to Squad', 18: 'Appointed as Squad Leader', 19: 'Depart', 20: 'Begin Operation', 21: 'Selecting Operator 1', 22: 'Selecting Operator 2', 23: 'Deployment 1', 24: 'Deployment 2', 25: 'In Battle 1', 26: 'In Battle 2', 27: 'In Battle 3', 28: 'In Battle 4', 29: '4-star Result', 30: '3-star Result', 31: 'Sub 3-star Result', 32: 'Operation Failure', 33: 'Assigned to Facility', 34: 'Tap', 36: 'Trust Tap', 37: 'Title', 38: "New Year's blessing", 42: 'Greeting', 43: 'Birthday', 44: 'Anniversary Celebration'}
 
@@ -111,6 +131,8 @@ def wiki_operator_dialogue(operator_list : list[str] | str,
                         else:
                             article_writer.append(f'{{{{{cell_template}|no={dialogue_no}{dialogue_desc}{dialogue_outfit}{dialogue_jp}{dialogue_cn}{dialogue_dialect}{dialogue_en}{dialogue_kr}{dialogue_other}}}}}')
                         if audio:
+                            if bd_only and (i + 1 != 38 if mode == 1 else sort_list[i] != 43):
+                                continue
                             if crossover:
                                 schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "", op_id = operator_id)
                             else:
@@ -201,11 +223,11 @@ lang_dict = {
         "char_1016_agoat2_epoque#34",       #eyja           Eyjafjalla the Hvít Aska
         "char_003_kalts_boc#6",             #kal            Kal'tsit
         char_1038_whitw2_sale#15            #dumbdumb       Lappland the Decadenza
+        "char_249_mlyss_boc#8",             #mumu           Muelsyse
+        "char_4064_mlynar_epoque#28",       #uncle          Młynar
         
         ################################################################################
         
-        "char_4064_mlynar_epoque#28",       #uncle          Młynar
-        "char_249_mlyss_boc#8",             #mumu           Muelsyse
         "char_472_pasngr_epoque#17"         #pass           Passenger
         "char_1012_skadi2_iteration#2",     #skya           Skadi the Corrupting Heart
         "char_245_cello_sale#12",           #tutu           Virtuosa
@@ -226,16 +248,22 @@ dialect         = ""    # TBU
 outfit          = ""
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = "char_4179_monstr"
+OP_DIALOGUE_LIST    = "char_328_cammou"
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
 force_server        = True  # True False
 audio               = True  # True False
-manual              = False  # True False
+manual              = True  # True False
 audio_category      = True
+bd_only             = False
 
-wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST, server = server, force_server = force_server, dialogue_cell = dialogue_cell, audio = audio, voice_data = op_voice_data)
-
+if len(sys.argv) > 1 and sys.argv[1].startswith("char"):
+    manual = False
+    bd_only = True
+    wiki_operator_dialogue(operator_list = sys.argv[1], server = server, force_server = force_server, dialogue_cell = dialogue_cell, audio = audio, voice_data = op_voice_data)
+else:
+    wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST, server = server, force_server = force_server, dialogue_cell = dialogue_cell, audio = audio, voice_data = op_voice_data)
+    
 #https://raw.githubusercontent.com/ArknightsAssets/ArknightsGamedata/refs/heads/master/en/gamedata/excel/charword_table.json
 #https://arknights.wiki.gg/wiki/Caper/Dialogue#cite_ref-1
 #   (^\{\{Operator dialogue cell\|.+?(?<!=true))\}\}$

@@ -649,7 +649,7 @@ def enemy_wave_csv():
                     script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}|{routeIndex}')
     script_result(script_txt, True)
     
-enemy_wave_csv()
+#enemy_wave_csv()
 
 #printr(bin(639), bin(96), bool("1"), bool("0"))
 
@@ -770,3 +770,19 @@ def enemy_name():
     
     script_result(enemy_name_dict, True, forced_txt=True, no_tab=True)
 #enemy_name()
+
+type_dict = []
+for activity in DB["json_activity"]["basicInfo"]:
+    activity_type = DB["json_activity"]["basicInfo"][activity]["type"]
+    if activity_type not in type_dict:
+        type_dict.append(activity_type)
+        
+printr(type_dict)
+
+type_dict = []
+for stage in DB["json_stage"]["stages"]:
+    stage_type = DB["json_stage"]["stages"][stage]["stageType"]
+    if stage_type not in type_dict:
+        type_dict.append(stage_type)
+        
+printr(type_dict)

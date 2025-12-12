@@ -50,11 +50,17 @@ ENEMY_NAMES_TL = {
                 }
 ITEM_NAMES_TL = {
                     "act46side_token_detector"  : "Multipurpose Snow Detector",
+                    "act47side_token_bottle"    :"Sky Respiratory Tube|"
                 }
 PART_NAMES_TL = {
+                    #act46side
                     "圣巡之旅"  : "Holy Tour",
                     "变革之路"  : "Path of Change",
                     "喀兰之心"  : "Heart of Karlan",
+                    
+                    #act47side
+                    "天空生活展会" : "Sky Living Expo",
+                    "逃离哥伦比亚" : "Escape from Columbia",
                 }
 TOKEN_NAMES_TL = {}
 SKILL_NAMES_TL = {}
