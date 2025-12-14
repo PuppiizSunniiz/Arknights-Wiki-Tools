@@ -7,6 +7,8 @@ from pyFunction import B, G, R, RE, Y, decimal_format, falsy_compare, join_and, 
 used_json = [
                 "json_activity",
                 "json_activityEN",
+                "json_building",
+                "json_buildingEN",
                 "json_character",
                 "json_characterEN",
                 "json_enemy_database",
@@ -569,13 +571,14 @@ def wiki_article(
                     tile_result.append(f'The [[Medical Rune]] restores {heal:{".0%" if len(str(heal).split(".")[-1]) < 2 else ".1%"}} of maximum HP every second to the friendly unit on it.')
                 case "tile_bigforce":
                     force = 0
-                    for blackboard in tile["blackboard"]:
-                        if blackboard["key"] == "base_force_level":
-                            force = blackboard["value"]
-                    if not force:
-                        printr(f'{R}Specialist Tactical Point{RE} key is invalid : {Y}{blackboard["key"]}{RE}')
-                        exit()
-                    tile_result.append(f'The [[Specialist Tactical Point]] increases the [[shift]] force of the friendly unit on it by {force:.0f} level.')
+                    if tile["blackboard"]:
+                        for blackboard in tile["blackboard"]:
+                            if blackboard["key"] == "base_force_level":
+                                force = blackboard["value"]
+                        if not force:
+                            printr(f'{R}Specialist Tactical Point{RE} key is invalid : {Y}{blackboard["key"]}{RE}')
+                            exit()
+                        tile_result.append(f'The [[Specialist Tactical Point]] increases the [[shift]] force of the friendly unit on it by {force:.0f} level.')
                 case "tile_toxic":
                     if tile == {"tileKey": "tile_toxic", 'blackboard': [{'key': 'dynamic', 'value': 1.0, 'valueStr': None}], 'effects': None}:
                         pass
@@ -1303,10 +1306,13 @@ def wiki_article(
                 match k:
                     case "initCooldown" :
                         return f'{v:g} seconds cooldown initially'
+                    case "Skill-BB-atk_scale":
+                        return f'increased to {v*100:g}% ATK'
+                    case "Skill-BB-dynamic":
+                        return f'something something {v:g}'
                     case _:
-                        printr(f'New skill parameter : {k}')
+                        printc("New skill parameter : ", k, v)
                         exit()
-            
             match key:
                 case "rangeRadius":
                     return f'an attack range of {decimal_format(value)} tiles radius'
@@ -1908,19 +1914,22 @@ def wiki_article(
             drop_list = {k:{} for k in drop_types}
             drop_rates = {"ALWAYS": 1, "ALMOST": 2, "USUAL": 3, "OFTEN": 4, "SOMETIMES": 5}
             for drop in def_data:
-                if drop["dropType"] == "COMPLETE":
+                if drop["dropType"] in ["COMPLETE", "ONCE"]:
                     drop_list["COMPLETE"][drop["id"]] = drop
                 else:
                     drop_list[drop["dropType"]][drop["id"]] = drop
             drop_output = {k:[] for k in drop_types}
             for drop_type in drop_types:
-                for drop in sorted(drop_list[drop_type].keys(), key = lambda k : -100000000000 if k == "4002" else DB["json_item"]["items"][k]["sortId"]):
-                    drop_name = DB["json_itemEN"]["items"][drop]["name"] if drop in DB["json_itemEN"]["items"] else ITEM_NAMES_TL.get(drop, f'{DB["json_item"]["items"][drop]["name"]}({drop})')
+                for drop in sorted(drop_list[drop_type].keys(), key = lambda k : -100000000000 if k == "4002" else DB["json_item"]["items"][k]["sortId"] if k in DB["json_item"]["items"] else 100000000000):
+                    if drop.startswith("furni"):
+                        drop_name = DB["json_buildingEN"]["customData"]["furnitures"][drop]["name"] if drop in DB["json_buildingEN"]["customData"]["furnitures"] else ITEM_NAMES_TL.get(drop, f'{DB["json_building"]["customData"]["furnitures"][drop]["name"]}({drop})')
+                    else:
+                        drop_name = DB["json_itemEN"]["items"][drop]["name"] if drop in DB["json_itemEN"]["items"] else ITEM_NAMES_TL.get(drop, f'{DB["json_item"]["items"][drop]["name"]}({drop})')
                     drop_rate = 0 if drop_type == "COMPLETE" else drop_rates[drop_list[drop_type][drop]["occPercent"]]
                     if drop_type == "ADDITIONAL":
-                        drop_output[drop_type].append(f'{{{{I|{drop_name}}}}}')
+                        drop_output[drop_type].append(f'{{{{{"F" if drop.startswith("furni") else "I"}|{drop_name}}}}}')
                     else:
-                        drop_output[drop_type].append(f'{{{{I|{drop_name}|rate={drop_rate}}}}}')
+                        drop_output[drop_type].append(f'{{{{{"F" if drop.startswith("furni") else "I"}|{drop_name}|rate={drop_rate}}}}}')
             return {k:" ".join(v) for k,v in drop_output.items()}
             
         match mode :
@@ -2637,8 +2646,9 @@ def wiki_article(
 
 # Event
 #script_result(wiki_article("act43side", "sidestory", "Act or Die", year = 6), True)
+script_result(wiki_article("act19mini", "storycollection", "Fantasy in The Mirage", year = 6), True)
 #script_result(wiki_article("act46side", "sidestory", "Retracing Our Steps 1101", year = 7), True)
-script_result(wiki_article("act47side", "sidestory", "Unrealized Realities", year = 7), True)
+#script_result(wiki_article("act47side", "sidestory", "Unrealized Realities", year = 7), True)
 #script_result(wiki_article("act1vhalfidle", "sidestory", "Rebuilding Mandate"), True)
 
 # Trials for Navigator #04

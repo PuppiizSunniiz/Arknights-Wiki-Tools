@@ -3,6 +3,7 @@ from typing import Any, Literal
 from Wiki_Dict import ENEMY_NAMES_TL, ITEM_NAMES_TL, SKILL_NAMES_TL, TOKEN_NAMES_TL, CLASS_PARSE_EN
 from Wiki_OOP.enemy_data import Enemy_Database
 from Wiki_OOP.stage_data import Stage_Database
+from Wiki_OOP.stage_writer import is_stage_writer
 from pyFunction_Wiki import load_json, replace_apos_between, wiki_story, wiki_trim
 from pyFunction import B, G, R, RE, Y, decimal_format, falsy_compare, join_and, join_or, json_load, printc, printr, script_result
 
@@ -52,7 +53,7 @@ def wiki_operation(
     
     match event_type:
         case "is":
-            theme_name = DB["json_roguelike_topic"][f'rogue_{year - 1}']["name"]
+            theme_name = DB["json_roguelike_topic"]["topics"][f'rogue_{int(year) - 1}']["name"]
             for stage in STAGE["stage"]:
                 if stage in STAGE["hard_dict"]:
                     continue
@@ -60,7 +61,7 @@ def wiki_operation(
                 if hard_stage:
                     article_data += is_stage_writer(stage, STAGE, hard_stage, year, theme_name) + [f'{{{{{page_footer}}}}}']
                 else:
-                    article_data += is_stage_writer(stage, STAGE, year, theme_name) + [f'{{{{{page_footer}}}}}']
+                    article_data += is_stage_writer(stage, STAGE, "", year, theme_name) + [f'{{{{{page_footer}}}}}']
         case _ :
             pass
     
@@ -139,8 +140,9 @@ def wiki_operation(
     #printc(sorted(data["enemies"].keys()))
     #script_result(big_data)
     #script_result(big_data["stage"])
-    return article_data
     '''
+    return article_data
+    
 
 event_id    = ""
 # ['episode', 'intermezzo', 'sidestory', 'storycollection', 'ig', 'is', 'sss', 'tn', 'vb']
@@ -152,6 +154,5 @@ DB      = load_json(all_json = True)
 ENEMY   = Enemy_Database().DB
 STAGE   = Stage_Database().Lister(event_id, event_type, year)
 
-script_result(STAGE, True)
-
-#wiki_operation(event_id, event_type, event_name, year)
+#script_result(STAGE, True)
+script_result(wiki_operation(event_id, event_type, event_name, year))

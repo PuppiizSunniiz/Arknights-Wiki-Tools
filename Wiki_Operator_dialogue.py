@@ -7,6 +7,7 @@ from typing import Literal
 
 import concurrent.futures
 import requests
+from Wiki_Dict import CLASS_PARSE_EN
 from Wiki_OOP.char_data import Character_Database
 from pyFunction import B, R, RE, Y, json_load, printc, printr, script_result
 from pyFunction_Wiki import load_json, wiki_story
@@ -162,7 +163,10 @@ def schedule_wiki_audio(executor, tasks, **kwargs):
 
 def wiki_audio(no_in : int, no_out : int, op_id : str, dir_in : str = "", name_out : str = "", ):
     op_real_id      = op_id.rsplit("_", op_id.count("_") - 2)[0].split("#")[0] if op_id.count("_") >= 3 else op_id.split("#")[0]
-    op_real_name    = DB["json_characterEN"][op_real_id]["name"] if op_real_id in DB["json_characterEN"] else DB["json_character"][op_real_id]["appellation"]
+    if op_real_id in DB["json_char_patch"]["infos"]["char_002_amiya"]["tmplIds"]:
+        op_real_name = f'{CHARACTER_DATA.getname_base(op_real_id)} ({CLASS_PARSE_EN.get(DB["json_char_patch"]["patchChars"][op_real_id]["profession"])})'
+    else:
+        op_real_name    = DB["json_characterEN"][op_real_id]["name"] if op_real_id in DB["json_characterEN"] else DB["json_character"][op_real_id]["appellation"]
     op_name         = f'{op_real_name}-{outfit}' if outfit else op_real_name
     input_file      = rf'E:\dyn\audio\sound_beta_2\voice{dir_in}\{op_id}\CN_{str(no_in).zfill(3)}.wav'
     output_file     = rf'E:\Wiki Audio\{op_real_id}\{op_name}-{str(no_out).zfill(3)}{name_out}.ogg'
@@ -248,7 +252,7 @@ dialect         = ""    # TBU
 outfit          = ""
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = "char_328_cammou"
+OP_DIALOGUE_LIST    = "char_294_ayer"
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
 force_server        = True  # True False
@@ -260,6 +264,7 @@ bd_only             = False
 if len(sys.argv) > 1 and sys.argv[1].startswith("char"):
     manual = False
     bd_only = True
+    if len(sys.argv) > 2: op_voice_data[-1] = " ".join(sys.argv[2:])
     wiki_operator_dialogue(operator_list = sys.argv[1], server = server, force_server = force_server, dialogue_cell = dialogue_cell, audio = audio, voice_data = op_voice_data)
 else:
     wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST, server = server, force_server = force_server, dialogue_cell = dialogue_cell, audio = audio, voice_data = op_voice_data)

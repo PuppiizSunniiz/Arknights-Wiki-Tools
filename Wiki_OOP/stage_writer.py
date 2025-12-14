@@ -1,9 +1,7 @@
 import re
 from typing import Literal
 
-from Wiki_OOP.stage_data import Stage_Database
-
-STAGE = Stage_Database()
+from Wiki_OOP.stage_data import get_stage_data
 
 class Stage_Writer():
     def __init__(self):
@@ -15,24 +13,24 @@ def is_stage_writer(stage_id : str, stage_dict : dict, hard_id : str, theme : st
         floor_string = re.match(r'ro(?:\d+)_n_(\d+)_\d+', stage_id)
         stage_floor = floor_string.group(1) if floor_string else ""
         return f'''{{{{IS operation info
-                        |code = {stage_dict[stage_id]["code"]}
-                        |name = {stage_dict[stage_id]["name"]}
+                        |code = {stage_dict["stage"][stage_id]["code"]}
+                        |name = {stage_dict["stage"][stage_id]["name"]}
                         |title = 
                         |map =
                         |theme = {theme_name}
                         |floor = {stage_floor}
                         |encounter =
                         |recreation =
-                        |dreadful foe = {"true" if stage_dict[stage_id]["isBoss"] else "false"}
+                        |dreadful foe = {"true" if stage_dict["stage"][stage_id]["isBoss"] else "false"}
                         |prophecy =
                         |faceoff =
                         |event =
-                        |desc = {stage_dict[stage_id]["description"]}
+                        |desc = {stage_dict["stage"][stage_id]["description"]}
                         |note = }}}}'''.replace("                        ", "")
     def is_stage_data(curr_id : str, isHard : bool = False):
-        curr_data = STAGE.get_stage_data(stage_dict[stage_id]["levelId"], isHard)
+        curr_data = get_stage_data(stage_dict["stage"][stage_id]["levelId"], isHard)
         return f'''{{{{IS operation info
-                        |cond = {stage_dict[curr_id]["eliteDesc"] if isHard else ""}
+                        |cond = {stage_dict["stage"][curr_id]["eliteDesc"] if isHard else ""}
                         |theme = {theme}
                         |unit limit = {curr_data["unit_limit"]}
                         |dp = {curr_data["dp"]}

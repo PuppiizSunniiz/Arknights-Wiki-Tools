@@ -49,26 +49,6 @@ class Stage_Database:
                         rogue_dict["hard_dict"][stage] = rogue_dict["stage"][stage]["linkedStageId"]
                 return rogue_dict
     
-    def get_stage_data(level_id : str, isHard : bool = False, is6Star : bool = False):
-        stage_data  = {}
-        diff_type   = "SIX_STAR" if is6Star else "FOUR_STAR" if isHard else "NORMAL"
-        stage_json  = stage_load(level_id)
-        enemies_list = enemies_lister(stage_json["waves"], stage_json["enemyDbRefs"], stage_json["runes"], diff_type)
-        #terrain_list = terrain_lister(stage_json)
-        
-        unit_limit  = global_deploy(stage_json["runes"], stage_json["options"]["characterLimit"], diff_type)
-        enemies     = enemies_list.get("counter")
-        lp          = global_lifepoint(stage_json["runes"], stage_json["options"]["maxLifePoint"], diff_type)
-        dp          = global_dp(stage_json["runes"], stage_json["options"]["initialCost"], diff_type)
-        dp_regen    = global_dp_regen(stage_json["runes"], stage_json["options"]["costIncreaseTime"], diff_type)
-        maxPlayTime = stage_json["options"]["maxPlayTime"]
-        #deployable  = 
-        #static      = 
-        #terrain     = terrain_list
-        normal      = enemies_list.get("NORMAL")
-        elite       = enemies_list.get("ELITE")
-        boss        = enemies_list.get("BOSS")
-        
 '''
 def stage_loader():
     stage_dict = {}
@@ -79,8 +59,30 @@ def stage_loader():
                 pass
 '''
 
-def enemies_lister(stage_waves : list, enemyDbRefs : list, runes_data : dict, diff : Literal["NORMAL", "FOUR_STAR", "SIX_STAR"] = "ALL"):
+def get_stage_data(level_id : str, isHard : bool = False, is6Star : bool = False):
+    stage_data  = {}
+    diff_type   = "SIX_STAR" if is6Star else "FOUR_STAR" if isHard else "NORMAL"
+    stage_json  = stage_load(level_id)
+    enemies_list = enemies_lister(stage_json["waves"], stage_json["enemyDbRefs"], stage_json["runes"], diff_type)
+    #terrain_list = terrain_lister(stage_json)
+    
+    unit_limit  = global_deploy(stage_json["runes"], stage_json["options"]["characterLimit"], diff_type)
+    enemies     = enemies_list.get("counter")
+    lp          = global_lifepoint(stage_json["runes"], stage_json["options"]["maxLifePoint"], diff_type)
+    dp          = global_dp(stage_json["runes"], stage_json["options"]["initialCost"], diff_type)
+    dp_regen    = global_dp_regen(stage_json["runes"], stage_json["options"]["costIncreaseTime"], diff_type)
+    maxPlayTime = stage_json["options"]["maxPlayTime"]
+    #deployable  = 
+    #static      = 
+    #terrain     = terrain_list
+    normal      = enemies_list.get("NORMAL")
+    elite       = enemies_list.get("ELITE")
+    boss        = enemies_list.get("BOSS")
+
+def enemies_lister(stage_waves : list, enemyDbRefs : list = [], runes_data : dict = {}, diff : Literal["NORMAL", "FOUR_STAR", "SIX_STAR"] = "ALL"):
+    enemyDbRefs_dict = {enemy["id"]:enemy["overwrittenData"]["prefabKey"]["m_value"] if enemy["overwrittenData"] else enemy["id"] for enemy in enemyDbRefs}
     enemy_counter = {"NORMAL" : {}, "ELITE" : {}, "BOSS" : {}, "counter" : {}, }
+    temp_counter = {}
     enemy_replace = {}
     valid_group = [None]
     if runes_data:
@@ -110,14 +112,32 @@ def enemies_lister(stage_waves : list, enemyDbRefs : list, runes_data : dict, di
                     printf(f'"level_enemy_replace" incomplete : {rune}', __file__, "c")
     for wave in stage_waves:
         for fragment in wave["fragments"]:
-            GroupKey = {}
-            GroupPackKey = {}
+            GroupKey        = {}
+            GroupKey_pack   = {}
+            GroupPackKey    = {}
             for action in fragment["actions"]:
-                if action["actionType"] == "SPAWN" and action["hiddenGroup"] in valid_group:
-                    if GroupKey or GroupPackKey:
+                if action["actionType"] == "SPAWN" and action["hiddenGroup"] in valid_group and action["key"].startswith("enemy"):
+                    enemy_key = enemy_prefabkey(action["key"], enemyDbRefs_dict, enemy_replace)
+                    temp_counter.setdefault(enemy_key, {"Base" : 0, "Min" : 0, "Max" : 0})
+                    if action["randomSpawnGroupPackKey"]:
+                        if action["randomSpawnGroupKey"]:
+                            GroupKey_pack.setdefault(action["randomSpawnGroupKey"], [])
+                            GroupKey_pack[action["randomSpawnGroupKey"]].append(action["randomSpawnGroupPackKey"])
+                        GroupPackKey[action["randomSpawnGroupPackKey"]].setdefault(enemy_key, 0)
+                        GroupPackKey[action["randomSpawnGroupPackKey"]][enemy_key] += action["count"]
                         pass
+                    elif action["randomSpawnGroupKey"]:
+                        GroupKey[action["randomSpawnGroupKey"]].setdefault(enemy_key, 0)
+                        GroupKey[action["randomSpawnGroupKey"]][enemy_key] += action["count"]
                     else:
-                        
+                        temp_counter[enemy_key]["Base"] += action["count"]
+            if GroupKey_pack:
+
+def enemy_prefabkey(enemy_key : str, enemyDbRefs : dict = {}, enemy_replace : dict = {}):
+    enemy_id = enemy_key
+    enemy_id = enemy_replace.get(enemy_id, enemy_id)
+    enemy_id = enemyDbRefs.get(enemy_id, enemy_id)
+    return enemy_id
 
 def global_dp(runes_data : dict, default_dp : int, diff = "ALL"):
     dp = default_dp

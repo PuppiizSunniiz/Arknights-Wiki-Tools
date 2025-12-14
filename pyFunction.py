@@ -48,7 +48,7 @@ def json_load(filepath : str, internal : bool = False, default_json : dict|list 
             return json.load(file)
 
 def stage_load(filepath : str):
-    return json_load(rf'json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\{filepath}')
+    return json_load(rf'json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\{filepath}.json')
 
 def txt_load(filepath : str, temp = False):
     if temp:

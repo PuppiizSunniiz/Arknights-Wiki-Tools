@@ -79,6 +79,8 @@ class Character_Database:
     def getname_base(self, char_id : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN"):
         if not char_id:
             return ""
+        if char_id in DB["json_char_patch"]["infos"]["char_002_amiya"]["tmplIds"]:
+            return self._get_name(char_id, lang)
         for char in self.char_meta:
             if char_id not in self.char_meta[char]:
                 continue
