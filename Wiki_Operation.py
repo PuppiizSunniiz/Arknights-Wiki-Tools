@@ -2,7 +2,7 @@ import re
 from typing import Any, Literal
 from Wiki_Dict import CLASS_PARSE_EN, ENEMY_NAMES_TL, IG_DIFF, IG_MODE, ITEM_NAMES_TL, PART_NAMES_TL, SKILL_NAMES_TL, TOKEN_NAMES_TL
 from pyFunction_Wiki import load_json, mini_blackboard, replace_apos_between, wiki_story, wiki_trim
-from pyFunction import B, G, R, RE, Y, decimal_format, falsy_compare, join_and, join_or, json_load, printc, printr, script_result
+from pyFunction import B, G, R, RE, Y, decimal_format, falsy_compare, join_and, join_or, json_load, printc, printr, script_result, stage_load, valid_filename
 
 used_json = [
                 "json_activity",
@@ -17,6 +17,8 @@ used_json = [
                 "json_enemy_handbookEN",
                 "json_item",
                 "json_itemEN",
+                "json_roguelike_topic",
+                "json_roguelike_topicEN",
                 "json_skill",
                 "json_skillEN",
                 "json_stage",
@@ -28,7 +30,7 @@ used_json = [
 
 DB = load_json(used_json)
 
-def wiki_enemies(event : str = "", show : bool = False) -> dict :
+def wiki_enemies(event : str = "", rogue : str = "", show : bool = False) -> dict :
     def enemy_lv_data(enemy_data : dict, enemy_data_EN : dict, lv : int) -> dict:
         temp : dict = {}
         for key in enemy_data[lv]["enemyData"].keys():
@@ -39,37 +41,43 @@ def wiki_enemies(event : str = "", show : bool = False) -> dict :
         return temp
         
     data = {"zone" : {}, "zone_node" : {}, "stage" : {}, "enemies" : {}, "enemy_type" : {}}
-    ZonetoAct = DB["json_activity"]["zoneToActivity"]
-    actzone = [zone for zone in ZonetoAct.keys() if ZonetoAct[zone] == event]
-    if not actzone:
-        printr(f'There no zone in this activity : {event}')
-        exit()
-    for zone in actzone:
-        if zone in DB["json_zoneEN"]["zones"].keys():
-            data["zone"].setdefault(zone, {})["name"] = DB["json_zoneEN"]["zones"][zone]["zoneNameSecond"]
-        else:
-            data["zone"].setdefault(zone, {})["name"] = DB["json_zone"]["zones"][zone]["zoneNameSecond"]
-    
-    CN_stage = DB["json_stage"]["stages"]
-    EN_stage = DB["json_stageEN"]["stages"]
     stages = {}
-    for stage in CN_stage.keys():
-        if CN_stage[stage]["zoneId"] in actzone:
-            stages[stage] = CN_stage[stage]
-            if stage in EN_stage:
-                for key in ["name", "description"]:
-                    stages[stage][key] = EN_stage[stage][key]
+    if rogue:
+        RO_DB = DB["json_roguelike_topicEN"] if rogue in DB["json_roguelike_topicEN"]["details"] else DB["json_roguelike_topic"]
+        for stage in RO_DB["details"][rogue]["stages"]:
+            stages[stage] = RO_DB["details"][rogue]["stages"][stage]
+            if RO_DB["details"][rogue]["stages"][stage]["linkedStageId"]:
+                stages[RO_DB["details"][rogue]["stages"][stage]["linkedStageId"]]["hard_stage"] = stage
+    else:
+        ZonetoAct = DB["json_activity"]["zoneToActivity"]
+        actzone = [zone for zone in ZonetoAct.keys() if ZonetoAct[zone] == event]
+        if not actzone:
+            printr(f'There no zone in this activity : {event}')
+            exit()
+        for zone in actzone:
+            if zone in DB["json_zoneEN"]["zones"].keys():
+                data["zone"].setdefault(zone, {})["name"] = DB["json_zoneEN"]["zones"][zone]["zoneNameSecond"]
+            else:
+                data["zone"].setdefault(zone, {})["name"] = DB["json_zone"]["zones"][zone]["zoneNameSecond"]
+        CN_stage = DB["json_stage"]["stages"]
+        EN_stage = DB["json_stageEN"]["stages"]
+        for stage in CN_stage.keys():
+            if CN_stage[stage]["zoneId"] in actzone:
+                stages[stage] = CN_stage[stage]
+                if stage in EN_stage:
+                    for key in ["name", "description"]:
+                        stages[stage][key] = EN_stage[stage][key]
 
-            if not stage.endswith(("#f#", "#s")):
-                data["zone"][CN_stage[stage]["zoneId"]].setdefault("stages", []).append(CN_stage[stage]["code"])
-                data["zone_node"].setdefault(stage, {"prev":[], "next":[]})
-                for condition in CN_stage[stage]["unlockCondition"]:
-                    if CN_stage[condition["stageId"]]["zoneId"] not in actzone:
-                        continue
-                    if condition["stageId"] not in data["zone_node"][stage]["prev"]:
-                        data["zone_node"][stage]["prev"].append(condition["stageId"])
-                    if stage not in data["zone_node"][condition["stageId"]]["next"]:
-                        data["zone_node"][condition["stageId"]]["next"].append(stage)
+                if not stage.endswith(("#f#", "#s")):
+                    data["zone"][CN_stage[stage]["zoneId"]].setdefault("stages", []).append(CN_stage[stage]["code"])
+                    data["zone_node"].setdefault(stage, {"prev":[], "next":[]})
+                    for condition in CN_stage[stage]["unlockCondition"]:
+                        if CN_stage[condition["stageId"]]["zoneId"] not in actzone:
+                            continue
+                        if condition["stageId"] not in data["zone_node"][stage]["prev"]:
+                            data["zone_node"][stage]["prev"].append(condition["stageId"])
+                        if stage not in data["zone_node"][condition["stageId"]]["next"]:
+                            data["zone_node"][condition["stageId"]]["next"].append(stage)
     
     data["stage_data"] = stages
     
@@ -77,7 +85,7 @@ def wiki_enemies(event : str = "", show : bool = False) -> dict :
         if stage.find("easy_") != -1: continue
         #printr(stage)
         if not stage.endswith(("#f#", "#s")) and stages[stage]["levelId"]:
-            stage_json = json_load(rf'json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\{stages[stage]["levelId"].lower()}.json')
+            stage_json = stage_load(stages[stage]["levelId"].lower())
             if not isinstance(stage_json, dict):
                 printr(f'\n{R}File path error {G}"{stage}" : {B}{stages[stage]["levelId"].lower()}{RE}')
                 exit()
@@ -185,7 +193,7 @@ def wiki_article(
     
     enemy_buffs     = ["cooperate_enemy_catch_up", "cooperate_enemy_after_attack_harder"]
     non_enemy_buffs = ["periodic_damage", "cooperate_fortress_global_buff", "character_in_magiccircuit_env"]
-    skip_buffs      = ["strife_mode_feature", "act27sisde_enemy_global_buff", "mainline12_sightManager", "night_map_default"]
+    skip_buffs      = ["strife_mode_feature", "act27sisde_enemy_global_buff", "mainline12_sightManager", "night_map_default", "rogue_4_parasitic_buff", "rogue_4_lock_all_entities_when_born"]
     
     norm_env = [
                 {'ui_plugin_name': 'common_camera_move_ui_plugin', 'camera_plugin_name': 'common_camera_move_half_second_plugin'},
@@ -425,7 +433,7 @@ def wiki_article(
                                 ig_wave_kill["Weight"][ig_group][stage_enemy_ref[action["key"]]] += action["count"]
                             continue
                         
-                    if action["actionType"] == "SPAWN":
+                    if action["actionType"] == "SPAWN" and action["key"]:
                         last_enemy = stage_enemy_ref[action["key"]]
                     if action["key"].find("enemy_1526_sfsui") != -1:
                         isSuiXiang = True
@@ -580,11 +588,14 @@ def wiki_article(
                             exit()
                         tile_result.append(f'The [[Specialist Tactical Point]] increases the [[shift]] force of the friendly unit on it by {force:.0f} level.')
                 case "tile_toxic":
-                    if tile == {"tileKey": "tile_toxic", 'blackboard': [{'key': 'dynamic', 'value': 1.0, 'valueStr': None}], 'effects': None}:
-                        pass
-                    else:
-                        printr(f'new {Y}"tile_toxic"{RE} stat just drop\n{tile}')
-                        exit()
+                    match tile:
+                        case {"tileKey": "tile_toxic", 'blackboard': [{'key': 'dynamic', 'value': 1.0, 'valueStr': None}], 'effects': None}: 
+                            pass
+                        case {'tileKey': 'tile_toxic', 'tile_index': tile_index, 'blackboard': [{'key': 'dynamic', 'value': 1.0, 'valueStr': None}], 'effects': None}:
+                            pass
+                        case _:
+                            printr(f'new {Y}"tile_toxic"{RE} stat just drop\n{tile}')
+                            exit()
                 case "tile_volspread":
                     damage = 0
                     cd_max = 0
@@ -1306,10 +1317,18 @@ def wiki_article(
                 match k:
                     case "initCooldown" :
                         return f'{v:g} seconds cooldown initially'
+                    case "cooldown":
+                        return f'{v:g} seconds cooldown'
+                    case "spCost":
+                        return f'{v:g} sp'
                     case "Skill-BB-atk_scale":
                         return f'increased to {v*100:g}% ATK'
                     case "Skill-BB-dynamic":
                         return f'something something {v:g}'
+                    case "Skill-BB-duration":
+                        return f'{v:g} seconds duration'
+                    case "Skill-BB-interval":
+                        return f'every {v:g} seconds'
                     case _:
                         printc("New skill parameter : ", k, v)
                         exit()
@@ -2002,7 +2021,6 @@ def wiki_article(
                 return {}
     
     def stage_article_writer(data : dict[str, Any], mode : Literal["info", "data"], extra : str = "", extra_2 : str = ""):
-        
         def event_type_writer():
             event_return = (event_name if event_name else event_code) if event_code else ""
             if event_type == "episode":
@@ -2088,7 +2106,7 @@ def wiki_article(
                             {operators_predefine_writer(data["comp"], data["pre_auto"], data["auto"], data["fixed"])}
                             }}}}'''.replace("                            ", "").replace("\n\n","\n").replace(" ", " ")
 
-    def ig_article_data(data, stage_key):
+    def ig_article_data(data : dict, stage_key : str):
         # https://arknights.wiki.gg/wiki/Template:IG_operation_info
         def ig_group_diff(isEN : bool):
             
@@ -2163,10 +2181,9 @@ def wiki_article(
                     "rune"          : rune_lister(data["stage"][stage_key]["runes"]) if data["stage"][stage_key]["runes"] else "",
                     "globalBuffs"   : global_buff_lister(data["stage"][stage_key]["globalBuffs"]) if data["stage"][stage_key]["globalBuffs"] else "",
                     "enemyDbRefs"   : {enemy["id"]:enemy for enemy in data["stage"][stage]["enemyDbRefs"]},
-
         }
     
-    def ig_article_writer(ig_data):
+    def ig_article_writer(ig_data : dict):
         if ig_data["isEN"]:
             targetMissionDataDict = DB["json_activityEN"]["activity"]["MULTIPLAY_V3"][event_code]["targetMissionDataDict"]
             writer_header = ""
@@ -2199,6 +2216,87 @@ def wiki_article(
                 }}}}
                 {{{{IG operations}}}}
                 '''.replace("                ", "").replace("\n\n","\n").replace(" ", " ")
+
+    def is_article_data(data : dict, stage : str, mode : str):
+        match mode :
+            # https://arknights.wiki.gg/wiki/Template:IS_operation_info
+            case "info":
+                code = data["stage_data"][stage]["code"]
+                floor_string = re.match(r'ro(?:\d+)_n_(\d+)_\d+', stage)
+                stage_floor = floor_string.group(1) if floor_string else ""
+                return {
+                            "stage_id"  : stage,
+                            "code"      : code,
+                            "name"      : data["stage_data"][stage]["name"],
+                            "floor"     : stage_floor,
+                            "isBoss"    : data["stage_data"][stage]["isBoss"],
+                            "desc"      : data["stage_data"][stage]["description"],
+                            "note"      : "",
+                    }
+            # https://arknights.wiki.gg/wiki/Template:IS_operation_data
+            case "data":
+                enemies_data = enemies_lister(data["enemies_stage"][stage])
+                diff_type = data["stage_data"][stage]["difficulty"]
+                return {
+                            "stage_id"      : stage,
+                            "cond"          : data["stage_data"][stage]["eliteDesc"],
+                            "unit_limit"    : global_deploy(data["stage"][stage]["runes"], data["stage"][stage]["options"]["characterLimit"], diff_type),
+                            "enemies"       : sum(data["enemies_stage"][stage]["counter"][0:2]),
+                            "dp"            : global_dp(data["stage"][stage]["runes"], data["stage"][stage]["options"]["initialCost"], diff_type),
+                            "dp_regen"      : data["stage"][stage]["options"]["costIncreaseTime"],
+                            "maxPlayTime"   : data["stage"][stage]["options"]["maxPlayTime"],
+                            "configBlackBoard" : data["stage"][stage]["options"]["configBlackBoard"],
+                            "deployable"    : token_lister(data["stage"][stage]["predefines"]["tokenCards"], "tokenCards") if data["stage"][stage]["predefines"] else "",
+                            "static"        : token_lister(data["stage"][stage]["predefines"]["tokenInsts"], "tokenInsts") if data["stage"][stage]["predefines"] else "",
+                            "terrain"       : tile_lister(data["stage"][stage]["mapData"]),
+                            "addendum"      : "",
+                            "optionalRunes" : data["stage"][stage]["optionalRunes"],
+                            "normal"        : enemies_data.get("NORMAL", ""),
+                            "elite"         : enemies_data.get("ELITE", ""),
+                            "boss"          : enemies_data.get("BOSS", ""),
+                            "eaddendum"     : eaddendum_lister(stage),
+                            "rune"          : rune_lister(data["stage"][stage]["runes"]) if data["stage"][stage]["runes"] else "",
+                            "globalBuffs"   : global_buff_lister(data["stage"][stage]["globalBuffs"]) if data["stage"][stage]["globalBuffs"] else "",
+                            "enemyDbRefs"   : {enemy["id"]:enemy for enemy in data["stage"][stage]["enemyDbRefs"]},
+                            "diff_type"     : diff_type
+                        }
+            case _ :
+                printr(f'Invalid mode {mode}')
+                exit()
+                return {}
+    
+    def is_article_writer(is_data : dict, mode : Literal["info", "data"], isHard : bool = False):
+        match mode:
+            case "info":
+                return f'''{{{{IS operation info
+                                |code = {is_data["code"]}
+                                {f'|name = {valid_filename(is_data["name"])}\n|title = {is_data["name"]}' if valid_filename(is_data["name"]) != is_data["name"] else f'|name = {is_data["name"]}'}
+                                |theme = {theme_name}
+                                |floor = {is_data["floor"]}
+                                |encounter =
+                                |recreation =
+                                |dreadful foe = {"true" if is_data["floor"] else "false"}
+                                |prophecy =
+                                |faceoff =
+                                |event =
+                                |desc = {is_data["desc"]}
+                                |note = }}}}'''.replace("                                ", "").replace("\n\n", "\n")
+            case "data":
+                return f'''{{{{IS operation data
+                                |cond = {is_data["cond"] if isHard else ""}
+                                |theme = {year}
+                                |unit limit = {is_data["unit_limit"]}
+                                |dp = {is_data["dp"]}
+                                |enemies = {is_data["enemies"]}
+                                |deployable = {is_data["deployable"]}
+                                |static = {is_data["static"] if is_data["static"] else ""}
+                                |terrain = {tile_writer(is_data["terrain"], (big_data["stage"][is_data["stage_id"].split("#")[0]]["predefines"] or {}).get("tokenInsts", []))}
+                                |addendum = {addendum_writer(is_data["rune"], is_data["globalBuffs"], maxPlayTime = is_data["maxPlayTime"], DP = is_data["dp_regen"], configBlackBoard = is_data["configBlackBoard"], diff = is_data["diff_type"], enemyDbRefs = is_data["enemyDbRefs"])}
+                                |normal = {is_data["normal"]}
+                                |elite = {is_data["elite"]}
+                                |boss = {is_data["boss"]}
+                                |eaddendum = {eaddendum_writer(is_data["eaddendum"], is_data["rune"], is_data["globalBuffs"], is_data["enemyDbRefs"], is_data["diff_type"])}}}}}'''.replace("                                ", "")
+
 
     def tn_article_data(data, stage_key):
         tn_season = re.search(r'act([0-9]){1,2}bossrush', event_code)
@@ -2545,7 +2643,7 @@ def wiki_article(
     article_data = []
     ishard = False
     is6star = False
-    big_data = wiki_enemies(event_code)
+    big_data = wiki_enemies(event_code, rogue = event_code) if event_type == "is" else wiki_enemies(event_code)
     big_data["enemies_stage"] = {}
     if event_type != "ig":
         for stage in big_data["stage"]:
@@ -2559,6 +2657,10 @@ def wiki_article(
     if event_type in ["vb", "ig", "tn"]:
         mode_info = event_type
         page_footer = "Seasonal game modes"
+    elif event_type in ["is"]:
+        theme_name = DB["json_roguelike_topicEN"]["topics"][event_code]["name"]
+        mode_info = event_type
+        page_footer = f'IS{year} operations'
     else:
         mode_info = "sidestory"
         page_footer = f'Y{year} event operations'
@@ -2592,6 +2694,18 @@ def wiki_article(
             stage_article = [f'### {stage}', f'{{{{Construction}}}}', ig_article_writer(stage_info)]
             article_data += stage_article
         
+        elif mode_info == "is":
+            if re.match(r'ro(?:\d+)_e_(\d+)_\d+', stage):
+                continue
+            stage_info = is_article_data(big_data, stage, "info")
+            stage_data = is_article_data(big_data, stage, "data")
+            hard_id = big_data["stage_data"][stage].get("hard_stage", "")
+            if hard_id:
+                stage_data_hard = is_article_data(big_data, hard_id, "data")
+                stage_article = [f'# {stage}/{hard_id} | {stage_info["name"]}', is_article_writer(stage_info, "info"), "<tabber>", "Normal=", is_article_writer(stage_data, "data"), "|-|Emergency=", is_article_writer(stage_data_hard, "data", True), "</tabber>"]
+            else:
+                stage_article = [f'# {stage} | {stage_info["name"]}', is_article_writer(stage_info, "info"), is_article_writer(stage_data, "data")]
+            article_data += stage_article
         elif mode_info == "tn":
             tn_diff = ["Basic Trial", "Orientation Trial", "Spectacular Trial", "Ultimate Trial"]
             tn_stage_code_template = [f'{event_code}_0', f'{event_code}_tm0', f'{event_code}_ex0', f'{event_code}_fin0']
@@ -2646,7 +2760,7 @@ def wiki_article(
 
 # Event
 #script_result(wiki_article("act43side", "sidestory", "Act or Die", year = 6), True)
-script_result(wiki_article("act19mini", "storycollection", "Fantasy in The Mirage", year = 6), True)
+#script_result(wiki_article("act19mini", "storycollection", "Fantasy in The Mirage", year = 6), True)
 #script_result(wiki_article("act46side", "sidestory", "Retracing Our Steps 1101", year = 7), True)
 #script_result(wiki_article("act47side", "sidestory", "Unrealized Realities", year = 7), True)
 #script_result(wiki_article("act1vhalfidle", "sidestory", "Rebuilding Mandate"), True)
@@ -2659,3 +2773,7 @@ script_result(wiki_article("act19mini", "storycollection", "Fantasy in The Mirag
 
 # Vector Breakthrough Mechanist
 #script_result(wiki_article("act1break", "vb", "Vector Breakthrough Mechanist"))
+
+# IS
+script_result(wiki_article("rogue_4", "is", year = 5), True)
+#script_result(wiki_article("rogue_5", "is", year = 6), True)

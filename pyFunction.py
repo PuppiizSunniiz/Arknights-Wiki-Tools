@@ -2,6 +2,7 @@ from datetime import datetime
 import json
 import inspect
 import os
+import re
 import subprocess
 from typing import Any, Callable, Literal, Self
 import csv
@@ -278,3 +279,8 @@ def DictToCSV(
                     df.to_excel(writer, sheet_name = sheet_name, index = False)
         case _ :
             print(f'DictToCSV do not support this file type : {file_type}')
+            
+def valid_filename(txt : str):
+    filename = "".join([x for x in txt if x.isalnum() or x in " ._-'"])
+    filename = re.sub(r'^\'(.+?)\'', r'\1', filename)
+    return filename

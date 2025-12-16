@@ -7,14 +7,16 @@ from typing import Literal
 import pandas as pd
 
 from Wiki_Dict import CLASS_PARSE_EN
+from Wiki_OOP.char_data import Character_Database
 from pyFunction import R, G, B, Y, RE, json_load, printr, script_result
 from pyFunction_Wiki import grid_name, load_json, range_template, replace_apos_between, wiki_stage, wiki_story, wiki_trim
 
 ################################################################################################################################################################################################################################################
-# JSON
+# CONST
 ################################################################################################################################################################################################################################################
 
 DB = load_json(all_json = True)
+CHAR = Character_Database()
 
 ################################################################################################################################################################################################################################################
 # Util
@@ -552,7 +554,9 @@ def input_script(script : Literal["txt", "json"] = "txt"):
 def enemy_wave_csv():
     all_stage_dict = {}
     #all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\obt\main\*16-*')
-    all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\activities\act2multi\**.json')
+    #all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\activities\act2multi\**.json')
+    #all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\obt\roguelike\ro5\**.json')
+    all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData_YoStar\en_US\gamedata\levels\obt\roguelike\ro5\**.json')
     for stage in all_stage:
         stage_id = stage.split("\\")[-1].split(".json")[0]
         stage_json = json_load(stage, internal=True)
@@ -771,18 +775,26 @@ def enemy_name():
     script_result(enemy_name_dict, True, forced_txt=True, no_tab=True)
 #enemy_name()
 
-type_dict = []
-for activity in DB["json_activity"]["basicInfo"]:
-    activity_type = DB["json_activity"]["basicInfo"][activity]["type"]
-    if activity_type not in type_dict:
-        type_dict.append(activity_type)
-        
-printr(type_dict)
+def stage_type():
+    type_dict = []
+    for activity in DB["json_activity"]["basicInfo"]:
+        activity_type = DB["json_activity"]["basicInfo"][activity]["type"]
+        if activity_type not in type_dict:
+            type_dict.append(activity_type)
+            
+    printr(type_dict)
 
-type_dict = []
-for stage in DB["json_stage"]["stages"]:
-    stage_type = DB["json_stage"]["stages"][stage]["stageType"]
-    if stage_type not in type_dict:
-        type_dict.append(stage_type)
-        
-printr(type_dict)
+    type_dict = []
+    for stage in DB["json_stage"]["stages"]:
+        stage_type = DB["json_stage"]["stages"][stage]["stageType"]
+        if stage_type not in type_dict:
+            type_dict.append(stage_type)
+            
+    printr(type_dict)
+    
+diff_json = json_load(r'tracker\charWords_diff.json', True)
+diff_list = []
+for key in diff_json["dialogue_tracker"]:
+    char_id = "_".join(key.split("#")[0].split("_")[0:3])
+    diff_list.append(char_id)
+print(sorted(list(set(diff_list)), key = lambda op: f'{CHAR.getrarity(op)} - {CHAR.getname(op)}'))

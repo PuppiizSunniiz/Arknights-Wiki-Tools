@@ -2,6 +2,7 @@ import json
 import re
 
 import requests
+from Wiki_OOP.char_data import Character_Database
 from Wiki_OOP.enemy_data import Enemy_Database
 from pyFunction import B, G, json_load, printr, script_result, sorted_dict_key
 from pyFunction_Wiki import load_json
@@ -25,28 +26,33 @@ for ref in ["nation_track", "charWords_track", "enemy_track"]:
 
 CN = json.loads(requests.get("https://ak-conf.hypergryph.com/config/prod/official/Android/version").text)["resVersion"]
 EN = json.loads(requests.get("https://ark-us-static-online.yo-star.com/assetbundle/official/Android/version").text)["resVersion"]
+CHAR = Character_Database()
 
 def charWords_track():
+    def get_char_id(char_str : str):
+        return "_".join(char_str.split("#")[0].split("_")[0:3])
+        
     if charWords_test: DB["json_charwordEN"] = json_load(r"py\charword_table.json", True, {"charWords" : {}, "voiceLangDict" : {}})
     
-    dialouge_track : dict = DB["json_charword"]["charWords"]
-    dialouge_track.update(DB["json_charwordEN"]["charWords"])
+    dialogue_track : dict = DB["json_charword"]["charWords"]
+    dialogue_track.update(DB["json_charwordEN"]["charWords"])
 
-    dialouge_track = {k:dialouge_track[k]["voiceText"] for k in sorted(dialouge_track.keys())}
+    dialogue_track = {k:dialogue_track[k]["voiceText"] for k in sorted(dialogue_track.keys())}
     
     skin_track : dict = DB["json_charword"]["voiceLangDict"]
     skin_track.update(DB["json_charwordEN"]["voiceLangDict"])
     
     skin_track = [k for k in sorted(skin_track.keys()) if re.match(r'char_\d+_[A-Za-z\d]+_[A-Za-z\d]+#\d+', k)]
     
-    dialouge_diff   = {k:v for k, v in dialouge_track.items() if "dialouge_tracker" not in DB["charWords_track"] or k not in DB["charWords_track"]["dialouge_tracker"] or DB["charWords_track"]["dialouge_tracker"][k] != v}
+    dialogue_diff   = {k:v for k, v in dialogue_track.items() if "dialogue_tracker" not in DB["charWords_track"] or k not in DB["charWords_track"]["dialogue_tracker"] or DB["charWords_track"]["dialogue_tracker"][k] != v}
+    dialogue_diff   = {k:dialogue_diff[k] for k in sorted(dialogue_diff.keys(), key = lambda op: f'{CHAR.getrarity(get_char_id(op))} - {CHAR.getname(get_char_id(op))} - {op}')}
     skin_diff       = [k for k in skin_track if "skin_tracker" not in DB["charWords_track"] or k not in DB["charWords_track"]["skin_tracker"]]
     
-    charWords_track_json    = {"CN" : CN, "EN" : EN, "dialouge_tracker" : dialouge_track, "skin_tracker": skin_track}
-    charWords_diff_json     = {"CN" : CN, "EN" : EN, "dialouge_tracker" : dialouge_diff, "skin_tracker": skin_diff}
+    charWords_track_json    = {"CN" : CN, "EN" : EN, "dialogue_tracker" : dialogue_track, "skin_tracker": skin_track}
+    charWords_diff_json     = {"CN" : CN, "EN" : EN, "dialogue_tracker" : dialogue_diff, "skin_tracker": skin_diff}
     
     if DB["charWords_track"] != charWords_track_json:
-        if charWords_diff_json["dialouge_tracker"] != {} or charWords_diff_json["skin_tracker"] != {}:
+        if charWords_diff_json["dialogue_tracker"] != {} or charWords_diff_json["skin_tracker"] != {}:
             with open("tracker/charWords_diff.json", "w", encoding = "utf-8") as filepath :
                 json.dump(charWords_diff_json, filepath, indent = 4, ensure_ascii = False)
         with open("tracker/ref/charWords_track_old.json", "w", encoding = "utf-8") as filepath :
@@ -98,11 +104,11 @@ def enemyname_track():
             json.dump(enemy_track_json, filepath, indent = 4, ensure_ascii = False)
     
 
-charWords_test = False # True False
+charWords_test = True # True False
 nationId_test = False # True False
 
 if __name__ == "__main__":
     charWords_track()
-    nationId_track()
-    enemyname_track()
+    #nationId_track()
+    #enemyname_track()
     printr(f'{B}Wiki_Text_tracker.py - {G}Completed !!!')

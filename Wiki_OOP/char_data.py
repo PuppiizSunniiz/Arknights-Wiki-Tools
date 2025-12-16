@@ -114,6 +114,12 @@ class Character_Database:
         printf(f'{Y}{char_id} {R}doesn\'t{RE} has an {R}alter', file=__file__)
         return ""
     
+    def getrarity(self, char_id : str):
+        if not char_id:
+            return ""
+        else:
+            return self.CN[char_id]["rarity"]
+    
     def getskillId(self, char_id : str, index : int):
         if index not in [0, 1, 2]:
             return ""

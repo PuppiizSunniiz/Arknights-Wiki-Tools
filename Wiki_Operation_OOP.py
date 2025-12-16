@@ -53,15 +53,13 @@ def wiki_operation(
     
     match event_type:
         case "is":
-            theme_name = DB["json_roguelike_topic"]["topics"][f'rogue_{int(year) - 1}']["name"]
+            rogue_id = f'rogue_{int(year) - 1}'
+            theme_name = DB["json_roguelike_topicEN"]["topics"][rogue_id]["name"] if rogue_id in DB["json_roguelike_topic"]["topics"] else DB["json_roguelike_topic"]["topics"][rogue_id]["name"]
             for stage in STAGE["stage"]:
-                if stage in STAGE["hard_dict"]:
+                if stage in STAGE["hard_dict"].values():
                     continue
                 hard_stage = STAGE["hard_dict"].get(stage, "")
-                if hard_stage:
-                    article_data += is_stage_writer(stage, STAGE, hard_stage, year, theme_name) + [f'{{{{{page_footer}}}}}']
-                else:
-                    article_data += is_stage_writer(stage, STAGE, "", year, theme_name) + [f'{{{{{page_footer}}}}}']
+                article_data += is_stage_writer(stage, STAGE, hard_stage, year, theme_name) + [f'{{{{{page_footer}}}}}\n']
         case _ :
             pass
     
@@ -155,4 +153,4 @@ ENEMY   = Enemy_Database().DB
 STAGE   = Stage_Database().Lister(event_id, event_type, year)
 
 #script_result(STAGE, True)
-script_result(wiki_operation(event_id, event_type, event_name, year))
+script_result(wiki_operation(event_id, event_type, event_name, year), True)
