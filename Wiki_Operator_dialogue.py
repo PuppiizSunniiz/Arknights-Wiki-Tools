@@ -142,7 +142,7 @@ def wiki_operator_dialogue(operator_list : list[str] | str,
                                 if cn:
                                     schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_cn", name_out = "-CN", op_id = operator_id)
                                 if cn and dialect:
-                                    schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_custom", name_out = f'-CN-{dialect.capitalize()}', op_id = operator_id + "_cn_topolect")
+                                    schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_custom", name_out = f'-CN-{dialect}', op_id = operator_id + "_cn_topolect")
                                 if en:
                                     schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_en", name_out = "-EN", op_id = operator_id)
                                 if kr:
@@ -185,7 +185,6 @@ def wiki_audio(no_in : int, no_out : int, op_id : str, dir_in : str = "", name_o
                 output_file
             ]
     subprocess.run(cmd, stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL)
-
 
 dialect_dict = {
                 "char_2014_nian"    : "Sichuanese",
@@ -252,20 +251,22 @@ dialect         = ""    # TBU
 outfit          = ""
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = "char_294_ayer"
+OP_DIALOGUE_LIST    = "char_338_iris"
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
-force_server        = True  # True False
+force_server        = False  # True False
 audio               = True  # True False
 manual              = True  # True False
 audio_category      = True
 bd_only             = False
 
-if len(sys.argv) > 1 and sys.argv[1].startswith("char"):
+if len(sys.argv) > 1:
     manual = False
     bd_only = True
-    if len(sys.argv) > 2: op_voice_data[-1] = " ".join(sys.argv[2:])
-    wiki_operator_dialogue(operator_list = sys.argv[1], server = server, force_server = force_server, dialogue_cell = dialogue_cell, audio = audio, voice_data = op_voice_data)
+    char_id = sys.argv[1] if sys.argv[1].startswith("char") else CHARACTER_DATA.getname(" ".join(sys.argv[1:]))
+    if len(sys.argv) > 2 and sys.argv[1].startswith("char"):
+        op_voice_data[-1] = " ".join(sys.argv[2:])
+    wiki_operator_dialogue(operator_list = char_id, server = server, force_server = force_server, dialogue_cell = dialogue_cell, audio = audio, voice_data = op_voice_data)
 else:
     wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST, server = server, force_server = force_server, dialogue_cell = dialogue_cell, audio = audio, voice_data = op_voice_data)
     
