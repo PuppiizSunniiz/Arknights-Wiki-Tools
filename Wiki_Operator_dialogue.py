@@ -93,7 +93,6 @@ def wiki_operator_dialogue(operator_list : list[str] | str,
         futures  = []
         for operator_id in operator_list:
             dialogue_dict = {}
-            
             crossover   = voice_data[0]
             jp          = voice_data[1] if manual else ("JP" in combine_charword["voiceLangDict"][operator_id])
             cn          = voice_data[2] if manual else ("CN_MANDARIN" in combine_charword["voiceLangDict"][operator_id])
@@ -154,7 +153,7 @@ def wiki_operator_dialogue(operator_list : list[str] | str,
                                         schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_custom", name_out = f'-{otherlang.upper()}', op_id = operator_id)
 
     if article_writer:
-        article_writer.append(f'{{{{Table end}}}}{f'\n\n[[Category:Operator audio]]\n[[Category:{operator_base_name}]]' if audio_category and operator_base_name else ""}')
+        article_writer.append(f'{{{{Table end}}}}{f'\n\n[[Category:Operator audio]]\n[[Category:{operator_base_name}]]\n\n{dialogue_jp}{dialogue_cn}{dialogue_dialect}{dialogue_en}{dialogue_kr}{dialogue_other}}}}}' if audio_category and operator_base_name else ""}')
         script_result(article_writer, True)
 
 def schedule_wiki_audio(executor, tasks, **kwargs):
@@ -251,10 +250,10 @@ dialect         = ""    # TBU
 outfit          = ""
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = "char_338_iris"
+OP_DIALOGUE_LIST    = "char_416_zumama"
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
-force_server        = False  # True False
+force_server        = True  # True False
 audio               = True  # True False
 manual              = True  # True False
 audio_category      = True
@@ -263,9 +262,19 @@ bd_only             = False
 if len(sys.argv) > 1:
     manual = False
     bd_only = True
-    char_id = sys.argv[1] if sys.argv[1].startswith("char") else CHARACTER_DATA.getname(" ".join(sys.argv[1:]))
-    if len(sys.argv) > 2 and sys.argv[1].startswith("char"):
-        op_voice_data[-1] = " ".join(sys.argv[2:])
+    pause = False
+    char_id_list = []
+    outfit_list = []
+    for arg in sys.argv[1:]:
+        if arg == "--":
+            pause = True
+        elif not pause:
+            char_id_list.append(arg)
+        else:
+            outfit_list.append(arg)
+    
+    char_id = " ".join(char_id_list) if " ".join(char_id_list).startswith("char") else CHARACTER_DATA.getname(" ".join(char_id_list))
+    outfit = op_voice_data[-1] = " ".join(outfit_list)
     wiki_operator_dialogue(operator_list = char_id, server = server, force_server = force_server, dialogue_cell = dialogue_cell, audio = audio, voice_data = op_voice_data)
 else:
     wiki_operator_dialogue(operator_list = OP_DIALOGUE_LIST, server = server, force_server = force_server, dialogue_cell = dialogue_cell, audio = audio, voice_data = op_voice_data)

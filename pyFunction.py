@@ -185,13 +185,13 @@ def script_result(text : str | list | set | dict ,
         exit()
 
 def join_and(text_list : list | set) -> str :
-    return_text = " and ".join(text_list)
+    return_text = " and ".join([string for string in text_list if isinstance(string, str)])
     if len(text_list) >= 3:
         return_text = return_text.replace(" and ", ", ", len(text_list) - 2)
     return return_text
 
 def join_or(text_list : list | set) -> str :
-    return_text = " or ".join(text_list)
+    return_text = " or ".join([string for string in text_list if isinstance(string, str)])
     if len(text_list) >= 3:
         return_text = return_text.replace(" or ", ", ", len(text_list) - 2)
     return return_text

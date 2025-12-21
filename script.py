@@ -551,110 +551,6 @@ def input_script(script : Literal["txt", "json"] = "txt"):
 
 #printr(f'{30.100010000000:.0%}')
 
-def enemy_wave_csv():
-    all_stage_dict = {}
-    #all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\obt\main\*16-*')
-    #all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\activities\act2multi\**.json')
-    #all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\obt\roguelike\ro5\**.json')
-    all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData_YoStar\en_US\gamedata\levels\obt\roguelike\ro5\**.json')
-    for stage in all_stage:
-        stage_id = stage.split("\\")[-1].split(".json")[0]
-        stage_json = json_load(stage, internal=True)
-        all_stage_dict[stage_id] = {
-                                        "options"       : stage_json["options"],
-                                        "runes"         : stage_json["runes"],
-                                        "globalBuffs"   : stage_json["globalBuffs"],
-                                        "branches"      : stage_json["branches"],
-                                        "routes"        : stage_json["routes"],
-                                        "extraRoutes"   : stage_json["extraRoutes"],
-                                    }
-        stage_waves = []
-        for wave in stage_json["waves"]:
-            curr_wave = {"advancedWaveTag" : wave["advancedWaveTag"]}
-            curr_fragment = []
-            for fragment in wave["fragments"]:
-                curr_action = []
-                spawn_key = ""
-                for action in fragment["actions"]:
-                    if action["randomSpawnGroupKey"] and action["randomSpawnGroupPackKey"]:
-                        spawn_key = action["randomSpawnGroupKey"]
-                    elif not action["randomSpawnGroupKey"] and not action["randomSpawnGroupPackKey"]:
-                        spawn_key = ""
-                    action_detail = {
-                                    "actionType"                : action["actionType"],
-                                    "key"                       : action["key"],
-                                    "count"                     : action["count"],
-                                    "preDelay"                  : action["preDelay"],
-                                    "interval"                  : action["interval"],
-                                    "hiddenGroup"               : action["hiddenGroup"],
-                                    "randomSpawnGroupKey"       : spawn_key if spawn_key else action["randomSpawnGroupKey"],
-                                    "randomSpawnGroupPackKey"   : action["randomSpawnGroupPackKey"],
-                                    "weight"                    : action["weight"],
-                                    "routeIndex"                : action["routeIndex"],
-                                }
-                    curr_action.append(action_detail)
-                curr_fragment.append(curr_action)
-            curr_wave["fragments"] = curr_fragment
-            stage_waves.append(curr_wave)
-        all_stage_dict[stage_id]["waves"] = stage_waves
-    
-    script_result(all_stage_dict)
-    
-    # txt
-    script_txt = []
-    for stage in all_stage_dict:
-        script_txt.append(f'\n{stage}')
-        script_txt.append(f'{"wave":>5}{"frag":>5}{"action":>10}{"group":^8}{"GroupKey":<10}{"GroupPack":<10}{"key":^20}{"count":<6}{"preDelay":>10}{"interval":>10}{"weight":<6}')
-        for i in range(len(all_stage_dict[stage]["waves"])):
-            for j in range(len(all_stage_dict[stage]["waves"][i]["fragments"])):
-                for action in all_stage_dict[stage]["waves"][i]["fragments"][j]:
-                    hiddenGroup             = action["hiddenGroup"] or ""
-                    randomSpawnGroupKey     = action["randomSpawnGroupKey"] or ""
-                    randomSpawnGroupPackKey = action["randomSpawnGroupPackKey"] or ""
-                    script_txt.append(f'{i:^5}{j:^5}{action["actionType"].split("_")[0]:<10}{hiddenGroup:<8}{randomSpawnGroupKey:^10}{randomSpawnGroupPackKey:^10}{action["key"]:<20}{action["count"]:>6}{action["preDelay"]:^10}{action["interval"]:^10}{action["weight"]:>6}')
-    #script_result(script_txt, True)
-    
-    #csv
-    script_txt = []
-    script_txt.append("stage|wave|frag|action|group|GroupKey|GroupPack|key|name|ID|Class|count|preDelay|interval|weight|start")
-    for stage in all_stage_dict:
-        for i in range(len(all_stage_dict[stage]["waves"])):
-            for j in range(len(all_stage_dict[stage]["waves"][i]["fragments"])):
-                for action in all_stage_dict[stage]["waves"][i]["fragments"][j]:
-                    hiddenGroup             = action["hiddenGroup"] or "-"
-                    randomSpawnGroupKey     = action["randomSpawnGroupKey"] or "-"
-                    randomSpawnGroupPackKey = action["randomSpawnGroupPackKey"] or "-"
-                    routeIndex              = grid_name(list(all_stage_dict[stage]["routes"][action["routeIndex"]]["startPosition"].values()))
-                    try :
-                        key_name    = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["name"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else (DB["json_characterEN"][action["key"].split("#")[0]]["name"] if action["key"].startswith(("char", "token", "trap")) else action["key"])
-                        key_id      = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else "-"
-                        key_class   = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else "-"
-                    except KeyError:
-                        key_name    = f'{DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["name"]}({action["key"]})' if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else (f'{DB["json_character"][action["key"].split("#")[0]]["name"]}({action["key"]})' if action["key"].startswith(("char", "token", "trap")) else action["key"])
-                        key_id      = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
-                        key_class   = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
-                    script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}|{routeIndex}')
-    if all_stage_dict[stage]["branches"]:
-        for branch in all_stage_dict[stage]["branches"]:
-            for k in range(len(all_stage_dict[stage]["branches"][branch]["phases"])):
-                for action in all_stage_dict[stage]["branches"][branch]["phases"][k]["actions"]:
-                    hiddenGroup             = f'{branch} | {action["hiddenGroup"]}' if action["hiddenGroup"] else branch
-                    randomSpawnGroupKey     = action["randomSpawnGroupKey"] or "-"
-                    randomSpawnGroupPackKey = action["randomSpawnGroupPackKey"] or "-"
-                    routeIndex              = grid_name(list(all_stage_dict[stage]["extraRoutes"][action["routeIndex"]]["startPosition"].values()))
-                    try :
-                        key_name    = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["name"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else (DB["json_characterEN"][action["key"].split("#")[0]]["name"] if action["key"].startswith(("char", "token", "trap")) else action["key"])
-                        key_id      = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else "-"
-                        key_class   = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else "-"
-                    except KeyError:
-                        key_name    = f'{DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["name"]}({action["key"]})' if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else (f'{DB["json_character"][action["key"].split("#")[0]]["name"]}({action["key"]})' if action["key"].startswith(("char", "token", "trap")) else action["key"])
-                        key_id      = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
-                        key_class   = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
-                    script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}|{routeIndex}')
-    script_result(script_txt, True)
-    
-#enemy_wave_csv()
-
 #printr(bin(639), bin(96), bool("1"), bool("0"))
 
 def editor_trim():
@@ -791,10 +687,128 @@ def stage_type():
             type_dict.append(stage_type)
             
     printr(type_dict)
+
+def something():
+    diff_json = json_load(r'tracker\charWords_diff.json', True)
+    diff_list = []
+    for key in diff_json["dialogue_tracker"]:
+        char_id = "_".join(key.split("#")[0].split("_")[0:3])
+        diff_list.append(char_id)
+    print(sorted(list(set(diff_list)), key = lambda op: f'{CHAR.getrarity(op)} - {CHAR.getname(op)}'))
     
-diff_json = json_load(r'tracker\charWords_diff.json', True)
-diff_list = []
-for key in diff_json["dialogue_tracker"]:
-    char_id = "_".join(key.split("#")[0].split("_")[0:3])
-    diff_list.append(char_id)
-print(sorted(list(set(diff_list)), key = lambda op: f'{CHAR.getrarity(op)} - {CHAR.getname(op)}'))
+    
+
+temp_list_DF = [
+"*[[The Suppression of Sui]]", 
+"*[[Words Past Like Smoke]]", 
+"*[[The Sui Strategist]]", 
+"*[[Feast of Fruit]]", 
+]
+
+temp_list_SP = [
+"*[[Steady Stream]]", 
+"*[[Sparkling Shine]]", 
+"*[[Reeducation]]", 
+"*[[Duck and Yi]]", 
+"*[[Calamitous Punishment]]", 
+"*[[Of Hundred Forms]]", 
+
+"*[[Biding Time]]", 
+"*[[Joy From Burdenbeast]]", 
+"*[[Silicon Geist's Banquet]]", 
+"*[[Totally Out of Control]]", 
+"*[[Cliff of Geists]]", 
+"*[[Astral Projection]]", 
+"*[[Sit Back and Watch]]", 
+]
+
+temp_list_NO_F = [
+"*[[Bout by the Dusk River]]", 
+"*[[Bout by the Dusk River]]", 
+"*[[Heroes of Nanwu]]", 
+"*[[Heroes of Nanwu]]", 
+"*[[Heroes of Nanwu]]", 
+]
+
+temp_list_NO_C = [
+"*[[Slandering Heaven]]", 
+"*[[Slandering Heaven]]", 
+"*[[Amidst Thunder]]", 
+"*[[Amidst Thunder]]", 
+"*[[Defying Quakes]]", 
+"*[[Defying Quakes]]", 
+"*[[To the Fall]]", 
+"*[[To the Fall]]", 
+"*[[Against the Flood]]", 
+"*[[Against the Flood]]", 
+]
+
+temp_list_NO_B = [
+"*[[Cold Moonlight]]", 
+"*[[Memories of Dusk Beauty]]", 
+"*[[Sword, Glaive, Spear]]", 
+"*[[Compassion, Justice, Valor]]", 
+"*[[Enlightenment]]", 
+"*[[Seeking the Way]]", 
+]
+
+temp_list_NO = [
+"*[[Whack-A-Mus]]", 
+"*[[To Market]]", 
+"*[[Serious Business]]", 
+"*[[Veteran Actor]]", 
+"*[[Learning for All]]", 
+"*[[Look Out Above]]", 
+"*[[Guardian of Justice]]", 
+"*[[Daylight Robbery]]", 
+"*[[Hook, Line, and Sinker]]", 
+"*[[Stopping the Advance]]", 
+"*[[Feng Shui]]", 
+"*[[Away, Hui!]]", 
+"*[[Return to Your Roots]]", 
+"*[[Shanhaizhong Scramble]]", 
+"*[[Sugared Bait]]", 
+"*[[Cultured]]", 
+"*[[Take the Stage]]", 
+"*[[Exemplary Service]]", 
+"*[[Beware the Shadows]]", 
+"*[[Green Hills Speak Not]]", 
+"*[[Departing Inspection]]", 
+"*[[A Humble Gift]]", 
+"*[[Muted Past]]", 
+"*[[Mangshan Town Records]]", 
+"*[[Unlit Sparks]]", 
+"*[[Inferno]]", 
+"*[[Garrison]]", 
+"*[[Cold Moonlight]]", 
+"*[[Memories of Dusk Beauty]]", 
+"*[[Sword, Glaive, Spear]]", 
+"*[[Compassion, Justice, Valor]]", 
+"*[[Enlightenment]]", 
+"*[[Seeking the Way]]", 
+
+"*[[Clarity]]", 
+
+"*[[The Four Difficulties]]", 
+"*[[The Four Difficulties]]", 
+"*[[Ware-User]]", 
+"*[[Ware-User]]", 
+"*[[Ware-User]]", 
+"*[[To Forget Oneself]]", 
+"*[[To Forget Oneself]]", 
+"*[[Avarice]]", 
+"*[[Strange Tales]]", 
+"*[[Strange Tales]]", 
+"*[[Breakthrough]]", 
+"*[[Breakthrough]]", 
+"*[[Unreflecting]]", 
+"*[[Unreflecting]]", 
+"*[[Frivolous Tunes]]", 
+"*[[Frivolous Tunes]]", 
+"*[[Inner Rage]]", 
+"*[[Inner Rage]]", 
+"*[[Inner Rage]]", 
+"*[[Confusion]]", 
+"*[[Confusion]]", 
+]
+script_result(sorted(list(set(temp_list_NO))) + [""] + sorted(list(set(temp_list_NO_C))) + [""] + sorted(list(set(temp_list_NO_F))) + [""] + sorted(list(set(temp_list_NO_B))) + [""] + sorted(list(set(temp_list_DF))) + [""] + sorted(list(set(temp_list_SP))), True)

@@ -46,7 +46,30 @@ IG_DIFF : dict[str, str] = {
 ######## TL ########
 
 ENEMY_NAMES_TL = {
-
+                    "enemy_2101_dyspll" : "Talisman",
+                    "enemy_2102_dytmbr" : "Shadow Scholar",
+                    "enemy_2103_dykens" : "Bottle Swordsman",
+                    "enemy_2104_dycast" : "Mirror Tianshi",
+                    "enemy_2105_dyrnge" : "Pseudomut",
+                    "enemy_2106_dyremy" : "Strange Gourd",
+                    "enemy_2122_dybgzd" : "Liang",
+                    "enemy_2107_dycant" : "Can Doe",
+                    
+                    "enemy_2108_dypryg" : "Dusk Beauty",
+                    "enemy_2109_dypry2" : "Lady of the Twin Moons",
+                    "enemy_2114_dylbgg" : "Jade Twin-Swords",
+                    "enemy_2112_dyhlgy" : "Crimson Crescent Blade",
+                    "enemy_2110_dyyrzf" : "Ash Spear",
+                    "enemy_2115_dylbg2" : "Lord Zhaolie",
+                    "enemy_2113_dyhlg2" : "Lord Wenheng",
+                    "enemy_2111_dyyrz2" : "Lord Huan",
+                    "enemy_2116_dyyysg" : "Revered Grandmaster",
+                    "enemy_2117_dyyys2" : "Grand Duke",
+                    "enemy_2118_dylbhm" : "Yi",
+                    "enemy_2119_dyshhj" : "'Sui'",
+                    "enemy_2119_dyshhj_2" : "'Body of Sui'",
+                    "enemy_2120_dywqgs" : "'Wang'",
+                    
                 }
 ITEM_NAMES_TL = {
                     "act46side_token_detector"  : "Multipurpose Snow Detector",
@@ -62,5 +85,16 @@ PART_NAMES_TL = {
                     "天空生活展会" : "Sky Living Expo",
                     "逃离哥伦比亚" : "Escape from Columbia",
                 }
-TOKEN_NAMES_TL = {}
+TOKEN_NAMES_TL = {
+                    "trap_223_dynbox"   : "Magic Gourd",
+                    "trap_224_dyrbox"   : "Iron Gourd",
+                    "trap_225_dysbox"   : "Strange Gourd",
+                    "trap_222_rgdysm"   : "Statuegeist",
+                    "trap_251_buftrp"   : "Artifact Center",
+                    "trap_226_dychss"   : "Flaw",
+                    "trap_238_dydfst"   : "Candle Stand",
+                    "trap_239_dyffgd"   : "Face to Face",
+                    "trap_240_dyffdd"   : "Face to Face",
+                    "token_10053_radian_tower3" : "Center",
+}
 SKILL_NAMES_TL = {}

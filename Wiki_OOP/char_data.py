@@ -56,11 +56,13 @@ class Character_Database:
             return ""
         
         for char_id in DB_json[lang].value:
+            if char_id in ["char_512_aprot"]: continue
             if char_name in [DB_json[lang].value[char_id]["name"], DB_json[lang].value[char_id]["appellation"]]:
                 print(char_name, char_id)
                 return char_id
         for char_id in DB_json["CN"].value:
-            if char_name in [DB_json["CN"].value[char_id]["name"], DB_json[lang].value[char_id]["appellation"]]:
+            if char_id in ["char_512_aprot"]: continue
+            if char_name in [DB_json["CN"].value[char_id]["name"], DB_json["CN"].value[char_id]["appellation"]]:
                 print(char_name, char_id)
                 return char_id
         return ""

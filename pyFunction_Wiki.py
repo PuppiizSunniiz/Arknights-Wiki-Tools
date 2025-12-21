@@ -254,24 +254,35 @@ def wiki_text(candidate : tuple[str, list] | str) -> str:
             return desc
     
     def ba_matching(desc : str) -> str:
-        ba_match = re.search(r'<\$(ba\.[^>]*)>([^<]*)<\/>', desc)
+        ba_string   = r'<\$(ba\.[^>]*)>([^<]*)<\/>'
+        ba_match    = re.search(ba_string, desc)
         if ba_match:
             term_name = DB["json_gamedataEN"]["termDescriptionDict"].get(ba_match.group(1), DB["json_gamedata"]["termDescriptionDict"][ba_match.group(1)])["termName"]
             wording = ba_match.group(2).replace("[", "").replace("]", "")
             if term_name == wording:
-                sub_desc = re.sub(r'<\$(ba\.[^>]*)>([^<]*)<\/>', rf'{{{{G|{wording}|nolink=true}}}}', desc, 1)
+                sub_desc = re.sub(ba_string, rf'{{{{G|{wording}|nolink=true}}}}', desc, 1)
                 return ba_matching(sub_desc)
             else:
-                sub_desc = re.sub(r'<\$(ba\.[^>]*)>([^<]*)<\/>', rf'{{{{G|{term_name}|{wording}|nolink=true}}}}', desc, 1)
+                sub_desc = re.sub(ba_string, rf'{{{{G|{term_name}|{wording}|nolink=true}}}}', desc, 1)
                 return ba_matching(sub_desc)
         return desc
     
     def cc_matching(desc : str) -> str:
-        cc_match = re.search(r'<\$(cc\.[^>]*)>([^<]*)<\/>', desc)
+        cc_string   = r'<\$(cc\.[^>]*)>([^<]*)<\/>'
+        cc_match    = re.search(cc_string, desc)
         if cc_match:
             term_name = DB["json_gamedataEN"]["termDescriptionDict"].get(cc_match.group(1), DB["json_gamedata"]["termDescriptionDict"][cc_match.group(1)])["termName"]
-            sub_desc = re.sub(r'<\$(cc\.[^>]*)>([^<]*)<\/>', rf'{{{{G|{term_name}|{cc_match.group(2)}}}}}', desc, 1)
+            sub_desc = re.sub(cc_string, rf'{{{{G|{term_name}|{cc_match.group(2)}}}}}', desc, 1)
             return cc_matching(sub_desc)
+        else:
+            return desc
+
+    def ro_matching(desc : str) -> str:
+        ro_string   = r'<@(ro[\d+])\.([^>]*)>([^<]*)<\/>'
+        ro_match    = re.search(ro_string, desc)
+        if ro_match:
+            sub_desc = re.sub(ro_string, rf'{{{{color|\3|\1\2}}}}', desc, 1)
+            return ro_matching(sub_desc)
         else:
             return desc
     
@@ -284,6 +295,7 @@ def wiki_text(candidate : tuple[str, list] | str) -> str:
     desc = ba_matching(desc)
     desc = kw_matching(desc, isBB, blackboard)
     desc = cc_matching(desc)
+    desc = ro_matching(desc)
 
     return wiki_cleanup(desc.replace("\n", "<br/>").strip())
 
