@@ -79,7 +79,7 @@ def enemy_wave_csv(all_stage : list):
     
     #csv
     script_txt = []
-    script_txt.append("stage|wave|frag|action|group|GroupKey|GroupPack|key|name|ID|Class|count|preDelay|interval|weight|start")
+    script_txt.append("stage|wave|frag|action|group|GroupKey|GroupPack|key|name|ID|Class|count|preDelay|interval|weight|route|start")
     for stage in all_stage_dict:
         for i in range(len(all_stage_dict[stage]["waves"])):
             for j in range(len(all_stage_dict[stage]["waves"][i]["fragments"])):
@@ -87,7 +87,8 @@ def enemy_wave_csv(all_stage : list):
                     hiddenGroup             = action["hiddenGroup"] or "-"
                     randomSpawnGroupKey     = action["randomSpawnGroupKey"] or "-"
                     randomSpawnGroupPackKey = action["randomSpawnGroupPackKey"] or "-"
-                    routeIndex              = grid_name(list(all_stage_dict[stage]["routes"][action["routeIndex"]]["startPosition"].values()))
+                    routeIndex              = action["routeIndex"]
+                    startPosition           = grid_name(list(all_stage_dict[stage]["routes"][routeIndex]["startPosition"].values()))
                     try :
                         key_name    = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["name"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else ENEMY_NAMES_TL.get(action["key"].split("#")[0], TOKEN_NAMES_TL.get(action["key"].split("#")[0], CHAR.getname(action["key"].split("#")[0]) if action["key"].startswith(("char", "token", "trap")) else action["key"]))
                         key_id      = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].startswith("enemy") else "-"
@@ -96,7 +97,7 @@ def enemy_wave_csv(all_stage : list):
                         key_name    = f'{DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["name"]}({action["key"]})' if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else (f'{CHAR.getname(action["key"].split("#")[0])}({action["key"]})' if action["key"].startswith(("char", "token", "trap")) else action["key"])
                         key_id      = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
                         key_class   = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
-                    script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}|{routeIndex}')
+                    script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}|{routeIndex}|{startPosition}')
     if all_stage_dict[stage]["branches"]:
         for branch in all_stage_dict[stage]["branches"]:
             for k in range(len(all_stage_dict[stage]["branches"][branch]["phases"])):
@@ -104,7 +105,8 @@ def enemy_wave_csv(all_stage : list):
                     hiddenGroup             = f'{branch} | {action["hiddenGroup"]}' if action["hiddenGroup"] else branch
                     randomSpawnGroupKey     = action["randomSpawnGroupKey"] or "-"
                     randomSpawnGroupPackKey = action["randomSpawnGroupPackKey"] or "-"
-                    routeIndex              = grid_name(list(all_stage_dict[stage]["extraRoutes"][action["routeIndex"]]["startPosition"].values()))
+                    routeIndex              = action["routeIndex"]
+                    startPosition           = grid_name(list(all_stage_dict[stage]["extraRoutes"][routeIndex]["startPosition"].values()))
                     try :
                         key_name    = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["name"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else ENEMY_NAMES_TL.get(action["key"].split("#")[0], TOKEN_NAMES_TL.get(action["key"].split("#")[0], CHAR.getname(action["key"].split("#")[0]) if action["key"].startswith(("char", "token", "trap")) else action["key"]))
                         key_id      = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].startswith("enemy") else "-"
@@ -113,7 +115,7 @@ def enemy_wave_csv(all_stage : list):
                         key_name    = f'{DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["name"]}({action["key"]})' if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else (f'{CHAR.getname(action["key"].split("#")[0])}({action["key"]})' if action["key"].startswith(("char", "token", "trap")) else action["key"])
                         key_id      = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
                         key_class   = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
-                    script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}|{routeIndex}')
+                    script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}|{routeIndex}|{startPosition}')
     script_result(script_txt, True)
 
 #all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\obt\main\*16-*')

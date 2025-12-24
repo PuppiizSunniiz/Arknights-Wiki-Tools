@@ -1327,11 +1327,16 @@ def wiki_article(
                                         enemy_overwrittenData[key] = skills_list
                                 case "spData":
                                     spData_list = {}
-                                    sp_big_data = big_data["enemies"][enemy_id]["lv"][0][key]
-                                    if not sp_big_data or (enemy_ref["overwrittenData"][key] and enemy_ref["overwrittenData"][key] == {'spType': 'INCREASE_WITH_TIME', 'maxSp': 0, 'initSp': 0, 'increment': 1.0}):
+                                    sp_base_data = big_data["enemies"][enemy_id]["lv"][0][key]
+                                    sp_curr_data = big_data["enemies"][enemy_id]["lv"][enemy_lv][key]
+                                    if not sp_base_data or (enemy_ref["overwrittenData"][key] and enemy_ref["overwrittenData"][key] == {'spType': 'INCREASE_WITH_TIME', 'maxSp': 0, 'initSp': 0, 'increment': 1.0}):
                                         continue
                                     else:
-                                        printc(f'Update other case soon !!! {Y}spData{RE}', enemy_id, enemy_ref["overwrittenData"][key], big_data["enemies"][enemy_id]["lv"][enemy_lv][key], sp_big_data)
+                                        for sp_key in sp_curr_data:
+                                            if sp_curr_data[sp_key] != enemy_ref["overwrittenData"][key][sp_key]:
+                                                spData_list[sp_key] = enemy_ref["overwrittenData"][key][sp_key]
+                                        #printc(f'Update other case soon !!! {Y}spData{RE}', enemy_id, enemy_ref["overwrittenData"][key], sp_curr_data, sp_base_data)
+                                        if spData_list: enemy_overwrittenData[key] = {"ref": sp_curr_data, "overwritten" : spData_list}
                                 case _:
                                     printr(f'Update other case soon !!!')
                             
@@ -1400,8 +1405,8 @@ def wiki_article(
                         return False
                     elif len(value) == 1:
                         match temp:
-                            case {"sleepwalking.unmove_duration" : bb_duration}:
-                                return f'(won\'t move) for {bb_duration:g} seconds'
+                            case {"sleepwalking.unmove_duration" : bb_duration} | {'Revive.unmovable_duration': bb_duration} | {'revive.unmove_duration': bb_duration}:
+                                return f'won\'t move for {bb_duration:g} seconds'
                             case {"RunToNearestHole.map_position_list" : bb_grid}:
                                 return f'(will escape to nearest position) {map_grid(bb_grid, "or")}'
                             case {"Sleep.interval" : bb_duration} | {'SleepBuff.sleep_duration': bb_duration}:
@@ -1424,6 +1429,25 @@ def wiki_article(
                             case {'Combat.attack@stun': bb_duration}:
                                 if enemy_id == "enemy_2034_sythef":
                                     return f'his attacks {{{{G|Stun}}}} the target for {bb_duration:g} seconds'
+                            case {'DefAndHpRecoveryUp.hp_recovery_per_sec': bb_hp_recovery_per_sec}:
+                                if enemy_id in ["enemy_1146_defspd_2"]:
+                                    return f'restores all other enemies within attack range {bb_hp_recovery_per_sec:g} HP every second'
+                            case {'TriggerSummon.duration': bb_duration}:
+                                if enemy_id in ["enemy_2107_dycant"]:
+                                    return f'turns the Statuegeist on the map into a Pseudomut after {bb_duration:g} seconds.'
+                            case {'act38side_scale.damage_resistance': bb_damage_resistance}:
+                                if enemy_id in ["enemy_10036_cnvpvd"]:
+                                    return f'reduce Physical and Arts damage taken by {bb_damage_resistance*100:g}%.'
+                            case {'buff.duration': bb_duration}:
+                                if enemy_id in ["enemy_1101_plkght_2"]:
+                                    return f'a shield for the {bb_duration:g} seconds.'
+                            case {'EndGame.duration': bb_duration}:
+                                if enemy_id in ["enemy_2116_dyyysg"]:
+                                    return f'will disappear after {bb_duration:g} seconds.'
+                            case _:
+                                pass
+                    elif len(value) == 2:
+                        match temp:
                             case _:
                                 pass
                     elif len(value) == 3:
@@ -1437,6 +1461,16 @@ def wiki_article(
                             case {'M0SpeedUp.duration': bb_M0SpeedUp_duration, 'M1SpeedUp.duration': bb_M1SpeedUp_duration, 'Mode.mode': bb_mode}:
                                 if bb_M0SpeedUp_duration == bb_M1SpeedUp_duration and enemy_id == "enemy_10045_parrot_2":
                                     return f'increase MSPD to 300% for {bb_M0SpeedUp_duration:g} seconds when taking damage'
+                            case {'growth.add_max_hp_ratio': bb_add_max_hp_ratio, 'growth.time': bb_time, 'growth.add_atk_ratio': bb_add_atk_ratio}:
+                                if enemy_id in ["enemy_10066_ftxjl", "enemy_10066_ftxjl_2"]:
+                                    return f' their HP and ATK linearly increases over time while outside the attack range of a friendly unit, up to +<!--growth.add_max_hp_ratio = {bb_add_max_hp_ratio}-->% HP and +<!--growth.add_atk_ratio = {bb_add_atk_ratio}-->% ATK after {bb_time} seconds.'
+                            case {'YinYang.enemy_dylbhm_buff_yinyang[diff].atk_scale': diff_atk_scale, 'YinYang.enemy_dylbhm_buff_yinyang[diff].high_atk_scale': diff_high_atk_scale, 'YinYang.enemy_dylbhm_buff_yinyang[same].atk_scale': same_atk_scale}:
+                                if enemy_id in ["enemy_2118_dylbhm"]:
+                                    return f'ATK multiplier against targets with a matching/opposing [[Hui and Ming|Hui/Ming attribute]] is changed to {same_atk_scale*100:g}%/{diff_atk_scale*100:g}% against units on low ground tiles and {same_atk_scale*100:g}%/{diff_high_atk_scale*100:g}% against units on high ground tiles.'
+                            case _:
+                                pass
+                    elif len(value) == 4:
+                        match temp:
                             case _:
                                 pass
                     printc(f'{Y}{stage}{RE}', key, temp, enemy_id)
@@ -1449,11 +1483,23 @@ def wiki_article(
                             skill_list.append(skill_lister(kv, vv))
                         skill_writer.append(f'skill "{k}" has {join_and(skill_list)}')
                     return join_and(skill_writer)
+                case "spData" :
+                    spData_writer = []
+                    ammo_enemies = ["enemy_1317_wdexg_2", "enemy_1216_cansld_2"]
+                    sp_time = {
+                        
+                            }
+                    if enemy_id in ammo_enemies:
+                        printc(enemy_id, value["overwritten"], value["ref"])
+                        return f'{value["overwritten"].get("initSp", value["ref"]["initSp"])}/{value["overwritten"].get("maxSp", value["ref"]["maxSp"])} ammo'
+                    exit()
+                    #for k, v in value["overwritten"].items():
+                        
                 case _ :
                     try:
                         return f'{decimal_format(value)} {eaddendum_dict[key]}'
                     except:
-                        printr(key, value)
+                        printr(key, enemy_id, value)
                         return f'<!--{key} : {value}-->'
         
         #attribute_key = ['maxHp', 'atk', 'def', 'magicResistance', 'moveSpeed', 'attackSpeed', 'baseAttackTime', 'respawnTime', 'hpRecoveryPerSec', 'spRecoveryPerSec', 'massLevel', 'baseForceLevel', 'tauntLevel', 'epDamageResistance', 'epResistance', 'damageHitratePhysical', 'damageHitrateMagical', 'epBreakRecoverSpeed', 'stunImmune', 'silenceImmune', 'sleepImmune', 'frozenImmune', 'levitateImmune', 'disarmedCombatImmune', 'fearedImmune', 'palsyImmune', 'attractImmune']
@@ -2333,6 +2379,7 @@ def wiki_article(
                                 |dreadful foe = {"true" if is_data["isBoss"] else "false"}
                                 |prophecy =
                                 |faceoff =
+                                |pathfinder =
                                 |event =
                                 |desc = {is_data["desc"]}
                                 |note = 

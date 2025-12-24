@@ -250,7 +250,7 @@ dialect         = ""    # TBU
 outfit          = ""
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = "char_416_zumama"
+OP_DIALOGUE_LIST    = "char_1043_leizi2"
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
 force_server        = True  # True False
@@ -268,6 +268,8 @@ if len(sys.argv) > 1:
     for arg in sys.argv[1:]:
         if arg == "--":
             pause = True
+        elif arg == "-all":
+            bd_only = False
         elif not pause:
             char_id_list.append(arg)
         else:
