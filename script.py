@@ -811,4 +811,19 @@ temp_list_NO = [
 "*[[Confusion]]", 
 "*[[Confusion]]", 
 ]
-script_result(sorted(list(set(temp_list_NO))) + [""] + sorted(list(set(temp_list_NO_C))) + [""] + sorted(list(set(temp_list_NO_F))) + [""] + sorted(list(set(temp_list_NO_B))) + [""] + sorted(list(set(temp_list_DF))) + [""] + sorted(list(set(temp_list_SP))), True)
+#script_result(sorted(list(set(temp_list_NO))) + [""] + sorted(list(set(temp_list_NO_C))) + [""] + sorted(list(set(temp_list_NO_F))) + [""] + sorted(list(set(temp_list_NO_B))) + [""] + sorted(list(set(temp_list_DF))) + [""] + sorted(list(set(temp_list_SP))), True)
+
+print(range_template("x-5"))
+
+def IS_relic_list(IS_THEME : str):
+    temp = {}
+    IS_details          = DB["json_roguelike_topicEN"]["details"][IS_THEME]
+    archive_relic       = list(IS_details["archiveComp"]["relic"]["relic"].keys())
+    archive_copper_dict = IS_details["archiveComp"]["copper"]
+    if archive_copper_dict:
+        archive_copper  = [archive_copper_dict["coppers"][copper]["displayCopperId"] for copper in archive_copper_dict["coppers"] if archive_copper_dict["coppers"][copper]["displayCopperId"]]
+    for item in archive_relic + archive_copper:
+        temp[IS_details["items"][item]["name"]] = IS_details["items"][item]["iconId"]
+    script_result(temp, True)
+    
+IS_relic_list("rogue_5")

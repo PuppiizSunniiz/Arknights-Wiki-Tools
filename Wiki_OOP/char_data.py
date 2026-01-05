@@ -51,17 +51,17 @@ class Character_Database:
             print(f'{char_id} not available')
             exit()
     
-    def _get_id(self, char_name :str, lang : Literal["EN", "CN", "JP", "KR"] = "EN"):
+    def _get_id(self, char_name :str, lang : Literal["EN", "CN", "JP", "KR"] = "EN", isObtainable : bool = True):
         if not char_name:
             return ""
         
         for char_id in DB_json[lang].value:
-            if char_id in ["char_512_aprot"]: continue
+            if isObtainable and DB_json[lang].value[char_id]["isNotObtainable"]: continue
             if char_name in [DB_json[lang].value[char_id]["name"], DB_json[lang].value[char_id]["appellation"]]:
                 print(char_name, char_id)
                 return char_id
         for char_id in DB_json["CN"].value:
-            if char_id in ["char_512_aprot"]: continue
+            if isObtainable and DB_json["CN"].value[char_id]["isNotObtainable"]: continue
             if char_name in [DB_json["CN"].value[char_id]["name"], DB_json["CN"].value[char_id]["appellation"]]:
                 print(char_name, char_id)
                 return char_id
@@ -89,11 +89,17 @@ class Character_Database:
                 printf(f'{char_id} not available', file=__file__)
                 exit()
 
-    def getname(self, char_str : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN"):
+    def getid(self, char_str : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN", isObtainable : bool = True):
+        if not char_str.startswith(("char_", "trap_", "token_")):
+            return self._get_id(char_str, lang, isObtainable)
+        else:
+            return self._get_name(char_str, lang)
+
+    def getname(self, char_str : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN", isObtainable : bool = True):
         if char_str.startswith(("char_", "trap_", "token_")):
             return self._get_name(char_str, lang)
         else:
-            return self._get_id(char_str, lang)
+            return self._get_id(char_str, lang, isObtainable)
     
     def getname_base(self, char_id : str, lang : Literal["EN", "CN", "JP", "KR"] = "EN"):
         if not char_id:

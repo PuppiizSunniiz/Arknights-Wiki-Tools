@@ -19,6 +19,8 @@ used_json = [
                 "json_characterEN",
                 "json_char_patch",
                 "json_char_patchEN",
+                "json_skin",
+                "json_skinEN",
             ]
 DB = load_json(used_json)
 DB["json_character"].update(DB["json_char_patch"]["patchChars"])
@@ -44,13 +46,13 @@ def charword_combine(charword_cn : dict, charword_en : dict):
 
 # Manual
 #DB["json_charwordEN"] = json_load(r"py\input_script.json", True)
-DB["json_charwordEN"] = json_load(r"py\charword_table.json", True)
+#DB["json_charwordEN"] = json_load(r"py\charword_table.json", True)
 #DB["json_charwordEN"] = json.loads(requests.get("https://raw.githubusercontent.com/ArknightsAssets/ArknightsGamedata/refs/heads/master/en/gamedata/excel/charword_table.json").text)
-birthday_check      = json_load(r"C:\GitHub\AN-EN-Tags\temp\birthday_voicelines.json", internal=True)
+#birthday_check      = json_load(r"C:\GitHub\AN-EN-Tags\temp\birthday_voicelines.json", internal=True)
 #birthday_check      = json.loads(requests.get("https://raw.githubusercontent.com/PuppiizSunniiz/AN-EN-Tags/refs/heads/main/temp/birthday_voicelines.json").text)
-#combine_charword    = json_load(r"C:\GitHub\AN-EN-Tags\json/puppiiz/charword_table.json", internal=True)
+combine_charword    = json_load(r"C:\GitHub\AN-EN-Tags\json\puppiiz\charword_table.json", internal=True)
 #combine_charword    = json.loads(requests.get("https://raw.githubusercontent.com/PuppiizSunniiz/AN-EN-Tags/refs/heads/main/json/puppiiz/charword_table.json").text)
-combine_charword    = charword_combine(DB["json_charword"], DB["json_charwordEN"])
+#combine_charword    = charword_combine(DB["json_charword"], DB["json_charwordEN"])
 
 DEFAULT = {1: 'Appointed as Assistant', 2: 'Talk 1', 3: 'Talk 2', 4: 'Talk 3', 5: 'Talk after Promotion 1', 6: 'Talk after Promotion 2', 7: 'Talk after Trust Increase 1', 8: 'Talk after Trust Increase 2', 9: 'Talk after Trust Increase 3', 10: 'Idle', 11: 'Onboard', 12: 'Watching Battle Record', 13: 'Promotion 1', 14: 'Promotion 2', 17: 'Added to Squad', 18: 'Appointed as Squad Leader', 19: 'Depart', 20: 'Begin Operation', 21: 'Selecting Operator 1', 22: 'Selecting Operator 2', 23: 'Deployment 1', 24: 'Deployment 2', 25: 'In Battle 1', 26: 'In Battle 2', 27: 'In Battle 3', 28: 'In Battle 4', 29: '4-star Result', 30: '3-star Result', 31: 'Sub 3-star Result', 32: 'Operation Failure', 33: 'Assigned to Facility', 34: 'Tap', 36: 'Trust Tap', 37: 'Title', 38: "New Year's blessing", 42: 'Greeting', 43: 'Birthday', 44: 'Anniversary Celebration'}
 
@@ -70,15 +72,9 @@ def wiki_operator_dialogue(operator_list : list[str] | str,
                            audio : bool = False):
     
     if isinstance(operator_list, str):
-        operator_real_id= operator_list.rsplit("_", 1)[0].split("#")[0] if operator_list.count("_") >= 3 else operator_list.split("#")[0]
-        if force_server: server = "CN" if operator_real_id not in DB["json_characterEN"] else "EN"
-        operator_base_name  = CHARACTER_DATA.getname_base(operator_real_id)
-        operator_list       = [operator_list.replace("@", "_")]
-    else:
-        operator_base_name  = ""
-        operator_list       = [operator.replace("@", "_") for operator in operator_list]
+        operator_list = [operator_list]
+
     article_writer = []
-    charword_table_json = DB["json_charwordEN"] if server == "EN" else DB["json_charword"]
     if dialogue_cell in [1, "1"]:
         sort_list = DIALOGUE_CELL_SORT
         mode = 1
@@ -91,7 +87,22 @@ def wiki_operator_dialogue(operator_list : list[str] | str,
     
     with concurrent.futures.ThreadPoolExecutor(max_workers = 6) as executor:
         futures  = []
-        for operator_id in operator_list:
+        for operator_key in operator_list:
+
+            isSkin = operator_key.find("#") != -1
+            
+            if operator_key.startswith("char"):
+                operator_id = DB["json_skin"]["charSkins"][operator_key]["charId"] if isSkin else operator_key
+                audio_id    = operator_id.replace("@", "_")
+            else:
+                operator_id = audio_id = CHARACTER_DATA.getid(operator_key)
+            
+            operator_base_name  = CHARACTER_DATA.getname_base(operator_id)
+            
+            if force_server: 
+                server = "CN" if (isSkin and operator_key not in DB["json_skinEN"]) or operator_id not in DB["json_characterEN"] else "EN"
+            
+            charword_table_json = DB["json_charwordEN"] if server == "EN" else DB["json_charword"]
             dialogue_dict = {}
             crossover   = voice_data[0]
             jp          = voice_data[1] if manual else ("JP" in combine_charword["voiceLangDict"][operator_id])
@@ -122,8 +133,8 @@ def wiki_operator_dialogue(operator_list : list[str] | str,
                         dialogue_outfit     = f'|outfit={outfit}' if outfit else ""
                         dialogue_jp         = "|jp=true" if jp else ""
                         dialogue_cn         = "|cn=true" if cn else ""
-                        dialogue_en         = "|en=true" if (en and (sort_list[i] != 43) or (sort_list[i] == 43 and operator_id in birthday_check["EN"])) else ""
-                        dialogue_kr         = "|kr=true" if (kr and (sort_list[i] != 43) or (sort_list[i] == 43 and operator_id in birthday_check["KR"])) else ""
+                        dialogue_en         = "|en=true" if en else ""
+                        dialogue_kr         = "|kr=true" if kr else ""
                         dialogue_other      = f'|otherlang={otherlang}' if otherlang else ""
                         dialogue_dialect    = f'|dialect={dialect}' if dialect and cn else ""
                         if crossover:
@@ -134,26 +145,27 @@ def wiki_operator_dialogue(operator_list : list[str] | str,
                             if bd_only and (i + 1 != 38 if mode == 1 else sort_list[i] != 43):
                                 continue
                             if crossover:
-                                schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "", op_id = operator_id)
+                                schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "", op_id = audio_id)
                             else:
                                 if jp:
-                                    schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "", name_out = "", op_id = operator_id)
+                                    schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "", name_out = "", op_id = audio_id)
                                 if cn:
-                                    schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_cn", name_out = "-CN", op_id = operator_id)
+                                    schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_cn", name_out = "-CN", op_id = audio_id)
                                 if cn and dialect:
-                                    schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_custom", name_out = f'-CN-{dialect}', op_id = operator_id + "_cn_topolect")
+                                    schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_custom", name_out = f'-CN-{dialect}', op_id = audio_id + "_cn_topolect")
                                 if en:
-                                    schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_en", name_out = "-EN", op_id = operator_id)
+                                    schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_en", name_out = "-EN", op_id = audio_id)
                                 if kr:
-                                    schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_kr", name_out = "-KR", op_id = operator_id)
+                                    schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_kr", name_out = "-KR", op_id = audio_id)
                                 if otherlang:
                                     if otherlang == "IT":
-                                        schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_custom", name_out = "-IT", op_id = operator_id + "_ita")
+                                        schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_custom", name_out = "-IT", op_id = audio_id + "_ita")
                                     else:
-                                        schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_custom", name_out = f'-{otherlang.upper()}', op_id = operator_id)
+                                        schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_custom", name_out = f'-{otherlang.upper()}', op_id = audio_id)
+                if article_writer:
+                    article_writer.append(f'{{{{Table end}}}}{f'\n\n[[Category:Operator audio]]\n[[Category:{operator_base_name}]]\n\n{dialogue_jp}{dialogue_cn}{dialogue_dialect}{dialogue_en}{dialogue_kr}{dialogue_other}}}}}' if audio_category and operator_base_name else ""}')
 
     if article_writer:
-        article_writer.append(f'{{{{Table end}}}}{f'\n\n[[Category:Operator audio]]\n[[Category:{operator_base_name}]]\n\n{dialogue_jp}{dialogue_cn}{dialogue_dialect}{dialogue_en}{dialogue_kr}{dialogue_other}}}}}' if audio_category and operator_base_name else ""}')
         script_result(article_writer, True)
 
 def schedule_wiki_audio(executor, tasks, **kwargs):
@@ -165,7 +177,7 @@ def wiki_audio(no_in : int, no_out : int, op_id : str, dir_in : str = "", name_o
     if op_real_id in DB["json_char_patch"]["infos"]["char_002_amiya"]["tmplIds"]:
         op_real_name = f'{CHARACTER_DATA.getname_base(op_real_id)} ({CLASS_PARSE_EN.get(DB["json_char_patch"]["patchChars"][op_real_id]["profession"])})'
     else:
-        op_real_name    = DB["json_characterEN"][op_real_id]["name"] if op_real_id in DB["json_characterEN"] else DB["json_character"][op_real_id]["appellation"]
+        op_real_name = CHARACTER_DATA.getname(op_real_id)
     op_name         = f'{op_real_name}-{outfit}' if outfit else op_real_name
     input_file      = rf'E:\dyn\audio\sound_beta_2\voice{dir_in}\{op_id}\CN_{str(no_in).zfill(3)}.wav'
     output_file     = rf'E:\Wiki Audio\{op_real_id}\{op_name}-{str(no_out).zfill(3)}{name_out}.ogg'
@@ -227,10 +239,10 @@ lang_dict = {
         char_1038_whitw2_sale#15            #dumbdumb       Lappland the Decadenza
         "char_249_mlyss_boc#8",             #mumu           Muelsyse
         "char_4064_mlynar_epoque#28",       #uncle          Młynar
+        "char_472_pasngr_epoque#17"         #pass           Passenger
         
         ################################################################################
         
-        "char_472_pasngr_epoque#17"         #pass           Passenger
         "char_1012_skadi2_iteration#2",     #skya           Skadi the Corrupting Heart
         "char_245_cello_sale#12",           #tutu           Virtuosa
         "char_113_cqbw_epoque#7",           #w              W
@@ -250,7 +262,7 @@ dialect         = ""    # TBU
 outfit          = ""
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = "char_1043_leizi2"
+OP_DIALOGUE_LIST    = ["Raidian", "Ray"]
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
 force_server        = True  # True False
@@ -261,7 +273,6 @@ bd_only             = False
 
 if len(sys.argv) > 1:
     manual = False
-    bd_only = True
     pause = False
     char_id_list = []
     outfit_list = []
