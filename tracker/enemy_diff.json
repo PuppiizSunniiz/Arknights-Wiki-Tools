@@ -1,105 +1,309 @@
 {
-    "CN": "25-12-04-02-54-57_e9dab3",
-    "EN": "25-11-11-08-15-40_78dbfa",
+    "CN": "26-01-06-09-38-59_ea48d2",
+    "EN": "25-12-22-12-58-23_0ca902",
     "tracker": {
-        "enemy_10146_nscola": {
-            "CN": "开天汽水瓶",
+        "enemy_10154_mnmblx": {
+            "CN": "“英雄的呼唤”",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10146_nscola_2": {
-            "CN": "开天汽水瓶·酸辣味",
+        "enemy_10155_mntjsd": {
+            "CN": "投矛的士兵",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10147_nsbomb": {
-            "CN": "遮天面包机",
+        "enemy_10155_mntjsd_2": {
+            "CN": "投矛的勇士",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10147_nsbomb_2": {
-            "CN": "遮天面包机·果酱款",
+        "enemy_10156_mncrer": {
+            "CN": "新手祭司学徒",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10148_nsmos": {
-            "CN": "啸天吸尘器",
+        "enemy_10156_mncrer_2": {
+            "CN": "见习祭司学徒",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10148_nsmos_2": {
-            "CN": "啸天吸尘器·大力版",
+        "enemy_10157_mnggyl": {
+            "CN": "疑问的雕像",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10149_nscan": {
-            "CN": "掀天汽水桶",
+        "enemy_10157_mnggyl_2": {
+            "CN": "失望的雕像",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10149_nscan_2": {
-            "CN": "掀天汽水桶·家庭装",
+        "enemy_10158_mnzeno": {
+            "CN": "小跑的斐迪庇第斯",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10150_nsheat": {
-            "CN": "炙烤螺旋桨",
+        "enemy_10158_mnzeno_2": {
+            "CN": "狂奔的斐迪庇第斯",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10150_nsheat_2": {
-            "CN": "焦香螺旋桨",
+        "enemy_10159_mntrjn": {
+            "CN": "伊利昂的木驮兽",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10151_nspace": {
-            "CN": "行天卫生间",
+        "enemy_10159_mntrjn_2": {
+            "CN": "伊利昂的铁驮兽",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10151_nspace_2": {
-            "CN": "行天救护车",
+        "enemy_10160_mnlaur": {
+            "CN": "传唱喜剧的诗人",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10152_nstree": {
-            "CN": "“自由的树”",
+        "enemy_10160_mnlaur_2": {
+            "CN": "传唱悲剧的诗人",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10152_nstree_2": {
-            "CN": "“逐日的树”",
+        "enemy_10161_mnserv": {
+            "CN": "英雄的理想",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10153_nsblon": {
-            "CN": "热气球",
+        "enemy_10161_mnserv_2": {
+            "CN": "英雄的气概",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_10153_nsblon_2": {
-            "CN": "强力热气球",
+        "enemy_10162_mnctpt": {
+            "CN": "自制投石机",
             "EN": "",
             "JP": "",
             "KR": ""
         },
-        "enemy_1579_nstmom": {
-            "CN": "女妖河谷的拂哀菈",
+        "enemy_10162_mnctpt_2": {
+            "CN": "翻新投石机",
+            "EN": "",
+            "JP": "",
+            "KR": ""
+        },
+        "enemy_10163_mnctur": {
+            "CN": "帕拉杜利斯",
+            "EN": "",
+            "JP": "",
+            "KR": ""
+        },
+        "enemy_10163_mnctur_2": {
+            "CN": "神勇的帕拉杜利斯",
+            "EN": "",
+            "JP": "",
+            "KR": ""
+        },
+        "enemy_1432_lrccon_2": {
+            "CN": "茧缚演出",
+            "EN": "Cocoon Cage Performance",
+            "JP": "繭籠演出",
+            "KR": "고치 속박 연출"
+        },
+        "enemy_1580_mnchrn": {
+            "CN": "赞索斯，复仇者",
+            "EN": "",
+            "JP": "",
+            "KR": ""
+        },
+        "enemy_1581_mnchrs": {
+            "CN": "“无数的伊萨科斯”",
+            "EN": "",
+            "JP": "",
+            "KR": ""
+        },
+        "enemy_2101_dyspll": {
+            "CN": "便符",
+            "EN": "Talisman",
+            "JP": "便符",
+            "KR": "부적"
+        },
+        "enemy_2102_dytmbr": {
+            "CN": "皮书生",
+            "EN": "Shadow Scholar",
+            "JP": "皮書生",
+            "KR": "그림자극 서생"
+        },
+        "enemy_2103_dykens": {
+            "CN": "平剑客",
+            "EN": "Bottle Swordsman",
+            "JP": "平剣客",
+            "KR": "평범한 검객"
+        },
+        "enemy_2104_dycast": {
+            "CN": "靳天师",
+            "EN": "Mirror Tianshi",
+            "JP": "靳天師",
+            "KR": "인색한 천사"
+        },
+        "enemy_2105_dyrnge": {
+            "CN": "似兽",
+            "EN": "Pseudomut",
+            "JP": "似獣",
+            "KR": "스쉐이"
+        },
+        "enemy_2106_dyremy": {
+            "CN": "怪葫芦",
+            "EN": "Strange Gourd",
+            "JP": "奇妙なひょうたん",
+            "KR": "괴상한 호리병"
+        },
+        "enemy_2107_dycant": {
+            "CN": "坎某人",
+            "EN": "Can Doe",
+            "JP": "キャノット",
+            "KR": "캔모씨"
+        },
+        "enemy_2108_dypryg": {
+            "CN": "夕娥",
+            "EN": "Dusk Beauty",
+            "JP": "夕娥",
+            "KR": "석아"
+        },
+        "enemy_2109_dypry2": {
+            "CN": "双月共主",
+            "EN": "Lady of the Twin Moons",
+            "JP": "双月の同君",
+            "KR": "쌍월공주"
+        },
+        "enemy_2110_dyyrzf": {
+            "CN": "炭长矛",
+            "EN": "Ash Spear",
+            "JP": "炭長矛",
+            "KR": "탄장모"
+        },
+        "enemy_2111_dyyrz2": {
+            "CN": "桓君",
+            "EN": "Lord Huan",
+            "JP": "桓君",
+            "KR": "환군"
+        },
+        "enemy_2112_dyhlgy": {
+            "CN": "枣大刀",
+            "EN": "Crimson Crescent Blade",
+            "JP": "棗大刀",
+            "KR": "조대도"
+        },
+        "enemy_2113_dyhlg2": {
+            "CN": "文衡君",
+            "EN": "Lord Wenheng",
+            "JP": "文衡君",
+            "KR": "문형군"
+        },
+        "enemy_2114_dylbgg": {
+            "CN": "玉双剑",
+            "EN": "Jade Twin-Swords",
+            "JP": "玉双剣",
+            "KR": "옥쌍검"
+        },
+        "enemy_2115_dylbg2": {
+            "CN": "昭烈君",
+            "EN": "Lord Zhaolie",
+            "JP": "昭烈君",
+            "KR": "소열군"
+        },
+        "enemy_2116_dyyysg": {
+            "CN": "师祖",
+            "EN": "Revered Grandmaster",
+            "JP": "師祖",
+            "KR": "사조"
+        },
+        "enemy_2117_dyyys2": {
+            "CN": "太公",
+            "EN": "Grand Duke",
+            "JP": "太公",
+            "KR": "태공"
+        },
+        "enemy_2118_dylbhm": {
+            "CN": "易",
+            "EN": "Yi",
+            "JP": "易",
+            "KR": "이"
+        },
+        "enemy_2119_dyshhj": {
+            "CN": "“岁”",
+            "EN": "'Sui'",
+            "JP": "「歳」",
+            "KR": "'쉐이'"
+        },
+        "enemy_2119_dyshhj_2": {
+            "CN": "“岁躯”",
+            "EN": "'Body of Sui'",
+            "JP": "「歳躯」",
+            "KR": "'쉐이의 몸'"
+        },
+        "enemy_2120_dywqgs": {
+            "CN": "“望”",
+            "EN": "'Wang'",
+            "JP": "「望」",
+            "KR": "'왕'"
+        },
+        "enemy_2121_dyspl2": {
+            "CN": "受符",
+            "EN": "With Talisman",
+            "JP": "受符",
+            "KR": "부착된 부적"
+        },
+        "enemy_2122_dybgzd": {
+            "CN": "梁",
+            "EN": "Liang",
+            "JP": "梁",
+            "KR": "량"
+        },
+        "enemy_3007_lrssia": {
+            "CN": "特蕾西娅，“演出”",
+            "EN": "A humble hero, a radiant dream. The future converges in her gaze, while the path fades beneath her steps.",
+            "JP": "「演出」テレジア",
+            "KR": "테레시아, '연출'"
+        },
+        "enemy_3008_lramiy": {
+            "CN": "演出阿米娅",
+            "EN": "A humble hero, a radiant dream. The future converges in her gaze, while the path fades beneath her steps.",
+            "JP": "演出アーミヤ",
+            "KR": "연출 아미야"
+        },
+        "enemy_6032_fxdjj": {
+            "CN": "“绝对安保”试做型",
+            "EN": "'Absolute Security' Prototype",
+            "JP": "「絶対警備」試作型",
+            "KR": "'절대 보안' 프로토타입"
+        },
+        "enemy_6033_skagod": {
+            "CN": "冰滚兽",
+            "EN": "",
+            "JP": "",
+            "KR": ""
+        },
+        "enemy_7027_xbbtl_2": {
+            "CN": "晶玲兽",
+            "EN": "",
+            "JP": "",
+            "KR": ""
+        },
+        "enemy_7028_xbscp_2": {
+            "CN": "晶珑兽",
             "EN": "",
             "JP": "",
             "KR": ""

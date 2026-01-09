@@ -1,26 +1,38 @@
 {
-    "CN": "25-12-04-02-54-57_e9dab3",
-    "EN": "25-11-11-08-15-40_78dbfa",
+    "CN": "26-01-06-09-38-59_ea48d2",
+    "EN": "25-12-22-12-58-23_0ca902",
     "tracker": {
-        "char_4212_nasti": {
+        "char_1022_flwr2": {
             "main": {
-                "nationId": "columbia",
-                "groupId": "rhine",
-                "teamId": null
-            },
-            "hidden": null
-        },
-        "char_4213_skybx": {
-            "main": {
-                "nationId": "columbia",
+                "nationId": "rhodes",
                 "groupId": null,
                 "teamId": null
             },
-            "hidden": null
+            "hidden": [
+                {
+                    "nationId": "minos",
+                    "groupId": null,
+                    "teamId": null
+                }
+            ]
         },
-        "char_4214_cairn": {
+        "char_4056_titi": {
             "main": {
-                "nationId": "columbia",
+                "nationId": "sargon",
+                "groupId": null,
+                "teamId": null
+            },
+            "hidden": [
+                {
+                    "nationId": "minos",
+                    "groupId": null,
+                    "teamId": null
+                }
+            ]
+        },
+        "char_4166_varkis": {
+            "main": {
+                "nationId": "minos",
                 "groupId": null,
                 "teamId": null
             },

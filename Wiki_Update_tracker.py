@@ -109,6 +109,6 @@ nationId_test = False # True False
 
 if __name__ == "__main__":
     charWords_track()
-    #nationId_track()
-    #enemyname_track()
+    nationId_track()
+    enemyname_track()
     printr(f'{B}Wiki_Text_tracker.py - {G}Completed !!!')
