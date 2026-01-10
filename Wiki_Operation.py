@@ -42,7 +42,7 @@ def wiki_enemies(event : str = "", rogue : str = "", sss : str = "", temp : bool
                 temp[key] = enemy_data[lv]["enemyData"][key]
         return temp
         
-    data = {"zone" : {}, "zone_node" : {}, "stage" : {}, "enemies" : {}, "enemy_type" : {}}
+    data = {"zone" : {}, "zone_node" : {}, "stage_code" : {}, "stage" : {}, "enemies" : {}, "enemy_type" : {}}
     stages = {}
     if rogue:
         RO_DB = DB["json_roguelike_topicEN"] if rogue in DB["json_roguelike_topicEN"]["details"] else json_load(r'py\roguelike_topic_table.json', internal=True) if temp else DB["json_roguelike_topic"]
@@ -72,9 +72,9 @@ def wiki_enemies(event : str = "", rogue : str = "", sss : str = "", temp : bool
             exit()
         for zone in actzone:
             if zone in DB["json_zoneEN"]["zones"].keys():
-                data["zone"].setdefault(zone, {})["name"] = DB["json_zoneEN"]["zones"][zone]["zoneNameSecond"]
+                data["zone"].setdefault(zone, {"name" : DB["json_zoneEN"]["zones"][zone]["zoneNameSecond"], "stages" : []})
             else:
-                data["zone"].setdefault(zone, {})["name"] = DB["json_zone"]["zones"][zone]["zoneNameSecond"]
+                data["zone"].setdefault(zone, {"name" : DB["json_zone"]["zones"][zone]["zoneNameSecond"], "stages" : []})
         CN_stage = DB["json_stage"]["stages"]
         EN_stage = DB["json_stageEN"]["stages"]
         for stage in CN_stage.keys():
@@ -85,7 +85,8 @@ def wiki_enemies(event : str = "", rogue : str = "", sss : str = "", temp : bool
                         stages[stage][key] = EN_stage[stage][key]
 
                 if not stage.endswith(("#f#", "#s")):
-                    data["zone"][CN_stage[stage]["zoneId"]].setdefault("stages", []).append(CN_stage[stage]["code"])
+                    data["zone"][CN_stage[stage]["zoneId"]]["stages"].append(CN_stage[stage]["code"])
+                    data["stage_code"][CN_stage[stage]["code"]] = stage
                     data["zone_node"].setdefault(stage, {"prev":[], "next":[]})
                     for condition in CN_stage[stage]["unlockCondition"]:
                         if CN_stage[condition["stageId"]]["zoneId"] not in actzone:
@@ -195,7 +196,11 @@ def wiki_article(
                         "map_tile_blackb_assign", 
                     ]
     both_rune       = ["env_gbuff_new_with_verify", "env_gbuff_new"]
-    skip_rune       = ["env_035_act1break_boss[hud]", "six_star_rune_alias", "rune_alias"]
+    skip_rune       = [
+                        "env_035_act1break_boss[hud]", "env_040_act48side",
+                        "rune_alias",
+                        "six_star_rune_alias", 
+                    ]
     
     enemy_buffs     = [
                         "cooperate_enemy_catch_up", "cooperate_enemy_after_attack_harder",
@@ -557,7 +562,7 @@ def wiki_article(
     def tile_lister(def_data : list) -> list:
         tile_output = []
         tile_skip = ["tile_wall", "tile_road", "tile_floor", "tile_toxichill", "tile_toxicroad", "tile_toxicwall", "tile_toxic", "tile_reed", "tile_reedw", "tile_mire", "tile_yinyang_wall", "tile_yinyang_road", "tile_stairs", "tile_passable_wall", "tile_passable_wall_forbidden", "tile_rcm_operator", "tile_wooden_wall", "tile_empty", "tile_deepsea", "tile_pollution_roadf", "tile_icestr", "tile_icetur_rb", "tile_icetur_lb", "tile_icetur_rt", "tile_icetur_lt", "tile_rcm_crate", "tile_codpsea", "tile_balloon", "tile_balloon_fbd"]
-        tlle_full_skip = ["tile_start", "tile_end", "tile_forbidden", "tile_telin", "tile_telout", "tile_hole", "tile_fence_bound", "tile_flystart", "tile_smog", "tile_start_cooperate", "tile_end_cooperate", "tile_allygoal", "tile_football", "tile_enemygoal", "tile_green", "tile_ristar_road", "tile_ristar_road_forbidden", "tile_grvtybtn", "tile_sleep_wall", "tile_sleep_road"]
+        tlle_full_skip = ["tile_start", "tile_end", "tile_forbidden", "tile_telin", "tile_telout", "tile_hole", "tile_fence_bound", "tile_flystart", "tile_smog", "tile_start_cooperate", "tile_end_cooperate", "tile_allygoal", "tile_football", "tile_enemygoal", "tile_green", "tile_ristar_road", "tile_ristar_road_forbidden", "tile_grvtybtn", "tile_sleep_wall", "tile_sleep_road", "tile_act48side"]
         
         for i in range(len(def_data["tiles"])):
             tile = def_data["tiles"][i]
@@ -2042,6 +2047,7 @@ def wiki_article(
                 else:
                     drop_list[drop["dropType"]][drop["id"]] = drop
             drop_output = {k:[] for k in drop_types}
+            stage_drop_list   = {"regdrop" : [], "regrate" : [], "specdrop" : [], "specrate" : []}
             for drop_type in drop_types:
                 for drop in sorted(drop_list[drop_type].keys(), key = lambda k : -100000000000 if k == "4002" else DB["json_item"]["items"][k]["sortId"] if k in DB["json_item"]["items"] else 100000000000):
                     if drop.startswith("furni"):
@@ -2053,7 +2059,14 @@ def wiki_article(
                         drop_output[drop_type].append(f'{{{{{"F" if drop.startswith("furni") else "I"}|{drop_name}}}}}')
                     else:
                         drop_output[drop_type].append(f'{{{{{"F" if drop.startswith("furni") else "I"}|{drop_name}|rate={drop_rate}}}}}')
-            return {k:" ".join(v) for k,v in drop_output.items()}
+                    if drop_type == "NORMAL":
+                        stage_drop_list["regdrop"].append(drop_name)
+                        stage_drop_list["regrate"].append(str(drop_rate))
+                    elif drop_type == "SPECIAL":
+                        stage_drop_list["specdrop"].append(drop_name)
+                        stage_drop_list["specrate"].append(str(drop_rate))
+            printr(stage, stage_drop_list)
+            return {k:" ".join(v) for k,v in drop_output.items()}, stage_drop_list
             
         match mode :
             case "info":
@@ -2081,7 +2094,7 @@ def wiki_article(
                     case _ :
                         stage_id = stage
                 enemies_data = enemies_lister(data["enemies_stage"][stage])
-                drop_data = drop_lister(data["stage_data"][stage_id]["stageDropInfo"]["displayDetailRewards"])
+                drop_data, drop_dict = drop_lister(data["stage_data"][stage_id]["stageDropInfo"]["displayDetailRewards"])
                 diff_type = data["stage_data"][stage_id]["difficulty"]
                 return {
                             "stage_id"      : stage_id,
@@ -2117,7 +2130,13 @@ def wiki_article(
                             "rune"          : rune_lister(data["stage"][stage]["runes"]) if data["stage"][stage]["runes"] else "",
                             "globalBuffs"   : global_buff_lister(data["stage"][stage]["globalBuffs"]) if data["stage"][stage]["globalBuffs"] else "",
                             "enemyDbRefs"   : {enemy["id"]:enemy for enemy in data["stage"][stage]["enemyDbRefs"]},
-                            "diff_type"     : diff_type
+                            "diff_type"     : diff_type,
+                            
+                            "isCINEMATIC"   : data["stage_data"][stage_id]["performanceStageFlag"] == "PERFORMANCE_STAGE",
+                            "isTRAINING"    : data["stage_data"][stage_id]["appearanceStyle"] == "TRAINING",
+                            "isBOSS_stage"  : data["stage_data"][stage_id]["bossMark"],
+                            "isHARD_stage"  : data["stage_data"][stage_id]["hilightMark"],
+                            "drop_list"     : drop_dict,
                         }
             case _ :
                 printr(f'Invalid mode {mode}')
@@ -2209,6 +2228,25 @@ def wiki_article(
                             |eaddendum = {eaddendum_writer(data["eaddendum"], data["rune"], data["globalBuffs"], data["enemyDbRefs"], data["diff_type"])}
                             {operators_predefine_writer(data["comp"], data["pre_auto"], data["auto"], data["fixed"])}
                             }}}}'''.replace("                            ", "").replace("\n\n","\n").replace(" ", " ")
+
+    def stage_operation_list(stage_key : str, info_dict : dict = {}, data_dict : dict = {}):
+        if info_dict and data_dict:
+            #printr(stage_key, data_dict["drop_list"])
+            return re.sub(r'\n+', "\n", f'''{{{{Operation list cell
+                                            {f'|type = {"cinematic" if data_dict["isCINEMATIC"] else "training"}' if data_dict["isCINEMATIC"] or data_dict["isTRAINING"] else ""}
+                                            |operation = {info_dict["code"]}
+                                            {f'|hard = true' if data_dict["isHARD_stage"] else ""}
+                                            {f'|boss = true' if data_dict["isBOSS_stage"] else ""}
+                                            {f'|sanity = {data_dict["sanity"]}' if data_dict["sanity"] else ""}
+                                            {f'|regdrop = {", ".join(data_dict["drop_list"]["regdrop"])}' if data_dict["drop_list"]["regdrop"] else ""}
+                                            {f'|regrate = {", ".join(data_dict["drop_list"]["regrate"])}' if data_dict["drop_list"]["regrate"] else ""}
+                                            {f'|specdrop = {", ".join(data_dict["drop_list"]["specdrop"])}' if data_dict["drop_list"]["specdrop"] else ""}
+                                            {f'|specrate = {", ".join(data_dict["drop_list"]["specrate"])}' if data_dict["drop_list"]["specrate"] else ""}
+                                            }}}}'''.replace("                                            ", ""))
+        else:
+            return f'''{{{{Operation list cell
+                        |type = interlude
+                        |operation = {stage_key}}}}}'''.replace("                        ", "")
 
     def ig_article_data(data : dict, stage_key : str):
         # https://arknights.wiki.gg/wiki/Template:IG_operation_info
@@ -2801,6 +2839,7 @@ def wiki_article(
             return f'{{{{Y{R} enemies}}}}'
         
     article_data = []
+    operation_list = {}
     ishard = False
     is6star = False
     if event_type == "sss":
@@ -2860,6 +2899,7 @@ def wiki_article(
                 stage_article = [stage_article_writer(stage_info, "info"), "<tabber>", "Normal Mode=", stage_article_writer(stage_data, "data"), "|-|Challenge Mode=", stage_article_writer(stage_data_hard, "data"), "</tabber>", f'{{{{{page_footer}}}}}']
             else:
                 stage_article = [stage_article_writer(stage_info, "info"), stage_article_writer(stage_data, "data"), f'{{{{{page_footer}}}}}']
+            operation_list[stage] = {"info" : stage_info, "data" : stage_data}
             article_data += stage_article
         
         elif mode_info == "ig":
@@ -2923,6 +2963,19 @@ def wiki_article(
     
     if event_type == "is":
         article_data += is_track
+    elif event_type == "sidestory":
+        for zone in big_data["zone"]:
+            zone_name = PART_NAMES_TL.get(big_data["zone"][zone]["name"], big_data["zone"][zone]["name"])
+            article_data += [f'\n\n==={zone_name}===\n{{{{Operation list head}}}}']
+            for stage in big_data["zone"][zone]["stages"]:
+                stage_key = big_data["stage_code"][stage]
+                if stage_key in operation_list:
+                    stage_info = operation_list[stage_key]["info"]
+                    stage_data = operation_list[stage_key]["data"]
+                    article_data.append(stage_operation_list(stage, stage_info, stage_data))
+                else:
+                    article_data.append(stage_operation_list(stage))
+            article_data.append("{{Table end}}")
 
     # Enemies articles
     # - https://arknights.wiki.gg/wiki/Template:Enemy_infobox
@@ -2947,6 +3000,7 @@ def wiki_article(
 #script_result(wiki_article("act46side", "sidestory", "Retracing Our Steps 1101", year = 7), True)
 #script_result(wiki_article("act47side", "sidestory", "Unrealized Realities", year = 7), True)
 #script_result(wiki_article("act1vhalfidle", "sidestory", "Rebuilding Mandate"), True)
+script_result(wiki_article("act48side", "sidestory", "Medjehtiqedti Bound", year = 7), True)
 
 # Trials for Navigator #04
 #script_result(wiki_article("act4bossrush", "tn", "Trials for Navigator #04"))
@@ -2962,4 +3016,4 @@ def wiki_article(
 #script_result(wiki_article("rogue_5", "is", year = 6, temp = True), True)
 
 # SSS
-script_result(wiki_article("tower_n_18", "sss", "Shangshu Night Market"), True)
+#script_result(wiki_article("tower_n_18", "sss", "Shangshu Night Market"), True)

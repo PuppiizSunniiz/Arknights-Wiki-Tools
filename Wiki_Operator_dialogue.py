@@ -243,10 +243,10 @@ lang_dict = {
         "char_249_mlyss_boc#8",             #mumu           Muelsyse
         "char_4064_mlynar_epoque#28",       #uncle          Młynar
         "char_472_pasngr_epoque#17"         #pass           Passenger
+        "char_1012_skadi2_iteration#2",     #skya           Skadi the Corrupting Heart
         
         ################################################################################
         
-        "char_1012_skadi2_iteration#2",     #skya           Skadi the Corrupting Heart
         "char_245_cello_sale#12",           #tutu           Virtuosa
         "char_113_cqbw_epoque#7",           #w              W
         "char_1035_wisdel_sale#14",         #wis            Wiš'adel
@@ -265,7 +265,7 @@ dialect         = ""    # TBU
 outfit          = ""
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = ["char_1012_skadi2", "char_1012_skadi2@iteration#2"] # "", 
+OP_DIALOGUE_LIST    = ["Perfumer the Distilled", "Varkáris"] # "", 
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
 force_server        = True  # True False

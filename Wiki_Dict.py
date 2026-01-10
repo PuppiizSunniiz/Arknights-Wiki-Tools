@@ -73,7 +73,8 @@ ENEMY_NAMES_TL = {
                 }
 ITEM_NAMES_TL = {
                     "act46side_token_detector"  : "Multipurpose Snow Detector",
-                    "act47side_token_bottle"    : "Sky Respiratory Tube"
+                    "act47side_token_bottle"    : "Sky Respiratory Tube",
+                    "act48side_token_ostracon"  : "Ceramic Voting Shards"
                 }
 PART_NAMES_TL = {
                     #act46side
