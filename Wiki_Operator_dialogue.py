@@ -107,7 +107,7 @@ def wiki_operator_dialogue(operator_list : list[str] | str,
             
             charword_table_json = DB["json_charwordEN"] if server == "EN" else DB["json_charword"]
             dialogue_dict = {}
-            crossover   = voice_data[0]
+            crossover   = voice_data[0] if manual else ("LINKAGE" in combine_charword["voiceLangDict"][audio_id])
             jp          = voice_data[1] if manual else ("JP" in combine_charword["voiceLangDict"][audio_id])
             cn          = voice_data[2] if manual else ("CN_MANDARIN" in combine_charword["voiceLangDict"][audio_id])
             en          = voice_data[3] if manual else ("EN" in combine_charword["voiceLangDict"][audio_id])
@@ -124,10 +124,9 @@ def wiki_operator_dialogue(operator_list : list[str] | str,
                     voiceText   = charword_table_json["charWords"][dialogue_key]["voiceText"]
                     dialogue_dict[voiceIndex] = wiki_story(voiceText) if server == "EN" else voiceText
             if dialogue_dict:
-                article_writer.append(f'''
-                                        {{{{Operator tab}}}}
+                article_writer.append(f'''{{{{Operator tab}}}}
                                         {f'{{{{Translation|article}}}}' if server == "CN" else ""}
-                                        {{{{Operator dialogue head{f'|note=\'\'\'XXX\'\'\' denotes the {dialect} Chinese dialect voiceline.' if dialect else ""}}}}}'''.replace("                                        ", "").replace("\n\n", "\n"))
+                                        {{{{Operator dialogue head{f'|note=As with other [[XXXXX]] [[Operator]]s, XXX only has XXXXX voicelines.' if crossover else f'|note=\'\'\'XXX\'\'\' denotes the {dialect} Chinese dialect voiceline.' if dialect else ""}}}}}'''.replace("                                        ", "").replace("\n\n", "\n"))
                 for i in range(len(sort_list)):
                     if sort_list[i] in dialogue_dict:
                         cell_template       = "Operator dialogue cell2" if mode == 2 else "Operator dialogue cell"
@@ -166,7 +165,7 @@ def wiki_operator_dialogue(operator_list : list[str] | str,
                                     else:
                                         schedule_wiki_audio(executor, futures, no_in = sort_list[i], no_out = dialogue_no, dir_in = "_custom", name_out = f'-{otherlang.upper()}', op_id = audio_id, outfit = outfit)
                 if article_writer:
-                    article_writer.append(f'{{{{Table end}}}}{f'\n\n[[Category:Operator audio]]\n[[Category:{operator_base_name}]]\n\n{dialogue_jp}{dialogue_cn}{dialogue_dialect}{dialogue_en}{dialogue_kr}{dialogue_other}}}}}' if audio_category and operator_base_name else ""}')
+                    article_writer.append(f'{{{{Table end}}}}{f'\n\n[[Category:Operator audio]]\n[[Category:{operator_base_name}]]\n\n{dialogue_jp}{dialogue_cn}{dialogue_dialect}{dialogue_en}{dialogue_kr}{dialogue_other}{"|crossover=true" if crossover else ""}}}}}\n' if audio_category and operator_base_name else ""}')
 
     if article_writer:
         script_result(article_writer, True)
@@ -265,7 +264,7 @@ dialect         = ""    # TBU
 outfit          = ""
 op_voice_data   = [crossover, jp, cn, en, kr, otherlang, dialect, outfit]
 
-OP_DIALOGUE_LIST    = ["Perfumer the Distilled", "Varkáris"] # "", 
+OP_DIALOGUE_LIST    = ["Togawa Sakiko", "Tragodia", "Typhon", ] # "", 
 dialogue_cell       = 1     # 1 2
 server              = "EN"  # EN CN
 force_server        = True  # True False
