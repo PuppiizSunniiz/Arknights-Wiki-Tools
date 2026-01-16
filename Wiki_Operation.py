@@ -1,6 +1,7 @@
 import re
 from typing import Any, Literal
 from Wiki_Dict import CLASS_PARSE_EN, ENEMY_NAMES_TL, IG_DIFF, IG_MODE, ITEM_NAMES_TL, PART_NAMES_TL, SKILL_NAMES_TL, TOKEN_NAMES_TL
+from Wiki_OOP.char_data import Character_Database
 from pyFunction_Wiki import load_json, mini_blackboard, replace_apos_between, wiki_story, wiki_trim
 from pyFunction import B, G, R, RE, Y, decimal_format, falsy_compare, join_and, join_or, json_load, printc, printr, script_result, stage_load, valid_filename
 
@@ -16,6 +17,7 @@ used_json = [
                 "json_enemy_databaseEN",
                 "json_enemy_handbook",
                 "json_enemy_handbookEN",
+                "json_handbook_infoEN",
                 "json_item",
                 "json_itemEN",
                 "json_roguelike_topic",
@@ -31,8 +33,9 @@ used_json = [
 
 DB = load_json(used_json)
 sortby_sortID = True # True False
+CHARACTER_DATA  = Character_Database()
 
-def wiki_enemies(event : str = "", rogue : str = "", sss : str = "", temp : bool = False, show : bool = False) -> dict :
+def wiki_enemies(event : str = "", ps : list[bool, list] = [False, []], rogue : str = "", sss : str = "", temp : bool = False, show : bool = False) -> dict :
     def enemy_lv_data(enemy_data : dict, enemy_data_EN : dict, lv : int) -> dict:
         temp : dict = {}
         for key in enemy_data[lv]["enemyData"].keys():
@@ -44,7 +47,15 @@ def wiki_enemies(event : str = "", rogue : str = "", sss : str = "", temp : bool
         
     data = {"zone" : {}, "zone_node" : {}, "stage_code" : {}, "stage" : {}, "enemies" : {}, "enemy_type" : {}}
     stages = {}
-    if rogue:
+    if ps:
+        if PS_OP:
+            ps_ops = [op if op.startswith("char_") else CHARACTER_DATA.getid(op) for op in PS_OP]
+        else:
+            ps_ops = DB["json_handbook_infoEN"]["handbookStageTime"][-1]["charSet"]
+        for ps_op in ps_ops:
+            ps_stage_data = DB["json_handbook_infoEN"]["handbookStageData"][ps_op]
+            stages[ps_stage_data["code"]] = ps_stage_data
+    elif rogue:
         RO_DB = DB["json_roguelike_topicEN"] if rogue in DB["json_roguelike_topicEN"]["details"] else json_load(r'py\roguelike_topic_table.json', internal=True) if temp else DB["json_roguelike_topic"]
         for stage in RO_DB["details"][rogue]["stages"]:
             stages[stage] = RO_DB["details"][rogue]["stages"][stage]
@@ -53,7 +64,7 @@ def wiki_enemies(event : str = "", rogue : str = "", sss : str = "", temp : bool
                 stages[stage]["hard_stage"] = stage.replace("_n_", "_e_", 1)
             elif re.match(r'ro(\d+)_t_(.+?)', stage) and stage.replace("_t_", "_e_t_", 1) in RO_DB["details"][rogue]["stages"]:
                 stages[stage]["hard_stage"] = stage.replace("_t_", "_e_t_", 1)
-    if sss:
+    elif sss:
         ssszone : list = DB["json_climb_towerEN"]["towers"][sss]["levels"]
         data["zone"][sss] = ssszone
         for stage in ssszone:
@@ -63,7 +74,6 @@ def wiki_enemies(event : str = "", rogue : str = "", sss : str = "", temp : bool
             if stage_index - 1 in range(len(ssszone)):
                 data["zone_node"][ssszone[stage_index - 1]]["next"].append(stage)
                 data["zone_node"][stage]["prev"].append(ssszone[stage_index - 1])
-        
     else:
         ZonetoAct = DB["json_activity"]["zoneToActivity"]
         actzone = [zone for zone in ZonetoAct.keys() if ZonetoAct[zone] == event]
@@ -169,7 +179,7 @@ def wiki_enemies(event : str = "", rogue : str = "", sss : str = "", temp : bool
     
 def wiki_article(
     event_code : str, 
-    event_type : Literal["episode", "intermezzo", "sidestory", "storycollection", "ig", "is", "sss", "tn", "vb"] = "", 
+    event_type : Literal["episode", "intermezzo", "sidestory", "storycollection", "ig", "is", "ps", "sss", "tn", "vb"] = "", 
     event_name : str = "", 
     year : str|int = "",
     temp : bool = False,
@@ -1456,6 +1466,9 @@ def wiki_article(
                                 pass
                     elif len(value) == 2:
                         match temp:
+                            case {'yinyang.buff_yinyang[same].atk_scale': same_atk_scale, 'yinyang.buff_yinyang[diff].atk_scale': diff_atk_scale}:
+                                if enemy_id in ["enemy_1123_spsbr", "enemy_1127_sptrkg", "enemy_1129_spklr"]:
+                                    return f'ATK multiplier against targets with a matching/opposing [[Hui and Ming|Hui/Ming attribute]] is changed to {same_atk_scale*100:g}%/{diff_atk_scale*100:g}%'
                             case _:
                                 pass
                     elif len(value) == 3:
@@ -1475,6 +1488,9 @@ def wiki_article(
                             case {'YinYang.enemy_dylbhm_buff_yinyang[diff].atk_scale': diff_atk_scale, 'YinYang.enemy_dylbhm_buff_yinyang[diff].high_atk_scale': diff_high_atk_scale, 'YinYang.enemy_dylbhm_buff_yinyang[same].atk_scale': same_atk_scale}:
                                 if enemy_id in ["enemy_2118_dylbhm"]:
                                     return f'ATK multiplier against targets with a matching/opposing [[Hui and Ming|Hui/Ming attribute]] is changed to {same_atk_scale*100:g}%/{diff_atk_scale*100:g}% against units on low ground tiles and {same_atk_scale*100:g}%/{diff_high_atk_scale*100:g}% against units on high ground tiles.'
+                            case {'yinyang.dynamic': dynamic, 'yinyang.buff_yinyang[same].atk_scale': same_atk_scale, 'yinyang.buff_yinyang[diff].atk_scale': diff_atk_scale}:
+                                if enemy_id in ["enemy_1123_spsbr", "enemy_1127_sptrkg", "enemy_1129_spklr"]:
+                                    return f'ATK multiplier against targets with a matching/opposing [[Hui and Ming|Hui/Ming attribute]] is changed to {same_atk_scale*100:g}%/{diff_atk_scale*100:g}%'
                             case _:
                                 pass
                     elif len(value) == 4:
@@ -1895,7 +1911,7 @@ def wiki_article(
                             return int(default + blackboard["value"])
         return default
 
-    def operators_predefine_writer(def_comp_data, def_preauto_data, def_auto_data, fixed):
+    def operators_predefine_writer(def_comp_data, def_preauto_data, def_auto_data, fixed, except_op : str = ""):
         #if def_preauto_data : printc("stage, fixed, def_comp_data, def_preauto_data, def_auto_data\n", stage, fixed, def_comp_data, def_preauto_data, def_auto_data)
         def elite_parse(elite):
             if elite.find("PHASE") != -1:
@@ -1980,6 +1996,7 @@ def wiki_article(
             predefine_result += "|fixed = true"
         if def_comp_data:
             for op in def_comp_data:
+                if op["inst"]["characterKey"] == except_op: continue
                 comp_op += op_lister(op, comp)
             predefine_result += op_writer("|comp", comp, mod_count)
         elif fixed:
@@ -2047,21 +2064,26 @@ def wiki_article(
                 else:
                     drop_list[drop["dropType"]][drop["id"]] = drop
             drop_output = {k:[] for k in drop_types}
-            stage_drop_list   = {"regdrop" : [], "regrate" : [], "specdrop" : [], "specrate" : []}
+            stage_drop_list   = {"firstdrop": [], "regdrop" : [], "regrate" : [], "specdrop" : [], "specrate" : []}
             for drop_type in drop_types:
                 for drop in sorted(drop_list[drop_type].keys(), key = lambda k : -100000000000 if k == "4002" else DB["json_item"]["items"][k]["sortId"] if k in DB["json_item"]["items"] else 100000000000):
                     if drop.startswith("furni"):
                         drop_name = DB["json_buildingEN"]["customData"]["furnitures"][drop]["name"] if drop in DB["json_buildingEN"]["customData"]["furnitures"] else ITEM_NAMES_TL.get(drop, f'{DB["json_building"]["customData"]["furnitures"][drop]["name"]}({drop})')
                     else:
                         drop_name = DB["json_itemEN"]["items"][drop]["name"] if drop in DB["json_itemEN"]["items"] else ITEM_NAMES_TL.get(drop, f'{DB["json_item"]["items"][drop]["name"]}({drop})')
+                        drop_itemType = DB["json_item"]["items"][drop]["itemType"]
                     drop_rate = 0 if drop_type == "COMPLETE" else drop_rates[drop_list[drop_type][drop]["occPercent"]]
                     if drop_type == "ADDITIONAL":
                         drop_output[drop_type].append(f'{{{{{"F" if drop.startswith("furni") else "I"}|{drop_name}}}}}')
                     else:
                         drop_output[drop_type].append(f'{{{{{"F" if drop.startswith("furni") else "I"}|{drop_name}|rate={drop_rate}}}}}')
-                    if drop_type == "NORMAL":
+                    if drop_type == "COMPLETE" and drop_name != "Originite Prime":
+                        stage_drop_list["firstdrop"].append(drop_name)
+                        if drop_itemType == "ACTIVITY_ITEM": stage_drop_list.setdefault("firstqty", True)
+                    elif drop_type == "NORMAL":
                         stage_drop_list["regdrop"].append(drop_name)
                         stage_drop_list["regrate"].append(str(drop_rate))
+                        if drop_itemType == "ACTIVITY_ITEM": stage_drop_list.setdefault("regqty", True)
                     elif drop_type == "SPECIAL":
                         stage_drop_list["specdrop"].append(drop_name)
                         stage_drop_list["specrate"].append(str(drop_rate))
@@ -2233,12 +2255,15 @@ def wiki_article(
         if info_dict and data_dict:
             #printr(stage_key, data_dict["drop_list"])
             return re.sub(r'\n+', "\n", f'''{{{{Operation list cell
-                                            {f'|type = {"cinematic" if data_dict["isCINEMATIC"] else "training"}' if data_dict["isCINEMATIC"] or data_dict["isTRAINING"] else ""}
+                                            {f'|type = {"cinematic" if data_dict["isCINEMATIC"] else "tutorial"}' if data_dict["isCINEMATIC"] or data_dict["isTRAINING"] else ""}
                                             |operation = {info_dict["code"]}
                                             {f'|hard = true' if data_dict["isHARD_stage"] else ""}
                                             {f'|boss = true' if data_dict["isBOSS_stage"] else ""}
                                             {f'|sanity = {data_dict["sanity"]}' if data_dict["sanity"] else ""}
+                                            {f'|firstdrop = {", ".join(data_dict["drop_list"]["firstdrop"])}' if data_dict["drop_list"]["firstdrop"] else ""}
+                                            {f'|firstqty = ' if data_dict["drop_list"].get("firstqty") else ""}
                                             {f'|regdrop = {", ".join(data_dict["drop_list"]["regdrop"])}' if data_dict["drop_list"]["regdrop"] else ""}
+                                            {f'|regqty = ' if data_dict["drop_list"].get("regqty") else ""}
                                             {f'|regrate = {", ".join(data_dict["drop_list"]["regrate"])}' if data_dict["drop_list"]["regrate"] else ""}
                                             {f'|specdrop = {", ".join(data_dict["drop_list"]["specdrop"])}' if data_dict["drop_list"]["specdrop"] else ""}
                                             {f'|specrate = {", ".join(data_dict["drop_list"]["specrate"])}' if data_dict["drop_list"]["specrate"] else ""}
@@ -2441,6 +2466,61 @@ def wiki_article(
                                 |boss = {is_data["boss"]}
                                 |eaddendum = {eaddendum_writer(is_data["eaddendum"], is_data["rune"], is_data["globalBuffs"], is_data["enemyDbRefs"], is_data["diff_type"])}
                                 }}}}'''.replace("                                ", "")
+
+    def ps_article_data(data : dict, stage_key : str):
+        # https://arknights.wiki.gg/wiki/Template:PS_info
+        enemies_data = enemies_lister(data["enemies_stage"][stage_key])
+        return {
+                    "stage_key"     : stage_key,
+                    "operator"      : data["stage_data"][stage_key]["charId"],
+                    "title"         : data["stage_data"][stage_key]["name"],
+                    "desc"          : data["stage_data"][stage_key]["description"],
+                    "promotion"     : data["stage_data"][stage_key]["unlockParam"][0]["unlockParam1"],
+                    "level"         : data["stage_data"][stage_key]["unlockParam"][0]["unlockParam2"],
+                    "unit limit"    : global_deploy(data["stage"][stage_key]["runes"], data["stage"][stage_key]["options"]["characterLimit"]), 
+                    "enemies"       : sum(data["enemies_stage"][stage_key]["counter"][0:2]),
+                    "lp"            : global_lifepoint(data["stage"][stage_key]["runes"], data["stage"][stage_key]["options"]["maxLifePoint"]),
+                    "dp"            : data["stage"][stage_key]["options"]["initialCost"], 
+                    "dp_regen"      : data["stage"][stage_key]["options"]["costIncreaseTime"], 
+                    "maxPlayTime"   : data["stage"][stage_key]["options"]["maxPlayTime"],
+                    "configBlackBoard" : data["stage"][stage_key]["options"]["configBlackBoard"],
+                    "deployable"    : token_lister(data["stage"][stage_key]["predefines"]["tokenCards"], "tokenCards") if data["stage"][stage_key]["predefines"] else "",
+                    "static"        : token_lister(data["stage"][stage_key]["predefines"]["tokenInsts"], "tokenInsts") if data["stage"][stage_key]["predefines"] else "",
+                    "terrain"       : tile_lister(data["stage"][stage_key]["mapData"]),
+                    "addendum"      : data["stage"][stage_key], 
+                    "normal"        : enemies_data.get("NORMAL", ""),
+                    "elite"         : enemies_data.get("ELITE", ""),
+                    "boss"          : enemies_data.get("BOSS", ""),
+                    "eaddendum"     : eaddendum_lister(stage_key),
+                    "fixed"         : "",
+                    "comp"          : data["stage"][stage]["predefines"]["characterCards"] if data["stage"][stage]["predefines"] else "",
+                    "pre_auto"      : data["stage"][stage]["predefines"]["characterInsts"] if data["stage"][stage]["predefines"] else "",
+                    "auto"          : auto_deploy_lister(data["stage"][stage]["waves"]),
+                    "saddendum"     : "",
+                    "rune"          : rune_lister(data["stage"][stage_key]["runes"]) if data["stage"][stage_key]["runes"] else "",
+                    "globalBuffs"   : global_buff_lister(data["stage"][stage_key]["globalBuffs"]) if data["stage"][stage_key]["globalBuffs"] else "",
+                    "enemyDbRefs"   : {enemy["id"]:enemy for enemy in data["stage"][stage]["enemyDbRefs"]},
+        }
+    
+    def ps_article_writer(ps_data : dict):
+        return f'''{{{{PS info
+                    |operator = {CHARACTER_DATA.getname(ps_data["operator"])}
+                    |title = {ps_data["title"]}
+                    |desc = {ps_data["desc"]}
+                    |promotion = {ps_data["promotion"]}
+                    |level = {ps_data["level"]}
+                    |unit limit = {ps_data["unit limit"]}
+                    |dp = {ps_data["dp"]}
+                    |deployable = {ps_data["deployable"]}
+                    |static = {ps_data["static"]}
+                    |terrain = {tile_writer(ps_data["terrain"], (big_data["stage"][ps_data["stage_key"].split("#")[0]]["predefines"] or {}).get("tokenInsts", []))}
+                    |addendum = {addendum_writer(ps_data["rune"], ps_data["globalBuffs"], maxPlayTime = ps_data["maxPlayTime"], DP = ps_data["dp_regen"], configBlackBoard = ps_data["configBlackBoard"], enemyDbRefs = ps_data["enemyDbRefs"])}
+                    |enemies = {ps_data["enemies"]}
+                    |normal = {ps_data["normal"]}
+                    |elite = {ps_data["elite"]}
+                    |boss = {ps_data["boss"]}
+                    |eaddendum = {eaddendum_writer(ps_data["eaddendum"], ps_data["rune"], ps_data["globalBuffs"], ps_data["enemyDbRefs"])}
+                    {operators_predefine_writer(ps_data["comp"], ps_data["pre_auto"], ps_data["auto"], ps_data["fixed"], except_op = ps_data["operator"])}}}}}'''.replace("                    ", "").replace("\n\n", "\n")
 
     def sss_article_data(data : dict, stage_key : str):
         # https://arknights.wiki.gg/wiki/Template:S3_operation_info
@@ -2850,7 +2930,13 @@ def wiki_article(
                     break
         elif event_code.startswith(("tower_tr_", "tower_n_")) and not event_name:
             event_name = DB["json_climb_towerEN"]["towers"][event_code]["name"]
-    big_data = wiki_enemies(event_code, rogue = event_code if event_type == "is" else "", sss = event_code if event_type == "sss" else "")
+    
+    big_data = wiki_enemies(
+                            event_code, 
+                            rogue = event_code if event_type == "is" else "", 
+                            ps = True if event_type == "ps" else "", 
+                            sss = event_code if event_type == "sss" else ""
+                            )
     big_data["enemies_stage"] = {}
     if event_type != "ig":
         for stage in big_data["stage"]:
@@ -2861,13 +2947,16 @@ def wiki_article(
     # Stage article
     # - https://arknights.wiki.gg/wiki/Template:Operation_info/doc
     # - https://arknights.wiki.gg/wiki/Template:Operation_data/doc
-    if event_type in ["vb", "ig", "tn"]:
+    if event_type in ["ig", "tn", "vb"]:
         mode_info = event_type
         page_footer = "Seasonal game modes"
     elif event_type in ["is"]:
         theme_name = DB["json_roguelike_topicEN"]["topics"][event_code]["name"] if not temp else json_load(r'py\roguelike_topic_table.json', internal=True)["topics"][event_code]["name"]
         mode_info = event_type
         page_footer = f'IS{year} operations'
+    elif event_type in ["ps"]:
+        mode_info = event_type
+        page_footer = f'Y{year} Paradox Simulations'
     elif event_type in ["sss"]:
         mode_info = event_type
         page_footer = "{{S3 operations}}"
@@ -2920,7 +3009,12 @@ def wiki_article(
             else:
                 stage_article = [f'# {stage} | {stage_info["name"]}', is_article_writer(stage_info, "info"), is_article_writer(stage_data, "data"), f'{{{{{page_footer}}}}}\n']
             article_data += stage_article
-            
+        
+        elif mode_info == "ps":
+            stage_info = ps_article_data(big_data, stage)
+            stage_article = [f'### {stage} | {stage_info["operator"]} : {stage_info["title"]}', ps_article_writer(stage_info), f'{{{{{page_footer}}}}}\n']
+            article_data += stage_article
+        
         elif mode_info == "sss":
             stage_info = sss_article_data(big_data, stage)
             stage_article = [f'### {stage} | {stage_info["name"]}', f'{{{{Construction}}}}', sss_article_writer(stage_info)]
@@ -3000,7 +3094,7 @@ def wiki_article(
 #script_result(wiki_article("act46side", "sidestory", "Retracing Our Steps 1101", year = 7), True)
 #script_result(wiki_article("act47side", "sidestory", "Unrealized Realities", year = 7), True)
 #script_result(wiki_article("act1vhalfidle", "sidestory", "Rebuilding Mandate"), True)
-script_result(wiki_article("act48side", "sidestory", "Medjehtiqedti Bound", year = 7), True)
+#script_result(wiki_article("act48side", "sidestory", "Medjehtiqedti Bound", year = 7), True)
 
 # Trials for Navigator #04
 #script_result(wiki_article("act4bossrush", "tn", "Trials for Navigator #04"))
@@ -3017,3 +3111,7 @@ script_result(wiki_article("act48side", "sidestory", "Medjehtiqedti Bound", year
 
 # SSS
 #script_result(wiki_article("tower_n_18", "sss", "Shangshu Night Market"), True)
+
+#PS
+PS_OP = []
+script_result(wiki_article(PS_OP, "ps", year = 6), True)
