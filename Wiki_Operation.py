@@ -35,7 +35,7 @@ DB = load_json(used_json)
 sortby_sortID = True # True False
 CHARACTER_DATA  = Character_Database()
 
-def wiki_enemies(event : str = "", ps : list[bool, list] = [False, []], rogue : str = "", sss : str = "", temp : bool = False, show : bool = False) -> dict :
+def wiki_enemies(event : str = "", ps : bool = False, rogue : str = "", sss : str = "", temp : bool = False, show : bool = False) -> dict :
     def enemy_lv_data(enemy_data : dict, enemy_data_EN : dict, lv : int) -> dict:
         temp : dict = {}
         for key in enemy_data[lv]["enemyData"].keys():
@@ -188,6 +188,7 @@ def wiki_article(
                         "add_other_rune_blackb", 
                         "char_attribute_mul", 
                         "cooperate_enemy_side_shared", 
+                        "ebuff_attack_radius",
                         "enemy_attribute_add", "enemy_talent_blackb_add", "enemy_weight_add",
                         "enemy_attribute_mul", "enemy_talent_blackb_mul", "enemy_skill_cd_mul", "enemy_attackradius_mul", "enemy_skill_blackb_mul", 
                         "enemy_dynamic_ability_new", 
@@ -196,7 +197,7 @@ def wiki_article(
                     ]
     non_enemy_rune  = [
                         "assign_global_blackboard",
-                        "cbuff_max_cost", 
+                        "cbuff_max_cost", "cbuff_token_initial_cnt",
                         "char_exclude", 
                         "char_attribute_add", "char_cost_add", "char_blockcnt_add", "char_skill_cd_add",
                         "char_skill_blackb_mul", "char_skill_cd_mul", "char_cost_mul", "char_respawntime_mul", 
@@ -549,9 +550,10 @@ def wiki_article(
             wave_count += 1
         return "\n".join(tn_enemies_output)
     
-    def token_lister(def_data : list, token_type : Literal["tokenCards", "tokenInsts"]= "tokenInsts") -> str:
+    def token_lister(def_data : list, token_type : Literal["tokenCards", "tokenInsts"] = "tokenInsts", runes : list = [], diff : str = "ALL") -> str:
         token_list = {}
         token_output = []
+        token_rune = {}
         # EP14 Controller / Tide Controller / TN Controller / Mouthpiece Doll / Entitative Program (TN Buff) / Icebreaker Games Control / IS mafia control
         token_skip = ["trap_162_lrctrl", "trap_042_tidectrl", "trap_091_brctrl", "trap_054_dancdol", "trap_090_recodr", "trap_179_muctrl", "trap_092_vgctrl"]
         for token in def_data:
@@ -563,9 +565,19 @@ def wiki_article(
                 token_list[token_code] = token.get("initialCnt", 0)
             else:
                 token_list[token_code] = token_list.get(token_code, 0) + 1
+        if runes:
+            for rune in runes:
+                if rune["difficultyMask"] == diff and rune["key"] == "cbuff_token_initial_cnt":
+                    rune_mini_blackboard = mini_blackboard(rune["blackboard"])
+                    match rune_mini_blackboard:
+                        case {'char': char, 'value': value}:
+                            token_rune[char] = value
+                        case _:
+                            printr(f'New {Y}cbuff_token_initial_cnt{RE} runes" : {B}{rune_mini_blackboard}')
+                            exit()
         for token in token_list:
             token_name = DB["json_characterEN"][token]["name"] if token in DB["json_characterEN"] else TOKEN_NAMES_TL.get(token, f'{DB["json_character"][token]["name"]}({token})')
-            token_output.append(f'{{{{D|{wiki_trim(token_name)}{f'|{token_list[token]}' if token_list[token] else ""}}}}}')
+            token_output.append(f'{{{{D|{wiki_trim(token_name)}{f'|{token_list[token] + token_rune.get(token, 0):g}' if token_list[token] else ""}}}}}')
             #printr(token_name)
         return ", ".join(token_output)
             
@@ -1250,6 +1262,8 @@ def wiki_article(
                         else:
                             printr(f'New {Y}{rune["key"]}{RE} key just drop : {rune["blackboard"]["key"]}')
                             exit()
+                    case "cbuff_token_initial_cnt":
+                        continue
                     case _:
                         printc(f'{Y}{stage}{RE} New case just drop :', rune["key"], rune["blackboard"])
                         #exit()
@@ -1398,7 +1412,7 @@ def wiki_article(
                     return f'an attack range of {decimal_format(value)} tiles radius'
                 case "lifePointReduce":
                     if value == 0:
-                        return "Does not deduct [[Life Point|Life Points]]"
+                        return "does not deduct [[Life Point|Life Points]]"
                     elif value < 0:
                         printr(f'There {Y}Negative value{RE} case to investigate {R}({stage}, {Y}{enemy_code}{R}){RE}')
                     else:
@@ -1798,6 +1812,14 @@ def wiki_article(
                             except:
                                 enemy_name = join_and([enemy_name_search(enemy, enemyDbRefs) for enemy in get_enemy if enemy in enemyDbRefs])
                             eaddendum_result.append(f'{enemy_name if get_enemy else "All enemies"} \'s weight have {"increased" if scale >= 0 else "reduced"} by {abs(scale):g}')
+                        case "ebuff_attack_radius":
+                            scale = temp["blackboard"].pop("range_scale")
+                            get_enemy = temp["blackboard"].pop("enemy").split("|") if "enemy" in temp["blackboard"] else ""
+                            try:
+                                enemy_name = join_and([enemy_name_search(enemy, enemyDbRefs) for enemy in get_enemy])
+                            except:
+                                enemy_name = join_and([enemy_name_search(enemy, enemyDbRefs) for enemy in get_enemy if enemy in enemyDbRefs])
+                            eaddendum_result.append(f'{enemy_name if get_enemy else "All enemies"} have their attack range {"increased" if scale >= 0 else "reduced"} by {abs(scale - 1)*100:g}%')
                         case _:
                             printc(f'{Y}{stage}{RE} New enemy rune key just drop : {B}{rune["key"]}{RE}', rune)
                             #exit()
@@ -2087,7 +2109,7 @@ def wiki_article(
                     elif drop_type == "SPECIAL":
                         stage_drop_list["specdrop"].append(drop_name)
                         stage_drop_list["specrate"].append(str(drop_rate))
-            printr(stage, stage_drop_list)
+            #printr(stage, stage_drop_list)
             return {k:" ".join(v) for k,v in drop_output.items()}, stage_drop_list
             
         match mode :
@@ -2131,8 +2153,8 @@ def wiki_article(
                             "dp_regen"      : data["stage"][stage]["options"]["costIncreaseTime"],
                             "maxPlayTime"   : data["stage"][stage]["options"]["maxPlayTime"],
                             "configBlackBoard" : data["stage"][stage]["options"]["configBlackBoard"],
-                            "deployable"    : token_lister(data["stage"][stage]["predefines"]["tokenCards"], "tokenCards") if data["stage"][stage]["predefines"] else "",
-                            "static"        : token_lister(data["stage"][stage]["predefines"]["tokenInsts"], "tokenInsts") if data["stage"][stage]["predefines"] else "",
+                            "deployable"    : token_lister(data["stage"][stage]["predefines"]["tokenCards"], "tokenCards", data["stage"][stage]["runes"], diff_type) if data["stage"][stage]["predefines"] else "",
+                            "static"        : token_lister(data["stage"][stage]["predefines"]["tokenInsts"], "tokenInsts", data["stage"][stage]["runes"], diff_type) if data["stage"][stage]["predefines"] else "",
                             "terrain"       : tile_lister(data["stage"][stage]["mapData"]),
                             "addendum"      : "",
                             "firstdrop"     : drop_data.get("COMPLETE", ""),
@@ -2328,8 +2350,8 @@ def wiki_article(
                     "lp"            : global_lifepoint(data["stage"][stage_key]["runes"], data["stage"][stage_key]["options"]["maxLifePoint"], ig_diff),
                     "dp"            : data["stage"][stage_key]["options"]["initialCost"], 
                     "dp_regen"      : data["stage"][stage_key]["options"]["costIncreaseTime"], 
-                    "deployable"    : token_lister(data["stage"][stage_key]["predefines"]["tokenCards"], "tokenCards") if data["stage"][stage_key]["predefines"] else "",
-                    "static"        : token_lister(data["stage"][stage_key]["predefines"]["tokenInsts"], "tokenInsts") if data["stage"][stage_key]["predefines"] else "",
+                    "deployable"    : token_lister(data["stage"][stage_key]["predefines"]["tokenCards"], "tokenCards", data["stage"][stage]["runes"], ig_diff) if data["stage"][stage_key]["predefines"] else "",
+                    "static"        : token_lister(data["stage"][stage_key]["predefines"]["tokenInsts"], "tokenInsts", data["stage"][stage]["runes"], ig_diff) if data["stage"][stage_key]["predefines"] else "",
                     "terrain"       : tile_lister(data["stage"][stage_key]["mapData"]),
                     "addendum"      : data["stage"][stage_key], 
                     "ig_ctrl"       : data["stage"][stage_key]["predefines"]["tokenInsts"] if data["stage"][stage_key]["predefines"] else {},
@@ -2413,8 +2435,8 @@ def wiki_article(
                             "dp_regen"      : data["stage"][stage]["options"]["costIncreaseTime"],
                             "maxPlayTime"   : data["stage"][stage]["options"]["maxPlayTime"],
                             "configBlackBoard" : data["stage"][stage]["options"]["configBlackBoard"],
-                            "deployable"    : token_lister(data["stage"][stage]["predefines"]["tokenCards"], "tokenCards") if data["stage"][stage]["predefines"] else "",
-                            "static"        : token_lister(data["stage"][stage]["predefines"]["tokenInsts"], "tokenInsts") if data["stage"][stage]["predefines"] else "",
+                            "deployable"    : token_lister(data["stage"][stage]["predefines"]["tokenCards"], "tokenCards", data["stage"][stage]["runes"], diff_type) if data["stage"][stage]["predefines"] else "",
+                            "static"        : token_lister(data["stage"][stage]["predefines"]["tokenInsts"], "tokenInsts", data["stage"][stage]["runes"], diff_type) if data["stage"][stage]["predefines"] else "",
                             "terrain"       : tile_lister(data["stage"][stage]["mapData"]),
                             "addendum"      : "",
                             "optionalRunes" : data["stage"][stage]["optionalRunes"],
@@ -3081,7 +3103,7 @@ def wiki_article(
     #printc(sorted(data["enemies"].keys()))
     #script_result(big_data)
     #script_result(big_data["stage"])
-    return article_data
+    return article_data + ["\n\n[[Category:Operation maps]]"]
 
 # \([A-Za-z0-9#_]+\)
 
@@ -3089,12 +3111,10 @@ def wiki_article(
 #script_result(wiki_article("act3mainss", "episode"))
 
 # Event
-#script_result(wiki_article("act43side", "sidestory", "Act or Die", year = 6), True)
-#script_result(wiki_article("act19mini", "storycollection", "Fantasy in The Mirage", year = 6), True)
 #script_result(wiki_article("act46side", "sidestory", "Retracing Our Steps 1101", year = 7), True)
 #script_result(wiki_article("act47side", "sidestory", "Unrealized Realities", year = 7), True)
 #script_result(wiki_article("act1vhalfidle", "sidestory", "Rebuilding Mandate"), True)
-#script_result(wiki_article("act48side", "sidestory", "Medjehtiqedti Bound", year = 7), True)
+script_result(wiki_article("act48side", "sidestory", "Medjehtiqedti Bound", year = 7), True)
 
 # Trials for Navigator #04
 #script_result(wiki_article("act4bossrush", "tn", "Trials for Navigator #04"))
@@ -3114,4 +3134,4 @@ def wiki_article(
 
 #PS
 PS_OP = []
-script_result(wiki_article(PS_OP, "ps", year = 6), True)
+#script_result(wiki_article(PS_OP, "ps", year = 7), True)

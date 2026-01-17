@@ -64,8 +64,8 @@ PART_NAMES_TL = {
                     "逃离哥伦比亚" : "Escape from Columbia",
                     
                     #act48side
-                    "神殿仪式" : "Temple Ceremony",
-                    "街头戏剧" : "Street Theater",
+                    "神殿仪式" : "Ritual of the Temple",
+                    "街头戏剧" : "Theatres of the Street",
                 }
 TOKEN_NAMES_TL = {
     

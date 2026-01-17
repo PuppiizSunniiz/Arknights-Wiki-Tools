@@ -20,6 +20,7 @@ def medal_article(medal_id : str, group_type : Literal["activityMedal", "rogueMe
     
     medal_dict = {}
     medal_text = []
+    medal_rename = {}
     medal_rarity_dict = {"T3" : "gold", "T2" : "silver", "T1" : "bronze"}
     Event_name = ""
     
@@ -35,27 +36,30 @@ def medal_article(medal_id : str, group_type : Literal["activityMedal", "rogueMe
             group_set   = group["groupName"].replace("#", "")
             group_desc  = group["groupDesc"]
             Event_name  = group_title.replace(" Engraved Medal Set", "")
-            medal_text.append(f'''{{{{Medal head
+            medal_text.append(f'''{{{{Event tab}}}}
+                                    {{{{Medal head
                                     |titlecolor = 
                                     {f'|title = {group_title}' if group_title != group_set else ""}
                                     |set = {group_set}
-                                    |desc = {wiki_story(group_desc)}}}}}'''.replace("                                    ", "").replace("\n\n", "\n"))
+                                    |desc = {wiki_story(group_desc)}
+                                    }}}}'''.replace("                                    ", "").replace("\n\n", "\n"))
             break
     
     #medal_piece list
     for medal in get_data["medalList"]:
         if medal["medalId"].find(medal_id) != -1:
-            if medal.get("originMedal", ""):
-                medal_dict[medal["slotId"]].update({"trim" : wikitrim_method(medal.get("getMethod", ""), Event_name)})
+            if medal.get("originMedal"):
+                medal_dict[medal["originMedal"]].update({"trim" : wikitrim_method(medal.get("getMethod", ""), Event_name)})
             else :
-                medal_dict[medal["slotId"]] = {
+                medal_dict[medal["medalId"]] = {
                                                 "id"            : medal["medalId"],
                                                 "name"          : medal["medalName"],
                                                 "rarity"        : medal["rarity"],
+                                                "slotId"        : medal["slotId"],
                                                 "getMethod"     : wikitrim_method(medal.get("getMethod", ""), Event_name),
                                                 "description"   : replace_apos_between(medal["description"])
                                             }
-    sort_medal_dict : dict[str, Any] = {key:medal_dict[key] for key in sorted(medal_dict.keys(), key = lambda k : int(k))}
+    sort_medal_dict : dict[str, Any] = {key:medal_dict[key] for key in sorted(medal_dict.keys(), key = lambda k : medal_dict[k]["slotId"])}
     #script_result(sort_medal_dict, True)
     
     #medal_piece write
@@ -71,11 +75,22 @@ def medal_article(medal_id : str, group_type : Literal["activityMedal", "rogueMe
         medal_get   = sort_medal_dict[key]["getMethod"]
         medal_trim  = sort_medal_dict[key].get("trim", False)
         medal_desc  = sort_medal_dict[key]["description"].replace("\n", "<br/>")
-        medal_text.append(f'{{{{Medal cell|name={medal_name}{f'|title={medal_title}' if medal_title != medal_name else ""}|type={medal_type}|desc={medal_desc}|cond={medal_get}{f'|trim={medal_trim}' if medal_trim else ""}}}}}')
+        medal_text.append(f'''{{{{Medal cell
+                                    |name={medal_name}
+                                    {f'|title={medal_title}' if medal_title != medal_name else ""}
+                                    |type={medal_type}
+                                    |desc={medal_desc}
+                                    |cond={medal_get}
+                                    {f'|trim={medal_trim}' if medal_trim else ""}}}}}'''.replace("                                    ", "").replace("\n", ""))
         #printr(medal_text)
+        medal_rename[key] = medal_name
+        if medal_trim: 
+            medal_rename[key + "5"] = f'{medal_name} Trimmed'
     
     if Event_name:
         medal_text.append("{{Table end}}\n{{Medal sets}}")
+    for medal, name in medal_rename.items():
+        medal_text.append(f'\n{medal}\t{name}')
     script_result(medal_text, True)
     
-medal_article("medal_activity_act1break", group_type = "activityMedal")
+medal_article("medal_activity_44side", group_type = "activityMedal")

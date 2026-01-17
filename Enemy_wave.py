@@ -2,6 +2,7 @@ import glob
 
 from Wiki_Dict import ENEMY_NAMES_TL, TOKEN_NAMES_TL
 from Wiki_OOP.char_data import Character_Database
+from Wiki_OOP.enemy_data import Enemy_Database
 from pyFunction import json_load, printr, script_result
 from pyFunction_Wiki import grid_name, load_json
 
@@ -12,6 +13,7 @@ used_json = [
 
 DB = load_json(used_json)
 CHAR = Character_Database()
+ENEMY = Enemy_Database()
 
 def enemy_wave_csv(all_stage : list):
     all_stage_dict = {}
@@ -79,7 +81,7 @@ def enemy_wave_csv(all_stage : list):
     
     #csv
     script_txt = []
-    script_txt.append("stage|wave|frag|action|group|GroupKey|GroupPack|key|name|ID|Class|count|preDelay|interval|weight|route|start")
+    script_txt.append("stage|wave|frag|action|group|GroupKey|GroupPack|key|name|ID|Class|count|preDelay|interval|weight|route|start|sortId")
     for stage in all_stage_dict:
         for i in range(len(all_stage_dict[stage]["waves"])):
             for j in range(len(all_stage_dict[stage]["waves"][i]["fragments"])):
@@ -90,14 +92,16 @@ def enemy_wave_csv(all_stage : list):
                     routeIndex              = action["routeIndex"]
                     startPosition           = grid_name(list(all_stage_dict[stage]["routes"][routeIndex]["startPosition"].values()))
                     try :
-                        key_name    = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["name"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else ENEMY_NAMES_TL.get(action["key"].split("#")[0], TOKEN_NAMES_TL.get(action["key"].split("#")[0], CHAR.getname(action["key"].split("#")[0]) if action["key"].startswith(("char", "token", "trap")) else action["key"]))
+                        key_name    = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["name"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else ENEMY_NAMES_TL.get(action["key"].split("#")[0], TOKEN_NAMES_TL.get(action["key"].split("#")[0], CHAR.getname(action["key"].split("#")[0]) if action["key"].startswith(("char", "token", "trap")) else ENEMY.getname(action["key"])))
                         key_id      = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].startswith("enemy") else "-"
+                        key_sortId  = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["sortId"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["sortId"] if action["key"].startswith("enemy") else "-"
                         key_class   = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].startswith("enemy") else "-"
                     except KeyError:
                         key_name    = f'{DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["name"]}({action["key"]})' if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else (f'{CHAR.getname(action["key"].split("#")[0])}({action["key"]})' if action["key"].startswith(("char", "token", "trap")) else action["key"])
                         key_id      = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
+                        key_sortId  = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["sortId"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
                         key_class   = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
-                    script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}|{routeIndex}|{startPosition}')
+                    script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}|{routeIndex}|{startPosition}|{key_sortId}')
     if all_stage_dict[stage]["branches"]:
         for branch in all_stage_dict[stage]["branches"]:
             for k in range(len(all_stage_dict[stage]["branches"][branch]["phases"])):
@@ -110,18 +114,20 @@ def enemy_wave_csv(all_stage : list):
                     try :
                         key_name    = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["name"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else ENEMY_NAMES_TL.get(action["key"].split("#")[0], TOKEN_NAMES_TL.get(action["key"].split("#")[0], CHAR.getname(action["key"].split("#")[0]) if action["key"].startswith(("char", "token", "trap")) else action["key"]))
                         key_id      = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].startswith("enemy") else "-"
+                        key_sortId  = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["sortId"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["sortId"] if action["key"].startswith("enemy") else "-"
                         key_class   = DB["json_enemy_handbookEN"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].split("#")[0] in DB["json_enemy_handbookEN"]["enemyData"] else DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].startswith("enemy") else "-"
                     except KeyError:
                         key_name    = f'{DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["name"]}({action["key"]})' if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else (f'{CHAR.getname(action["key"].split("#")[0])}({action["key"]})' if action["key"].startswith(("char", "token", "trap")) else action["key"])
                         key_id      = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyIndex"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
+                        key_sortId  = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["sortId"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
                         key_class   = DB["json_enemy_handbook"]["enemyData"][action["key"].split("#")[0]]["enemyLevel"] if action["key"].split("#")[0] in DB["json_enemy_handbook"]["enemyData"] else "-"
-                    script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}|{routeIndex}|{startPosition}')
+                    script_txt.append(f'{stage}|{i}|{j}|{action["actionType"].split("_")[0]}|{hiddenGroup}|{randomSpawnGroupKey}|{randomSpawnGroupPackKey}|{action["key"]}|{key_name}|{key_id}|{key_class}|{action["count"]}|{action["preDelay"]}|{action["interval"]}|{action["weight"]}|{routeIndex}|{startPosition}|{key_sortId}')
     script_result(script_txt, True)
 
 #all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\obt\main\*16-*')
-#all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\activities\act2multi\**.json')
+all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\activities\act48side\**.json')
 #all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\obt\roguelike\ro4\**.json')
 #all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\obt\roguelike\ro5\**.json')
-all_stage = glob.glob(r'C:\Github\Arknights-Project\FBS\YoStar_out\level\**.json')
+#all_stage = glob.glob(r'C:\Github\Arknights-Project\FBS\YoStar_out\level\**.json')
 
 enemy_wave_csv(all_stage)

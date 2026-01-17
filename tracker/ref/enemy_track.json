@@ -1,6 +1,6 @@
 {
-    "CN": "26-01-06-09-38-59_ea48d2",
-    "EN": "25-12-22-12-58-23_0ca902",
+    "CN": "26-01-14-09-16-21_82db26",
+    "EN": "26-01-13-09-42-53_63eee8",
     "tracker": {
         "enemy_10001_trslim": {
             "CN": "简饲源石虫",
@@ -1384,105 +1384,105 @@
         },
         "enemy_10111_ymgpck": {
             "CN": "“某种天命”",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "'Certain Fates'",
+            "JP": "「ある種の天命」",
+            "KR": "'어떤 운명'"
         },
         "enemy_10111_ymgpck_2": {
             "CN": "“某种天命”",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "'Certain Fates'",
+            "JP": "「ある種の天命」",
+            "KR": "'어떤 운명'"
         },
         "enemy_10112_ymgds": {
             "CN": "冒失的小弟",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Careless Underling",
+            "JP": "そそっかしい舎弟",
+            "KR": "경솔한 조직원"
         },
         "enemy_10112_ymgds_2": {
             "CN": "资深的小弟",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Veteran Underling",
+            "JP": "古参の舎弟",
+            "KR": "베테랑 조직원"
         },
         "enemy_10113_ymgung": {
             "CN": "雷遁忍者",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Raiton Ninja",
+            "JP": "雷遁忍者",
+            "KR": "뇌둔 닌자"
         },
         "enemy_10113_ymgung_2": {
             "CN": "雷遁宗师",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Raiton Master",
+            "JP": "雷遁宗師",
+            "KR": "뇌둔 종사"
         },
         "enemy_10114_ymgsld": {
             "CN": "悲观的大哥",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Pessimistic Oath-Brother",
+            "JP": "悲観的な兄貴分",
+            "KR": "비관적인 형님"
         },
         "enemy_10114_ymgsld_2": {
             "CN": "绝望的大哥",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Desperate Oath-Brother",
+            "JP": "絶望した兄貴分",
+            "KR": "절망하는 형님"
         },
         "enemy_10115_ymghol": {
             "CN": "土遁忍者",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Doton Ninja",
+            "JP": "土遁忍者",
+            "KR": "토둔 닌자"
         },
         "enemy_10115_ymghol_2": {
             "CN": "土遁宗师",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Doton Master",
+            "JP": "土遁宗師",
+            "KR": "토둔 종사"
         },
         "enemy_10116_ymgtop": {
             "CN": "水遁忍者",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Suiton Ninja",
+            "JP": "水遁忍者",
+            "KR": "수둔 닌자"
         },
         "enemy_10116_ymgtop_2": {
             "CN": "水遁宗师",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Suiton Master",
+            "JP": "水遁宗師",
+            "KR": "수둔 종사"
         },
         "enemy_10117_ymggld": {
             "CN": "风遁忍者",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Fuuton Ninja",
+            "JP": "風遁忍者",
+            "KR": "풍둔 닌자"
         },
         "enemy_10117_ymggld_2": {
             "CN": "风遁宗师",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Fuuton Master",
+            "JP": "風遁宗師",
+            "KR": "풍둔 종사"
         },
         "enemy_10118_ymgprc": {
             "CN": "澪",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Mio",
+            "JP": "澪",
+            "KR": "미오"
         },
         "enemy_10119_ymgbxm": {
             "CN": "压力舒缓帮手",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Stress-Relief Helper",
+            "JP": "モヤモヤナクナール",
+            "KR": "스트레스 해소 기기"
         },
         "enemy_10119_ymgbxm_2": {
             "CN": "压力归零帮手",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Zero-Stress Helper",
+            "JP": "イライラナクナール",
+            "KR": "스트레스 제거 기기"
         },
         "enemy_1011_wizard": {
             "CN": "术师",
@@ -7780,9 +7780,9 @@
         },
         "enemy_1570_ymgscm": {
             "CN": "三船光平",
-            "EN": "",
-            "JP": "",
-            "KR": ""
+            "EN": "Kouhei Mifune",
+            "JP": "三船光平",
+            "KR": "미후네 코헤이"
         },
         "enemy_1571_mirbst": {
             "CN": "狂躁异质裂兽",
