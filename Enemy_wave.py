@@ -125,9 +125,10 @@ def enemy_wave_csv(all_stage : list):
     script_result(script_txt, True)
 
 #all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\obt\main\*16-*')
-all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\activities\act48side\**.json')
+#all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\activities\act48side\**.json')
 #all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\obt\roguelike\ro4\**.json')
 #all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\obt\roguelike\ro5\**.json')
+all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData_YoStar\en_US\gamedata\levels\obt\roguelike\ro5\**.json')
 #all_stage = glob.glob(r'C:\Github\Arknights-Project\FBS\YoStar_out\level\**.json')
-
+#all_stage = glob.glob(r'C:/Github/AN-EN-Tags/json\gamedata\ArknightsGameData_YoStar\en_US\gamedata\levels\obt\memory\**.json')
 enemy_wave_csv(all_stage)

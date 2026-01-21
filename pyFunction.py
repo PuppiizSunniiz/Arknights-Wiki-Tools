@@ -48,8 +48,11 @@ def json_load(filepath : str, internal : bool = False, default_json : dict|list 
         with open(f'C:/Github/AN-EN-Tags/{filepath}', 'r', encoding = 'utf-8') as file:
             return json.load(file)
 
-def stage_load(filepath : str):
-    return json_load(rf'json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\{filepath}.json')
+def stage_load(filepath : str, server : Literal["CN", "EN"] = "CN"):
+    if server == "CN":
+        return json_load(rf'json\gamedata\ArknightsGameData\zh_CN\gamedata\levels\{filepath}.json')
+    else:
+        return json_load(rf'json\gamedata\ArknightsGameData_YoStar\en_US\gamedata\levels\{filepath}.json')
 
 def txt_load(filepath : str, temp = False):
     if temp:

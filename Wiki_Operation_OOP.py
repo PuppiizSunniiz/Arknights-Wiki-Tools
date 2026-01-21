@@ -35,12 +35,15 @@ def wiki_operation(
         case "ig" | "tn" | "vb":
             mode_info = event_type
             page_footer = "Seasonal game modes"
-        case "sss":
-            mode_info = event_type
-            page_footer = "S3 operations"
         case "is":
             mode_info = event_type
             page_footer = f'IS{year} operations'
+        case "ps":
+            mode_info = event_type
+            page_footer = f'Y{year} Paradox Simulations'
+        case "sss":
+            mode_info = event_type
+            page_footer = "S3 operations"
         case "intermezzo" | "sidestory" | "storycollection":
             mode_info = event_type
             page_footer = f'Y{year} event operations'
@@ -56,6 +59,7 @@ def wiki_operation(
             rogue_id = f'rogue_{int(year) - 1}'
             theme_name = DB["json_roguelike_topicEN"]["topics"][rogue_id]["name"] if rogue_id in DB["json_roguelike_topic"]["topics"] else DB["json_roguelike_topic"]["topics"][rogue_id]["name"]
             for stage in STAGE["stage"]:
+                if test_stage and stage != test_stage: continue
                 if stage in STAGE["hard_dict"].values():
                     continue
                 hard_stage = STAGE["hard_dict"].get(stage, "")
@@ -146,11 +150,14 @@ event_id    = ""
 # ['episode', 'intermezzo', 'sidestory', 'storycollection', 'ig', 'is', 'sss', 'tn', 'vb']
 event_type  = "is"
 event_name  = ""
-year        = "5"
+year        = "6"
 
 DB      = load_json(all_json = True)
 ENEMY   = Enemy_Database().DB
 STAGE   = Stage_Database().Lister(event_id, event_type, year)
 
+test_stage = ""
+#test_stage = "ro5_n_2_3"
+
 #script_result(STAGE, True)
-script_result(wiki_operation(event_id, event_type, event_name, year), True)
+script_result(wiki_operation(event_id, event_type, event_name, year), )#True)

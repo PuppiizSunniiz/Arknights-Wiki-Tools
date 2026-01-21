@@ -8,7 +8,7 @@ import pandas as pd
 
 from Wiki_Dict import CLASS_PARSE_EN
 from Wiki_OOP.char_data import Character_Database
-from pyFunction import R, G, B, Y, RE, json_load, printr, script_result
+from pyFunction import R, G, B, Y, RE, json_load, printc, printr, script_result
 from pyFunction_Wiki import grid_name, load_json, range_template, replace_apos_between, wiki_stage, wiki_story, wiki_trim
 
 ################################################################################################################################################################################################################################################
@@ -826,4 +826,9 @@ def IS_relic_list(IS_THEME : str):
         temp[IS_details["items"][item]["name"]] = IS_details["items"][item]["iconId"]
     script_result(temp, True)
     
-IS_relic_list("rogue_5")
+#IS_relic_list("rogue_5")
+
+enemy_diff = json_load(r'tracker\enemy_diff.json', True)
+for enemy in enemy_diff["tracker"]:
+    enemyData = DB["json_enemy_handbookEN"]["enemyData"][enemy]
+    printc(enemyData["name"], f'|filename = {enemy}', f'|sortId = {enemyData["sortId"]}')

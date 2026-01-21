@@ -486,11 +486,11 @@ def wiki_article(
         return enemy_counter
     
     def enemy_trim(enemy_name, e_class = ""):
-            trim_result = re.sub(r"(.+?|)'(.+?)'(.+?|)",r'\1"\2"\3', enemy_name)
-            if event_type == "tn" and e_class == "BOSS":
-                return trim_result.replace(",", "")
-            else:
-                return trim_result.replace('"', "")
+        trim_result = re.sub(r"(.+?|)'(.+?)'(.+?|)",r'\1"\2"\3', enemy_name)
+        if event_type == "tn" and e_class == "BOSS":
+            return trim_result.replace(",", "")
+        else:
+            return trim_result.replace('"', "")
     
     def enemies_lister(def_data : dict) -> dict:
         enemy_classes = ["NORMAL", "ELITE", "BOSS"]
@@ -2035,9 +2035,9 @@ def wiki_article(
         
         if len(all_op) > 1:
             if len(all_trust) == 1:
-                predefine_result += f'\n|saddendum = \nAll Operators have {all_trust[0]}% [[Trust]].'
+                predefine_result += f'\n|saddendum = All Operators have {all_trust[0]}% [[Trust]].'
             else:
-                predefine_result += f'''\n|saddendum = \n$1 and $2 have $3% [[Trust]].
+                predefine_result += f'''\n|saddendum = $1 and $2 have $3% [[Trust]].
                                     <!--
                                     Comp = {comp_op}
                                     
@@ -3114,7 +3114,7 @@ def wiki_article(
 #script_result(wiki_article("act46side", "sidestory", "Retracing Our Steps 1101", year = 7), True)
 #script_result(wiki_article("act47side", "sidestory", "Unrealized Realities", year = 7), True)
 #script_result(wiki_article("act1vhalfidle", "sidestory", "Rebuilding Mandate"), True)
-script_result(wiki_article("act48side", "sidestory", "Medjehtiqedti Bound", year = 7), True)
+#script_result(wiki_article("act48side", "sidestory", "Medjehtiqedti Bound", year = 7), True)
 
 # Trials for Navigator #04
 #script_result(wiki_article("act4bossrush", "tn", "Trials for Navigator #04"))
@@ -3127,7 +3127,7 @@ script_result(wiki_article("act48side", "sidestory", "Medjehtiqedti Bound", year
 
 # IS
 #script_result(wiki_article("rogue_4", "is", year = 5), True)
-#script_result(wiki_article("rogue_5", "is", year = 6, temp = True), True)
+script_result(wiki_article("rogue_5", "is", year = 6), True)
 
 # SSS
 #script_result(wiki_article("tower_n_18", "sss", "Shangshu Night Market"), True)

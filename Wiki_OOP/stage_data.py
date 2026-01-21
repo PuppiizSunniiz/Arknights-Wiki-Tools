@@ -1,7 +1,7 @@
 import re
 from typing import Literal
 from Wiki_OOP.enemy_data import Enemy_Database
-from pyFunction import printc, printf, script_result, stage_load
+from pyFunction import printc, printf, printr, script_result, stage_load
 from pyFunction_Wiki import load_json
 
 used_json = [
@@ -60,14 +60,13 @@ def stage_loader():
                 pass
 '''
 
-def get_stage_data(level_id : str, isHard : bool = False, is6Star : bool = False):
+def get_stage_data(level_id : str, isHard : bool = False, is6Star : bool = False, ignored_group : list[str] = []):
     stage_data      = {}
     diff_type       = "SIX_STAR" if is6Star else "FOUR_STAR" if isHard else "NORMAL"
-    stage_json      = stage_load(level_id)
-    valid_list      = valid_lister(stage_json["runes"], diff_type)
+    stage_json      = stage_load(level_id, "EN")
+    valid_list      = valid_lister(stage_json["runes"], diff_type, ignored_group)
     enemies_list    = enemies_lister(stage_json["waves"], valid_list, stage_json["enemyDbRefs"])
     #terrain_list = terrain_lister(stage_json)
-    
     stage_data["unit_limit"]  = global_deploy(stage_json["runes"], stage_json["options"]["characterLimit"], diff_type)
     stage_data["enemies"]     = enemies_list.get("counter")
     stage_data["lp"]          = global_lifepoint(stage_json["runes"], stage_json["options"]["maxLifePoint"], diff_type)
@@ -82,72 +81,132 @@ def get_stage_data(level_id : str, isHard : bool = False, is6Star : bool = False
     stage_data["boss"]        = enemies_list.get("BOSS")
     return stage_data
 
-def valid_lister(runes_data : dict = {}, diff : Literal["NORMAL", "FOUR_STAR", "SIX_STAR"] = "ALL"):
+def valid_lister(runes_data : dict = {}, diff : Literal["NORMAL", "FOUR_STAR", "SIX_STAR"] = "ALL", ignored_group : list[str] = []):
     enemy_replace = {}
     enable_group = [None]
-    disable_group = []
-    
+    disable_group = ignored_group
+    #print(ignored_group)
     if runes_data:
         for rune in runes_data:
-            if rune["key"] == "level_hidden_group_enable" and rune["difficultyMask"] in ["ALL", diff]:
+            if rune["difficultyMask"] not in ["ALL", diff]: continue
+            if rune["key"] == "level_hidden_group_enable":
                 for blackboard in rune["blackboard"]:
-                    if blackboard["key"] == "value":
+                    if blackboard["key"] == "key" and blackboard["valueStr"] not in ignored_group:
                         enable_group.append(blackboard["valueStr"])
-            elif rune["key"] == "level_hidden_group_disable" and rune["difficultyMask"] in ["ALL", diff]:
+            elif rune["key"] == "level_hidden_group_disable":
                 for blackboard in rune["blackboard"]:
-                    if blackboard["key"] == "value":
+                    if blackboard["key"] == "key":
                         disable_group.append(blackboard["valueStr"])
-            elif rune["key"] == "level_enemy_replace" and rune["difficultyMask"] in ["ALL", diff]:
+            elif rune["key"] == "level_enemy_replace":
                 replace_key     = ""
                 replace_value   = ""
                 for blackboard in rune["blackboard"]:
                     if blackboard["key"] == "key":
                         replace_key = blackboard["valueStr"]
-                    elif blackboard["key"] == "key":
+                    elif blackboard["key"] == "value":
                         replace_value = blackboard["valueStr"]
                 if replace_key and replace_value:
                     enemy_replace[replace_key] = replace_value
                 else:
-                    printf(f'"level_enemy_replace" incomplete : {rune}', __file__, "c")
+                    printf(f'"level_enemy_replace" incomplete : {rune}', file = __file__, mode="c")
     return {"enable" : enable_group, "disable" : disable_group, "replace" : enemy_replace}
 
 def enemies_lister(stage_waves : list, valid_dict : dict, enemyDbRefs : list = [], ):
-    enemyDbRefs_dict = {enemy["id"]:enemy["overwrittenData"]["prefabKey"]["m_value"] if (enemy["overwrittenData"] and enemy["overwrittenData"]["prefabKey"]["m_value"]) else enemy["id"] for enemy in enemyDbRefs}
-    enemy_counter = {"NORMAL" : {}, "ELITE" : {}, "BOSS" : {}, "counter" : "", }
-    temp_counter_dict = {}
-    temp_counter = (0, 0)
+    def enemy_trim(enemy_name):
+        trim_result = re.sub(r"(^|.+? )'(.+?)'( .+?|$)",r'\1"\2"\3', enemy_name)
+        return trim_result.replace('"', "")
+    
+    def wiki_enemy(enemy_id : str, enemy_counter : dict[str, int]):
+        unique_enemies = []
+        isBoss = DB["json_enemy_handbook"]["enemyData"][enemy]["enemyLevel"] == "BOSS"
+        isSummon = enemy_counter["isSummon"]
+        count_min = enemy_counter["Base"] + enemy_counter["Min"]
+        count_max = enemy_counter["Base"] + enemy_counter["Max"]
+        enemy_name = enemy_trim(ENEMIES.getname(enemy_id))
+        
+        if count_min != count_max:
+            return f'{{{{E|{enemy_name}|{count_min}|{count_max}}}}}'
+        elif (count_min == 1 and (enemy_id in unique_enemies or isBoss)) or (count_min == 0 and isSummon):
+            return f'{{{{E|{enemy_name}}}}}'
+        elif count_min == 0:
+            return ""
+        else:
+            return f'{{{{E|{enemy_name}|{count_min}}}}}'
+        
+    enemyDbRefs_dict    = {enemy["id"]:enemy["overwrittenData"]["prefabKey"]["m_value"] if (enemy["overwrittenData"] and enemy["overwrittenData"]["prefabKey"]["m_value"]) else enemy["id"] for enemy in enemyDbRefs}
+    enemy_counter       = {"NORMAL" : {}, "ELITE" : {}, "BOSS" : {}, "counter" : "", }
+    temp_enemy_counter  = {}
+    temp_wave_counter   = {"Base" : 0, "Min" : 0, "Max" : 0}
     
     enable_group    = valid_dict["enable"]
     disable_group   = valid_dict["disable"]
     enemy_replace   = valid_dict["replace"]
-    
+    #print(disable_group)
     for wave in stage_waves:
         for fragment in wave["fragments"]:
-            GroupKey        = {}
-            GroupKey_pack   = {}
-            GroupPackKey    = {}
+            GroupKeys        = {}
+            GroupKey_packs   = {}
+            GroupPackKeys    = {}
             for action in fragment["actions"]:
+                if action["randomSpawnGroupPackKey"]:
+                    if action["randomSpawnGroupKey"]:
+                        GroupKey_packs.setdefault(action["randomSpawnGroupKey"], [])
+                        GroupKey_packs[action["randomSpawnGroupKey"]].append(action["randomSpawnGroupPackKey"])
+                
                 if action["actionType"] == "SPAWN" and action["key"]:
                     enemy_key = enemy_prefabkey(action["key"], enemyDbRefs_dict, enemy_replace)
-                    print(f'action["key"] = {action["key"]} | enemy_key = {enemy_key}')
-                    temp_counter_dict.setdefault(enemy_key, {"Base" : 0, "Min" : 0, "Max" : 0})
+                    #print(f'action["key"] = {action["key"]} | enemy_key = {enemy_key}')
                 else:
                     continue
+                
                 if action["hiddenGroup"] in enable_group and action["hiddenGroup"] not in disable_group and action["key"].startswith("enemy"):
+                    temp_enemy_counter.setdefault(enemy_key, {"Base" : 0, "Min" : 0, "Max" : 0, "isSummon" : False})
                     if action["randomSpawnGroupPackKey"]:
-                        if action["randomSpawnGroupKey"]:
-                            GroupKey_pack.setdefault(action["randomSpawnGroupKey"], [])
-                            GroupKey_pack[action["randomSpawnGroupKey"]].append(action["randomSpawnGroupPackKey"])
-                        GroupPackKey.setdefault(action["randomSpawnGroupPackKey"], {}).setdefault(enemy_key, 0)
-                        GroupPackKey[action["randomSpawnGroupPackKey"]][enemy_key] += action["count"]
+                        GroupPackKeys.setdefault(action["randomSpawnGroupPackKey"], {}).setdefault(enemy_key, 0)
+                        GroupPackKeys[action["randomSpawnGroupPackKey"]][enemy_key] += action["count"]
                     elif action["randomSpawnGroupKey"]:
-                        GroupKey.setdefault(action["randomSpawnGroupKey"], {}).setdefault(enemy_key, 0)
-                        GroupKey[action["randomSpawnGroupKey"]][enemy_key] += action["count"]
+                        GroupKeys.setdefault(action["randomSpawnGroupKey"], {}).setdefault(enemy_key, [])
+                        GroupKeys[action["randomSpawnGroupKey"]][enemy_key].append(action["count"])
                     else:
-                        temp_counter_dict[enemy_key]["Base"] += action["count"]
-            if GroupKey_pack:
-                pass
-    enemy_counter["counter"] = (sum([enemy["Base"] + enemy["Min"] for enemy in temp_counter_dict.values()]), sum([enemy["Base"] + enemy["Max"] for enemy in temp_counter_dict.values()]))
+                        temp_enemy_counter[enemy_key]["Base"] += action["count"]
+                        temp_wave_counter["Base"] += action["count"]
+            if GroupKeys:
+                for GroupKey in GroupKeys:
+                    if GroupKey == "tel" : continue # extra miniboss on sui sub
+                    wave_min = 9999
+                    wave_max = 0
+                    for enemy in GroupKeys[GroupKey]:
+                        enemy_min = min(GroupKeys[GroupKey][enemy])
+                        enemy_max = max(GroupKeys[GroupKey][enemy])
+                        temp_enemy_counter[enemy]["Min"] += (enemy_min if len(set(GroupKeys[GroupKey].keys())) == 1 else 0)
+                        temp_enemy_counter[enemy]["Max"] += enemy_max
+                        wave_min = min(wave_min, enemy_min)
+                        wave_max = max(wave_max, enemy_max)
+                    temp_wave_counter["Min"] += wave_min
+                    temp_wave_counter["Max"] += wave_max
+            if GroupKey_packs:
+                #printc(GroupKey_packs, GroupPackKeys)
+                for GroupKey in GroupKey_packs:
+                    GroupKey_enemy = set([enemy for group in GroupKey_packs[GroupKey] if group in GroupPackKeys for enemy in GroupPackKeys[group]])
+                    for enemy in GroupKey_enemy:
+                        enemy_count = [GroupPackKeys[group].get(enemy, 0) if group in GroupPackKeys else 0 for group in GroupKey_packs[GroupKey]]
+                        temp_enemy_counter[enemy]["Min"] += min(enemy_count)
+                        temp_enemy_counter[enemy]["Max"] += max(enemy_count)
+                    wave_count = [sum(GroupPackKeys[group].values()) if group in GroupPackKeys else 0 for group in GroupKey_packs[GroupKey]]
+                    temp_wave_counter["Min"] += min(wave_count)
+                    temp_wave_counter["Max"] += max(wave_count)
+            #printc(GroupKeys, GroupKey_packs, GroupPackKeys,)
+    wave_counter = (temp_wave_counter["Base"] + temp_wave_counter["Min"], temp_wave_counter["Base"] + temp_wave_counter["Max"])
+    enemy_counter["counter"] = wave_counter[0] if wave_counter[0] == wave_counter[1] else f'{wave_counter[0]}, {wave_counter[1]}'
+    #printr(temp_enemy_counter)
+    temp_writer = {"NORMAL" : [], "ELITE" : [], "BOSS" : []}
+    sorted_enemies = sorted(filter(lambda enemy : enemy in DB["json_enemy_handbook"]["enemyData"], temp_enemy_counter.keys()), key = lambda x : DB["json_enemy_handbook"]["enemyData"][x]["sortId"])
+    for enemy in sorted_enemies:
+        enemy_wikitext = wiki_enemy(enemy, temp_enemy_counter[enemy])
+        if enemy_wikitext: temp_writer[DB["json_enemy_handbook"]["enemyData"][enemy]["enemyLevel"]].append(enemy_wikitext)
+    for enemyLevel in temp_writer:
+        enemy_counter[enemyLevel] = ", ".join(temp_writer[enemyLevel])
+    #temp_counter = (sum([enemy["Base"] + enemy["Min"] for enemy in temp_enemy_counter.values()]), sum([enemy["Base"] + enemy["Max"] for enemy in temp_enemy_counter.values()]))
     #script_result(temp_counter_dict, True, script_exit = True)
     return enemy_counter
 
