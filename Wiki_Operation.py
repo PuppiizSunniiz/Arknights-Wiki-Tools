@@ -35,7 +35,7 @@ DB = load_json(used_json)
 sortby_sortID = True # True False
 CHARACTER_DATA  = Character_Database()
 
-def wiki_enemies(event : str = "", ps : bool = False, rogue : str = "", sss : str = "", temp : bool = False, show : bool = False) -> dict :
+def wiki_enemies(event : str = "", cc : bool = False, cc_info : dict = {}, ps : bool = False, rogue : str = "", sss : str = "", temp : bool = False, show : bool = False) -> dict :
     def enemy_lv_data(enemy_data : dict, enemy_data_EN : dict, lv : int) -> dict:
         temp : dict = {}
         for key in enemy_data[lv]["enemyData"].keys():
@@ -47,7 +47,9 @@ def wiki_enemies(event : str = "", ps : bool = False, rogue : str = "", sss : st
         
     data = {"zone" : {}, "zone_node" : {}, "stage_code" : {}, "stage" : {}, "enemies" : {}, "enemy_type" : {}}
     stages = {}
-    if ps:
+    if cc:
+        stages = cc_info
+    elif ps:
         if PS_OP:
             ps_ops = [op if op.startswith("char_") else CHARACTER_DATA.getid(op) for op in PS_OP]
         else:
@@ -167,7 +169,10 @@ def wiki_enemies(event : str = "", ps : bool = False, rogue : str = "", sss : st
             for enemy_handbook_key in DB["json_enemy_handbook"]["enemyData"]:
                 if DB["json_enemy_handbook"]["enemyData"][enemy_handbook_key]["name"] == enemy[1]:
                     enemy_handbook_id = enemy_handbook_key
-        data["enemies"][enemy[0]]["handbook"] = DB["json_enemy_handbookEN"]["enemyData"][enemy_handbook_id] if enemy_handbook_id in DB["json_enemy_handbookEN"]["enemyData"] else DB["json_enemy_handbook"]["enemyData"][enemy_handbook_id]
+        try:
+            data["enemies"][enemy[0]]["handbook"] = DB["json_enemy_handbookEN"]["enemyData"][enemy_handbook_id] if enemy_handbook_id in DB["json_enemy_handbookEN"]["enemyData"] else DB["json_enemy_handbook"]["enemyData"][enemy_handbook_id]
+        except:
+            printr(enemy)
         #print(data["enemies"][enemy[0]])
     # Enemy type dict
     ## CN
@@ -179,7 +184,7 @@ def wiki_enemies(event : str = "", ps : bool = False, rogue : str = "", sss : st
     
 def wiki_article(
     event_code : str, 
-    event_type : Literal["episode", "intermezzo", "sidestory", "storycollection", "ig", "is", "ps", "sss", "tn", "vb"] = "", 
+    event_type : Literal["episode", "intermezzo", "sidestory", "storycollection", "cc", "ig", "is", "ps", "sss", "tn", "vb"] = "", 
     event_name : str = "", 
     year : str|int = "",
     temp : bool = False,
@@ -200,7 +205,7 @@ def wiki_article(
                         "cbuff_max_cost", "cbuff_token_initial_cnt",
                         "char_exclude", 
                         "char_attribute_add", "char_cost_add", "char_blockcnt_add", "char_skill_cd_add",
-                        "char_skill_blackb_mul", "char_skill_cd_mul", "char_cost_mul", "char_respawntime_mul", 
+                        "char_skill_blackb_add", "char_skill_blackb_mul", "char_skill_cd_mul", "char_cost_mul", "char_respawntime_mul", 
                         "env_gbuff_new", "env_gbuff_new_with_verify", "env_system_new", 
                         "global_cost_recovery_mul", "global_lifepoint", "global_cost_recovery", "global_forbid_location", "global_placable_char_num_add", "global_initial_cost_add",
                         "level_predefines_enable", 
@@ -239,6 +244,7 @@ def wiki_article(
             ]
 
     env_name = [
+                    "character_in_magiccircuit_env",
                     "defense_buff_add_if_cancelable_buff[enemy]",
                     "env_010_act31side_pollute", "env_005_mainline12_sightSystem", "env_v066_mainline16_ctrl", "env_act42side_level_ctrl", 
                     "mainline16_enemy_target_free", 
@@ -272,8 +278,10 @@ def wiki_article(
                 desc = desc.replace(k,v)
             return desc
         if desc_cond == None : return ""
+        # lv.item skip
+        desc = re.sub(r'<@lv\.(?:item)>(.+?)<\/>', r"\1", desc_cond)
         # rft skip
-        desc = re.sub(r'<@lv\.(?:muitem)><(.+?)><\/>', r"'''{{Color|<[[\1]]>|muitem}}'''", desc_cond)
+        desc = re.sub(r'<@lv\.(?:muitem)><(.+?)><\/>', r"'''{{Color|<[[\1]]>|muitem}}'''", desc)
         desc = re.sub(r'<@lv\.(?:muitem)>(.+?)<\/>', r"{{Color|\1|muitem}}", desc)
         # game color
         desc = re.sub(r'<@lv.sp>(.+?)<\/>', r"{{Color|\1|sp}}", desc)
@@ -1831,7 +1839,8 @@ def wiki_article(
             eaddendum_exclude = []
             enemy_key = enemy[0]
             enemy_ref_id = enemy[1]["id"]
-            enemy_code = big_data["enemies"][enemy_key]["handbook"]["enemyId"]
+            printr("enemy_key", enemy_key)
+            enemy_code = big_data["enemies"][enemy_key]["handbook"]["enemyId"] if "handbook" in big_data["enemies"][enemy_key] else enemy_key
             enemy_name = DB["json_enemy_handbookEN"]["enemyData"][enemy_code]["name"] if enemy_code in DB["json_enemy_handbookEN"]["enemyData"] else ENEMY_NAMES_TL.get(enemy_key, f'{big_data["enemies"][enemy_key]["data"]["name"]}({enemy_key})')
             for k,v in enemy[1]["data"].items():
                 if k in eaddendum_skip or (k == "attackSpeed" and v == 100) or k == "rangeRadius" and v in [0, -1] or (k == "enemyTags" and v == big_data["enemies"][enemy_key]["data"]["enemyTags"]):
@@ -2294,6 +2303,111 @@ def wiki_article(
             return f'''{{{{Operation list cell
                         |type = interlude
                         |operation = {stage_key}}}}}'''.replace("                        ", "")
+
+    def cc_article_data(data : dict, stage_key : str):
+        # https://arknights.wiki.gg/wiki/Template:CC_operation_info
+        enemies_data = enemies_lister(data["enemies_stage"][stage_key])
+        return {
+                    "stage_key"     : stage_key,
+                    "name"          : data["stage_data"][stage_key]["name"],
+                    "location"      : data["stage_data"][stage_key]["code"],
+                    "desc"          : data["stage_data"][stage_key]["description"],
+                    "unit limit"    : global_deploy(data["stage"][stage_key]["runes"], data["stage"][stage_key]["options"]["characterLimit"]), 
+                    "enemies"       : sum(data["enemies_stage"][stage_key]["counter"][0:2]),
+                    "lp"            : global_lifepoint(data["stage"][stage_key]["runes"], data["stage"][stage_key]["options"]["maxLifePoint"]),
+                    "dp"            : data["stage"][stage_key]["options"]["initialCost"], 
+                    "dp_regen"      : data["stage"][stage_key]["options"]["costIncreaseTime"], 
+                    "maxPlayTime"   : data["stage"][stage_key]["options"]["maxPlayTime"],
+                    "configBlackBoard" : data["stage"][stage_key]["options"]["configBlackBoard"],
+                    "deployable"    : token_lister(data["stage"][stage_key]["predefines"]["tokenCards"], "tokenCards") if data["stage"][stage_key]["predefines"] else "",
+                    "static"        : token_lister(data["stage"][stage_key]["predefines"]["tokenInsts"], "tokenInsts") if data["stage"][stage_key]["predefines"] else "",
+                    "terrain"       : tile_lister(data["stage"][stage_key]["mapData"]),
+                    "addendum"      : data["stage"][stage_key], 
+                    "normal"        : enemies_data.get("NORMAL", ""),
+                    "elite"         : enemies_data.get("ELITE", ""),
+                    "boss"          : enemies_data.get("BOSS", ""),
+                    "eaddendum"     : eaddendum_lister(stage_key),
+                    "rune"          : rune_lister(data["stage"][stage_key]["runes"]) if data["stage"][stage_key]["runes"] else "",
+                    "globalBuffs"   : global_buff_lister(data["stage"][stage_key]["globalBuffs"]) if data["stage"][stage_key]["globalBuffs"] else "",
+                    "enemyDbRefs"   : {enemy["id"]:enemy for enemy in data["stage"][stage]["enemyDbRefs"]},
+        }
+    
+    def cc_article_writer(cc_data : dict):
+        return f'''{{{{CC operation tab}}}}
+                    {{{{CC operation info
+                    |name = {cc_data["name"]}
+                    |location = {cc_data["location"]}
+                    |desc = {desc_cond_writer(cc_data["desc"])}
+                    |unit limit = {cc_data["unit limit"]}
+                    |dp = {cc_data["dp"]}
+                    |lp = {cc_data["lp"]}
+                    |deployable = {cc_data["deployable"]}
+                    |static = {cc_data["static"]}
+                    |terrain = {tile_writer(cc_data["terrain"], (big_data["stage"][cc_data["stage_key"].split("#")[0]]["predefines"] or {}).get("tokenInsts", []))}
+                    |addendum = {addendum_writer(cc_data["rune"], cc_data["globalBuffs"], maxPlayTime = cc_data["maxPlayTime"], DP = cc_data["dp_regen"], configBlackBoard = cc_data["configBlackBoard"], enemyDbRefs = cc_data["enemyDbRefs"])}
+                    |enemies = {cc_data["enemies"]}
+                    |normal = {cc_data["normal"]}
+                    |elite = {cc_data["elite"]}
+                    |boss = {cc_data["boss"]}
+                    |eaddendum = {eaddendum_writer(cc_data["eaddendum"], cc_data["rune"], cc_data["globalBuffs"], cc_data["enemyDbRefs"])}
+                    }}}}'''.replace("                    ", "").replace("\n\n", "\n")
+
+    def cc_criteria_writer(cc_runes : dict, dimensionItemList : list, bagDataMap : dict, nodeDataMap : dict):
+        def rune_writer():
+            criterion       = cc_runes[rune]["runeName"]
+            effect          = criterion_effect(cc_runes[rune]["packedRune"]["description"], cc_runes[rune]["packedRune"]["runes"]) #
+            dimension_name  = dimensionItemList[cc_runes[rune]["dimension"]]["desc"]
+            score           = cc_runes[rune]["score"]
+            mutual          = ", ".join([cc_runes[mutual_rune]["runeName"] for mutual_rune in mutualExclusionGroup[mutualExclusionGroup_rune[rune]] if rune != mutual_rune]) if rune in mutualExclusionGroup_rune else ""
+            return f'{{{{Test Criteria cell|criterion={criterion}|effect={effect}|dimension={dimension_name}|score={score}{f'|mutual={mutual}' if mutual else ""}}}}}'
+        
+        def rune_replace(sub_desc : str, runes : list):
+            if not re.match(r'^\{.+?\}$', sub_desc):
+                return sub_desc
+            else:
+                sub_desc = sub_desc[1:-1]
+            sub_key = sub_desc.split(":")[0]
+            sub_format = sub_desc.split(":")[1] if len(sub_desc.split(":")) == 2 else ""
+            #printc(sub_desc, sub_key, sub_format)
+            for rune in runes:
+                for blackboard in rune["blackboard"]:
+                    if blackboard["key"] == sub_key:
+                        match sub_format:
+                            case "0%":
+                                return f'{blackboard["value"]*100:g}%'
+                            case "0":
+                                return f'{blackboard["value"]:g}'
+                            case _:
+                                return blackboard["valueStr"] if blackboard.get("valueStr") else f'{blackboard["value"]:g}'
+            
+        def criterion_effect(desc : str, runes : list):
+            if re.search(r'<@crisisv2\.(nag|pos)>([+-]|)(.+?)<\/>', desc):
+                desc = re.sub(r'<@crisisv2\.(nag|pos)>([+-]|)(.+?)<\/>', lambda m : rf'{{{{color|{m.group(2)}{rune_replace(m.group(3), runes)}|{"down" if m.group(1) == "nag" else "up"}}}}}', desc)
+            return desc
+        
+        criteria_article = []
+        mutualExclusionGroup = {}
+        mutualExclusionGroup_rune = {}
+        for node in nodeDataMap:
+            if nodeDataMap[node]["mutualExclusionGroup"]:
+                mutualExclusionGroup.setdefault(nodeDataMap[node]["mutualExclusionGroup"], []).append(nodeDataMap[node]["runeId"])
+                mutualExclusionGroup_rune[nodeDataMap[node]["runeId"]] = nodeDataMap[node]["mutualExclusionGroup"]
+        
+        if bagDataMap:
+            #printr(nodeDataMap)
+            for pack in bagDataMap:
+                criteria_article.append(f'\n==={bagDataMap[pack]["slotPackName"]}===\n{{{{Test Criteria head|bonus={bagDataMap[pack]["rewardScore"]}}}}}')
+                pack_runes = [nodeDataMap[node]["runeId"] for node in nodeDataMap if nodeDataMap[node]["slotPackId"] == pack and "runeId" in nodeDataMap[node]]
+                for rune in sorted(cc_runes, key = lambda x : cc_runes[x]["runeName"]):
+                    if rune not in pack_runes: continue
+                    criteria_article.append(rune_writer())
+                criteria_article.append("{{Test Criteria end}}\n")
+        else:
+            criteria_article.append("\n{{Test Criteria head}}")
+            for rune in sorted(cc_runes, key = lambda x : cc_runes[x]["runeName"]):
+                criteria_article.append(rune_writer())
+            criteria_article.append("{{Test Criteria end}}\n")
+        return "\n".join(criteria_article)
 
     def ig_article_data(data : dict, stage_key : str):
         # https://arknights.wiki.gg/wiki/Template:IG_operation_info
@@ -2944,7 +3058,9 @@ def wiki_article(
     operation_list = {}
     ishard = False
     is6star = False
-    if event_type == "sss":
+    if event_type == "cc":
+        cc_data = json_load(r'py\cc_getinfo.json', internal = True)
+    elif event_type == "sss":
         if not event_code.startswith(("tower_tr_", "tower_n_")) and event_name:
             for tower in DB["json_climb_towerEN"]["towers"]:
                 if DB["json_climb_towerEN"]["towers"][tower]["name"] == event_name:
@@ -2955,8 +3071,10 @@ def wiki_article(
     
     big_data = wiki_enemies(
                             event_code, 
-                            rogue = event_code if event_type == "is" else "", 
+                            cc = True if event_type == "cc" else "",
+                            cc_info = cc_data["info"]["mapStageDataMap"] if event_type == "cc" else "",
                             ps = True if event_type == "ps" else "", 
+                            rogue = event_code if event_type == "is" else "", 
                             sss = event_code if event_type == "sss" else ""
                             )
     big_data["enemies_stage"] = {}
@@ -2972,6 +3090,9 @@ def wiki_article(
     if event_type in ["ig", "tn", "vb"]:
         mode_info = event_type
         page_footer = "Seasonal game modes"
+    elif event_type in ["cc"]:
+        mode_info = event_type
+        page_footer = "{{CC operations}}"
     elif event_type in ["is"]:
         theme_name = DB["json_roguelike_topicEN"]["topics"][event_code]["name"] if not temp else json_load(r'py\roguelike_topic_table.json', internal=True)["topics"][event_code]["name"]
         mode_info = event_type
@@ -3011,6 +3132,17 @@ def wiki_article(
             else:
                 stage_article = [stage_article_writer(stage_info, "info"), stage_article_writer(stage_data, "data"), f'{{{{{page_footer}}}}}']
             operation_list[stage] = {"info" : stage_info, "data" : stage_data}
+            article_data += stage_article
+        
+        elif mode_info == "cc":
+            if stage not in cc_data["info"]["mapDetailDataMap"]: continue
+            stage_info          = cc_article_data(big_data, stage)
+            stage_criteria      = cc_data["info"]["mapDetailDataMap"][stage]["runeDataMap"]
+            dimensionItemList   = cc_data["info"]["mapDetailDataMap"][stage]["dimensionItemList"]
+            bagDataMap          = cc_data["info"]["mapDetailDataMap"][stage]["bagDataMap"]
+            nodeDataMap         = cc_data["info"]["mapDetailDataMap"][stage]["nodeDataMap"]
+            
+            stage_article = [f'### {stage}', f'{{{{Construction}}}}', cc_article_writer(stage_info), cc_criteria_writer(stage_criteria, dimensionItemList, bagDataMap, nodeDataMap)]
             article_data += stage_article
         
         elif mode_info == "ig":
@@ -3103,6 +3235,7 @@ def wiki_article(
     #printc(sorted(data["enemies"].keys()))
     #script_result(big_data)
     #script_result(big_data["stage"])
+    #printr(article_data)
     return article_data + ["\n\n[[Category:Operation maps]]"]
 
 # \([A-Za-z0-9#_]+\)
@@ -3127,7 +3260,7 @@ def wiki_article(
 
 # IS
 #script_result(wiki_article("rogue_4", "is", year = 5), True)
-script_result(wiki_article("rogue_5", "is", year = 6), True)
+#script_result(wiki_article("rogue_5", "is", year = 6), True)
 
 # SSS
 #script_result(wiki_article("tower_n_18", "sss", "Shangshu Night Market"), True)
@@ -3135,3 +3268,6 @@ script_result(wiki_article("rogue_5", "is", year = 6), True)
 #PS
 PS_OP = []
 #script_result(wiki_article(PS_OP, "ps", year = 7), True)
+
+#CC
+script_result(wiki_article("", "cc"), True)
